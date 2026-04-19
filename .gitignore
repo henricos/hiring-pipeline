@@ -1,0 +1,62 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# macOS / windows
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
+# testing
+/coverage
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# cache
+.eslintcache
+.cache/
+
+# local data
+*.sqlite
+*.sqlite3
+.codex
+
+# uploads / generated files
+/uploads
+/tmp
+/temp
+
+# misc
+.vercel
