@@ -1,6 +1,12 @@
+import { timingSafeEqual } from "crypto";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { env } from "@/lib/env";
+
+function safeCompare(a: string, b: string): boolean {
+  const buf = (s: string) => Buffer.from(s.slice(0, 256).padEnd(256));
+  return timingSafeEqual(buf(a), buf(b));
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   logger: {
@@ -16,12 +22,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           username: string;
           password: string;
         };
-        // Comparação de string simples — aceitável para single-user local.
-        // AVISO DE SEGURANÇA: para exposição pública, substituir por
-        // crypto.timingSafeEqual() ou hashing com bcrypt (ver RESEARCH.md Security Domain)
         if (
-          username === env.AUTH_USERNAME &&
-          password === env.AUTH_PASSWORD
+          safeCompare(username, env.AUTH_USERNAME) &&
+          safeCompare(password, env.AUTH_PASSWORD)
         ) {
           return { id: "1", name: username };
         }

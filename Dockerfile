@@ -10,10 +10,13 @@ WORKDIR /app
 ARG APP_VERSION
 ARG NEXT_PUBLIC_GIT_HASH
 ARG APP_BASE_PATH
+RUN test -n "${APP_BASE_PATH}" || (echo "ERRO: APP_BASE_PATH é obrigatório no build (ex: --build-arg APP_BASE_PATH=/hiring-pipeline)" && exit 1)
 ENV APP_VERSION=${APP_VERSION}
 ENV NEXT_PUBLIC_GIT_HASH=${NEXT_PUBLIC_GIT_HASH}
 ENV APP_BASE_PATH=${APP_BASE_PATH}
 ENV DATA_PATH=/tmp/build/data
+# Credenciais descartáveis apenas para satisfazer a validação Zod durante o npm run build.
+# Não têm relação com as credenciais de produção, que são injetadas via compose.yaml em runtime.
 ENV AUTH_USERNAME=build-user
 ENV AUTH_PASSWORD=build-password
 ENV NEXTAUTH_SECRET=build-secret-build-secret-build-secret-1234

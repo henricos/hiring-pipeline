@@ -24,7 +24,13 @@ export function validateDataPath(): void {
  * @returns Caminho absoluto para a subpasta
  */
 export function ensureSubdir(subdir: string): string {
+  if (!subdir || subdir.includes("..") || path.isAbsolute(subdir)) {
+    throw new Error(`ensureSubdir: subdir inválido: "${subdir}"`);
+  }
   const dirPath = path.join(env.DATA_PATH, subdir);
+  if (!dirPath.startsWith(env.DATA_PATH + path.sep)) {
+    throw new Error(`ensureSubdir: traversal detectado para "${subdir}"`);
+  }
   fs.mkdirSync(dirPath, { recursive: true });
   return dirPath;
 }

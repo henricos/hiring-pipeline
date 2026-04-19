@@ -26,6 +26,13 @@ export function AppShell({ children }: AppShellProps) {
     setWorkspacePending(false);
   }, [pathname]);
 
+  // Timeout de segurança: se pathname não mudar (ex: navegação falhou), reseta após 5s
+  useEffect(() => {
+    if (!workspacePending) return;
+    const timeout = setTimeout(() => setWorkspacePending(false), 5000);
+    return () => clearTimeout(timeout);
+  }, [workspacePending]);
+
   return (
     <div className="flex h-screen overflow-hidden bg-surface">
       <aside

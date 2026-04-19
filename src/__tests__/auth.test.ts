@@ -91,11 +91,7 @@ describe("auth middleware", () => {
   });
 });
 
-// Mock das dependências do login-form que dependem do next-auth (não testadas aqui)
-vi.mock("@/app/actions/auth", () => ({ authenticate: vi.fn() }));
-vi.mock("next/navigation", () => ({ useSearchParams: () => ({ get: () => null }) }));
-
-import { isValidCallback } from "@/components/login-form";
+import { isValidCallback } from "@/lib/auth-utils";
 
 describe("isValidCallback", () => {
   const base = "/hiring-pipeline";
@@ -106,6 +102,10 @@ describe("isValidCallback", () => {
 
   test("rejeita URLs com protocolo http://", () => {
     expect(isValidCallback("http://external.com", base)).toBe(false);
+  });
+
+  test("rejeita protocol-relative URLs (//)", () => {
+    expect(isValidCallback("//evil.com", base)).toBe(false);
   });
 
   test("aceita path relativo com prefix correto", () => {

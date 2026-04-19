@@ -6,13 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authenticate } from "@/app/actions/auth";
+import { isValidCallback } from "@/lib/auth-utils";
 
-export function isValidCallback(url: string, baseFallback: string): boolean {
-  // Rejeitar qualquer URL absoluta (contém "://") — previne open redirect (T-1-01)
-  if (url.includes("://")) return false;
-  // Aceitar apenas paths relativos que comecem com o fallback
-  return url.startsWith(baseFallback);
-}
+export { isValidCallback };
 
 export function LoginForm({ fallbackUrl }: { fallbackUrl: string }) {
   const searchParams = useSearchParams();
