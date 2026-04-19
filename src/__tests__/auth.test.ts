@@ -91,28 +91,28 @@ describe("auth middleware", () => {
   });
 });
 
-// Importar quando LoginForm for implementado (PLAN-E — Wave 2)
-// import { isValidCallback } from "@/components/login-form";
+// Mock das dependências do login-form que dependem do next-auth (não testadas aqui)
+vi.mock("@/app/actions/auth", () => ({ authenticate: vi.fn() }));
+vi.mock("next/navigation", () => ({ useSearchParams: () => ({ get: () => null }) }));
+
+import { isValidCallback } from "@/components/login-form";
 
 describe("isValidCallback", () => {
-  // Stub — ficará RED até isValidCallback ser implementado em PLAN-E
-  const isValidCallback = (_url: string): boolean => {
-    throw new Error("isValidCallback not implemented yet");
-  };
+  const base = "/hiring-pipeline";
 
   test("rejeita URLs absolutas com ://", () => {
-    expect(isValidCallback("://malicious.com")).toBe(false);
+    expect(isValidCallback("://malicious.com", base)).toBe(false);
   });
 
   test("rejeita URLs com protocolo http://", () => {
-    expect(isValidCallback("http://external.com")).toBe(false);
+    expect(isValidCallback("http://external.com", base)).toBe(false);
   });
 
   test("aceita path relativo com prefix correto", () => {
-    expect(isValidCallback("/hiring-pipeline/dashboard")).toBe(true);
+    expect(isValidCallback("/hiring-pipeline/dashboard", base)).toBe(true);
   });
 
   test("aceita path raiz do hiring-pipeline", () => {
-    expect(isValidCallback("/hiring-pipeline")).toBe(true);
+    expect(isValidCallback("/hiring-pipeline", base)).toBe(true);
   });
 });
