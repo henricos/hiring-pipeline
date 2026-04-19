@@ -1,0 +1,20 @@
+services:
+  web:
+    image: hiring-pipeline:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      APP_ROOT_PATH: /app
+      APP_BASE_PATH: /hiring-pipeline
+      DATA_PATH: /data
+      AUTH_USERNAME: ${AUTH_USERNAME}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+    ports:
+      - "${WEB_HOST_PORT:-3000}:3000"
+    volumes:
+      - type: bind
+        source: ${DATA_HOST_PATH}
+        target: /data
