@@ -34,16 +34,9 @@ Arquivos de compatibilidade como `CLAUDE.md` e diretórios de ferramenta são ap
 - **Cursor** — lê `AGENTS.md` como arquivo nativo de instruções; skills via `.cursor/skills/`, que aponta para `.agents/skills/`
 - **Codex CLI / outras ferramentas** — leem `AGENTS.md` diretamente; skills lidas de `.agents/skills/`
 
-## Desenvolvimento guiado por especificação (SDD)
+## Workflow de desenvolvimento
 
-Este projeto usa **GSD** como sistema de operação. Qualquer feature nova começa com discussão e especificação antes do código:
-
-- `/gsd-discuss-phase` — contexto e alinhamento antes de planejar
-- `/gsd-plan-phase` — plano atômico em `PLAN.md`
-- `/gsd-execute-phase` — execução
-- `/gsd-verify-work` — verificação dos entregáveis
-
-Antes de implementar qualquer feature, verifique se existe fase correspondente no roadmap. Se não existir, sinalize ao operador antes de prosseguir.
+Este projeto opera com um workflow determinado chamado **GSD (Get Shit Done)**. Skills do GSD estão instaladas e definem como o trabalho é planejado e executado. Antes de implementar qualquer feature, verifique se existe fase correspondente no roadmap. Se não existir, sinalize ao operador antes de prosseguir.
 
 ## Nomenclatura de arquivos
 
@@ -54,13 +47,7 @@ Incorreto: `jobProfile.ts`, `VacancyForm.tsx`, `data_layer.ts`
 
 ## Commits
 
-**Nunca faça commits automáticos.** Antes de qualquer commit, avise o operador e aguarde aprovação explícita. Use sempre a skill `/commit-push` para criar commits neste repositório — ela aplica o estilo Conventional Commits em `pt-BR` e aguarda aprovação humana.
-
-Isso se aplica a qualquer agente, incluindo fluxos GSD (`/gsd-discuss-phase`, `/gsd-plan-phase`, `/gsd-execute-phase` e similares): mesmo que o workflow instrua a commitar artefatos de planejamento, o agente deve propor o commit e aguardar aprovação, usando `/commit-push`.
-
-## Rastreabilidade
-
-Sem arquivos de log de IA; auditoria exclusivamente via mensagem de commit Git.
+**Nunca faça commits automáticos.** Sempre que precisar commitar, use a skill de commit instalada no projeto e aguarde autorização explícita do operador antes de executar. Isso se aplica a qualquer agente e em qualquer situação, inclusive durante fluxos do GSD.
 
 ## Versionamento
 
