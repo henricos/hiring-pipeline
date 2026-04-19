@@ -89,6 +89,8 @@ Cada perfil poderá armazenar informações como:
 - texto descritivo da vaga;
 - observações internas.
 
+> **Nota:** Esta lista é uma sugestão inicial na fase de ideação. A lista correta e definitiva de campos será determinada após análise do formulário modelo da GH e discussão detalhada dos requisitos do produto.
+
 ### 2. Geração assistida de conteúdo com IA
 
 A IA deverá apoiar a criação e atualização dos perfis de vaga, ajudando a:
@@ -137,7 +139,14 @@ Funcionalidades esperadas nessa etapa:
 
 A ferramenta deverá permitir registrar entrevistas e consolidar percepções sobre cada candidato.
 
-Informações esperadas:
+**Fluxo de entrada de dados:**
+Na fase inicial, a edição de informações de entrevistas e anotações será realizada de forma conversacional através de um **agente CLI integrado** (skill de IA), que:
+- Conversa com o usuário em linguagem natural;
+- Transforma respostas em campos estruturados;
+- Persiste os dados na aplicação;
+- Permite iteração rápida sem sair do contexto do agente.
+
+**Informações esperadas:**
 
 - data da entrevista;
 - entrevistadores;
@@ -149,11 +158,20 @@ Informações esperadas:
 - nota geral ou notas por critério;
 - recomendação final.
 
-Ao fim do processo, o sistema deverá facilitar a comparação entre candidatos, o ranking final e a decisão entre avançar com uma contratação ou solicitar novos candidatos.
+**Interface de consulta:**
+A aplicação web oferecerá uma interface **read-only** inicial que consolida todas as informações capturadas, facilitando:
+- Visualização de perfil completo de cada candidato;
+- Comparação estruturada entre candidatos;
+- Ranking final com base em critérios ponderados;
+- Decisão entre avançar com uma contratação ou solicitar novos candidatos.
+
+Edições futuras poderão ser realizadas novamente via agente conversacional ou, em futuras iterações, diretamente na UI web.
 
 ## Papel da IA no produto
 
 A IA é um elemento central da ferramenta, mas sempre como apoio à decisão humana.
+
+A estratégia de integração de IA é baseada em **agentes CLI com skills customizadas** (ex: Claude Code, Cursor, Codex CLI, ou similares), evitando complexidade de integração nativa e permitindo interação conversacional direta com o usuário.
 
 Os principais usos previstos são:
 
@@ -165,7 +183,7 @@ Os principais usos previstos são:
 - ajudar a resumir anotações e entrevistas;
 - apoiar a comparação entre candidatos ao final do processo.
 
-A decisão final sobre contratação continuará sendo humana.
+A decisão final sobre contratação continuará sendo humana. As skills de IA serão invocadas através de uma interface conversacional intuitiva, permitindo que o usuário itere rapidamente sem sair do contexto do agente.
 
 ## Diretrizes de produto
 
@@ -181,12 +199,32 @@ A ferramenta deve seguir estas diretrizes:
 
 ## Considerações técnicas iniciais
 
+### Arquitetura e hospedagem
+
 - o sistema será hospedado em infraestrutura própria do autor do projeto;
-- a aplicação será acessada via caminho `/contratacao`;
+- a aplicação será uma aplicação web (stack sugerido: Node/Next, aberto a alternativas);
+- a aplicação será acessada via um caminho configurável em contexto (padrão: `/hiring-pipeline`);
 - o repositório do projeto será privado;
 - o nome do repositório será `hiring-pipeline`;
 - o formulário padrão da GH será mantido como arquivo modelo dentro do repositório;
 - a solução deve ser pensada para futura evolução, sem exigir complexidade desnecessária no início.
+
+### Estratégia de implementação em fases
+
+**Primeira onda (MVP local):**
+- Execução local da aplicação web
+- Agente CLI externo (Claude Code, Cursor, etc.) para operações de IA e edição de dados
+- Visualização read-only via servidor web local
+- Propósito: validar fluxos, ganhar velocidade, reduzir complexidade inicial
+
+**Segunda onda (deployment em homeserver):**
+- Integração do agente de IA nativo na aplicação (utilizando Agent SDK da Anthropic ou similar)
+- Execução de skills de IA 100% no runtime da instalação (sem dependência de CLI externo)
+- Distribuição via container Docker
+- Automatização de build e deploy com GitHub Actions
+- Ambiente pronto para produção em infraestrutura local
+
+Essa abordagem permite validação rápida na primeira fase e evolução gradual para uma solução integrada e auto-contida.
 
 ## Evoluções futuras possíveis
 
