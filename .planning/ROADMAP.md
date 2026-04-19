@@ -31,7 +31,15 @@
 3. Application accessible at configurable base path (default `/hiring-pipeline`)
 4. Docker build completes with multi-stage process (production-ready image created)
 
-**Plans:** TBD
+**Plans:** 6 plans
+
+Plans:
+- [ ] 01-PLAN-A.md — Wave 0: Infraestrutura de testes (vitest.config.ts + 6 stubs de teste)
+- [ ] 01-PLAN-B.md — Wave 1: Scaffolding (package.json, next.config.ts, globals.css, fonts, lib/ utilitários)
+- [ ] 01-PLAN-C.md — Wave 1: Auth (env.ts, auth.ts, actions/auth.ts, route handler)
+- [ ] 01-PLAN-D.md — Wave 1: Data service (data-service.ts, .gitignore, .env.local.example)
+- [ ] 01-PLAN-E.md — Wave 2: Shell UI (AppShell, LeftRail, LoginPage, LoginForm, ShellLayout)
+- [ ] 01-PLAN-F.md — Wave 2: Docker + Design assets (Dockerfile, compose.yaml, DESIGN.md, referencias UI)
 
 ---
 
@@ -99,7 +107,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/? | Not started | — |
+| 1. Foundation & Auth | 0/6 | Planned | — |
 | 2. Job Profile Library | 0/? | Not started | — |
 | 3. AI-Assisted Profiles | 0/? | Not started | — |
 | 4. Vacancy & GH Form | 0/? | Not started | — |
@@ -107,3 +115,4 @@
 ---
 
 *Roadmap created: 2026-04-19*
+*Phase 1 planned: 2026-04-19*
