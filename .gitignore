@@ -1,19 +1,15 @@
 # dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+node_modules/
+.pnp
+.pnp.js
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
-# production
-/build
+# production build
+build/
+dist/
 
 # logs
 npm-debug.log*
@@ -22,20 +18,15 @@ yarn-error.log*
 pnpm-debug.log*
 *.log
 
-# env files
+# environment variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# macOS / windows
-.DS_Store
-Thumbs.db
-
-# editor
-.vscode/
-.idea/
+# data directory (local dev — use bind mount in production)
+data-local/
 
 # testing
 /coverage
@@ -44,19 +35,17 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
+# OS
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
 # cache
 .eslintcache
 .cache/
-
-# local data
-*.sqlite
-*.sqlite3
-.codex
-
-# uploads / generated files
-/uploads
-/tmp
-/temp
 
 # misc
 .vercel
