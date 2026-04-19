@@ -8,7 +8,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Authentication** - Project scaffolding, Docker setup, single-user auth
+- [x] **Phase 1: Foundation & Authentication** - Project scaffolding, Docker setup, single-user auth ✓ 2026-04-19
 - [ ] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates
 - [ ] **Phase 3: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions
 - [ ] **Phase 4: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
@@ -34,12 +34,12 @@
 **Plans:** 6 plans
 
 Plans:
-- [ ] 01-PLAN-A.md — Wave 0: Infraestrutura de testes (vitest.config.ts + 6 stubs de teste)
-- [ ] 01-PLAN-B.md — Wave 1: Scaffolding (package.json, next.config.ts, globals.css, fonts, lib/ utilitários)
-- [ ] 01-PLAN-C.md — Wave 1: Auth (env.ts, auth.ts, actions/auth.ts, route handler)
-- [ ] 01-PLAN-D.md — Wave 1: Data service (data-service.ts, .gitignore, .env.local.example)
-- [ ] 01-PLAN-E.md — Wave 2: Shell UI (AppShell, LeftRail, LoginPage, LoginForm, ShellLayout)
-- [ ] 01-PLAN-F.md — Wave 2: Docker + Design assets (Dockerfile, compose.yaml, DESIGN.md, referencias UI)
+- [x] 01-PLAN-A.md — Wave 0: Infraestrutura de testes (vitest.config.ts + 6 stubs de teste) ✓ 2026-04-19
+- [x] 01-PLAN-B.md — Wave 1: Scaffolding (package.json, next.config.ts, globals.css, fonts, lib/ utilitários) ✓ 2026-04-19
+- [x] 01-PLAN-C.md — Wave 1: Auth (env.ts, auth.ts, actions/auth.ts, route handler) ✓ 2026-04-19
+- [x] 01-PLAN-D.md — Wave 1: Data service (data-service.ts, .gitignore, .env.local.example) ✓ 2026-04-19
+- [x] 01-PLAN-E.md — Wave 2: Shell UI (AppShell, LeftRail, LoginPage, LoginForm, ShellLayout) ✓ 2026-04-19
+- [x] 01-PLAN-F.md — Wave 2: Docker + Design assets (Dockerfile, compose.yaml, DESIGN.md, referencias UI) ✓ 2026-04-19
 
 ---
 
@@ -107,7 +107,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Auth | 0/6 | Planned | — |
+| 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 0/? | Not started | — |
 | 3. AI-Assisted Profiles | 0/? | Not started | — |
 | 4. Vacancy & GH Form | 0/? | Not started | — |
