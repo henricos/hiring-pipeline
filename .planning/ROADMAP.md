@@ -88,7 +88,7 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Wave 1: Data layer (Vacancy schema, VacancyRepository, Badge + adm-zip install, unit tests)
+- [x] 03-01-PLAN.md — Wave 1: Data layer (Vacancy schema, VacancyRepository, Badge + adm-zip install, unit tests)
 - [ ] 03-02-PLAN.md — Wave 2: Server actions + repositories (vacancy CRUD, SettingsRepository, AreaSettings)
 - [ ] 03-03-PLAN.md — Wave 3: UI components e rotas (/vacancies, /settings, VacancyForm, VacancyList, SettingsForm, left-rail)
 - [ ] 03-04-PLAN.md — Wave 4: Route handler download + Skill /abrir-vaga (VAG-02)

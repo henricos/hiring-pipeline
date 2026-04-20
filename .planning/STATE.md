@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: Executing Phase 03
+last_updated: "2026-04-20T19:54:05.627Z"
+progress:
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 5
+  completed_plans: 10
+  percent: 100
+---
+
 # State: Hiring Pipeline v1
 
 **Last updated:** 2026-04-20  
@@ -12,12 +26,14 @@
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
 **Phase 3 Status:** Ready to execute (5 plans)
-**Current Focus:** Phase 3 (Vacancy Opening & GH Form Generation)
+**Current Focus:** Phase 03 — vacancy-gh-form
 
 ---
 
 ## Current Position
 
+Phase: 03 (vacancy-gh-form) — EXECUTING
+Plan: 1 of 5
 **Milestone:** v1 Hiring Pipeline  
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 (Vacancy & GH Form) a planejar  
 **Overall Progress:** [######----] 50%
@@ -46,15 +62,18 @@
 ## Accumulated Context
 
 ### Blocking Issues
+
 None yet.
 
 ### Tech Notes
+
 - Stack mirrors ai-pkm (Next.js 16, React 19, TypeScript, Tailwind 4, shadcn/ui)
 - Data lives in `/data` mounted volume; no relational DB in v1
 - Base path configurable via `APP_BASE_PATH` env var
 - Deployment: Docker multi-stage (node:22-alpine) + Compose
 
 ### Insights
+
 - GH Excel form template at `templates/requisicao-de-pessoal.xlsx`
 - Manager is single-user; auth via next-auth env credentials
 - AI agents accessed via CLI skills (Claude Code, Cursor, Codex)
@@ -65,23 +84,28 @@ None yet.
 ## Session Continuity
 
 ### Starting Phase
+
 Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
+
 1. `/gsd-discuss-phase 3` — Discutir e definir contexto da Phase 3 antes de planejar (recomendado)
 2. `/gsd-plan-phase 3` — Planejar abertura de vagas, modelo de dados e geração do Excel GH
 3. Validar critérios de sucesso (formulário Excel preenchido pronto para email, lista de vagas abertas)
 
 ### Phase 2 Planning Summary (2026-04-20)
+
 - 4 planos criados: PLAN-A (schema + shadcn), PLAN-B (server actions CRUD), PLAN-C (componentes ProfileList + ProfileForm), PLAN-D (rotas + left rail + checkpoint visual)
 - Verificação: PASSED (1ª verificação, 0 blockers, 0 warnings)
 - Pesquisa pulada — contexto suficiente via CONTEXT.md + UI-SPEC.md
 
 ### Phase 1 Planning Summary (2026-04-19)
+
 - 6 planos criados: PLAN-A (Wave 0 testes), PLAN-B (scaffolding), PLAN-C (auth), PLAN-D (data service), PLAN-E (shell UI), PLAN-F (Docker + design)
 - Verificação: PASSED após 1 iteração de revisão (2 warnings corrigidos, 0 blockers)
 
 ### Open Questions
+
 - Database location strategy: how will `/data` volume be synchronized in production?
 - Excel form generation: use python-pptx or js-xlsx? Check template structure first.
 - GH form versioning: changes to template — how to migrate old vacancies?
