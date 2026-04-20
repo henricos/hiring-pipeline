@@ -125,25 +125,13 @@ Nenhum anti-pattern bloqueador encontrado. Os 3 avisos estão documentados no 02
 
 ---
 
-### Verificação Humana Necessária
+### Verificação Humana
 
-#### 1. Checkpoint D-4 — Verificação Funcional Completa
+#### Checkpoint D-4 — Verificação Funcional Completa
 
-**Teste:** Seguir os 16 passos do checklist definido em 02-PLAN-D.md, Task D-4:
-1. Certificar que `DATA_PATH` aponta para `data/` local via `.env.local`
-2. `npm run dev` e login em http://localhost:3000/hiring-pipeline
-3. Verificar item "Perfis" no left rail habilitado e clicável
-4. `/profiles` exibe perfil seed "Engenheiro(a) de Software Pleno"
-5. Clicar no perfil → `/profiles/{id}/edit` com campos pré-preenchidos
-6. Alterar título e salvar → lista atualizada
-7. Criar novo perfil via `/profiles/new`
-8. Testar campos condicionais (educationLevel, postGraduateLevel, certifications)
-9. Testar AlertDialog de exclusão (Excluir + Manter perfil)
-10. Verificar que "Vagas" permanece desabilitado
+**Status: ✓ APROVADO pelo operador em 2026-04-20**
 
-**Esperado:** Todos os 16 passos passam sem erros
-
-**Por que humano:** Fluxo completo de navegação, comportamento visual dos campos condicionais, estado do AlertDialog e resposta da UI durante persistência não podem ser verificados programaticamente
+Fluxo testado e confirmado: insert, update, delete funcionando corretamente após correção de basePath duplicado nos redirects (`fix: corrigir rotas 404 em editar e criar perfil`, commit 86bb056).
 
 ---
 
