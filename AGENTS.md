@@ -4,11 +4,7 @@ Regras obrigatórias para qualquer IA (IDEs como Cursor, CLIs como Claude Code o
 
 ## Leitura de contexto
 
-Antes de iniciar qualquer tarefa de implementação, leia:
-
-1. **`.planning/PROJECT.md`** — visão atual e contexto do produto
-2. **`.planning/REQUIREMENTS.md`** — requisitos ativos
-3. **`.planning/ROADMAP.md`** — fases e estado de execução
+Antes de iniciar qualquer tarefa de implementação, familiarize-se com o contexto do projeto. Este projeto segue o framework **GSD (Get Shit Done)** — consulte os artefatos de planning gerados pelo GSD para entender a visão, os requisitos ativos e o estado de execução do roadmap.
 
 ## Idioma
 
