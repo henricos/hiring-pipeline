@@ -56,7 +56,7 @@ human_verification: []
 | `src/app/(shell)/profiles/new/page.tsx` | Página /profiles/new | VERIFICADO | Importa `ProfileForm` + `createProfile`; formulário em branco |
 | `src/app/(shell)/profiles/[id]/edit/page.tsx` | Página /profiles/[id]/edit | VERIFICADO | `getProfile(id)` + `notFound()` guard; `updateProfile.bind(null, id)`; formulário pré-preenchido |
 | `src/components/shell/left-rail.tsx` | Left rail com Perfis habilitado | VERIFICADO | `disabled: false` no item Perfis; Vagas permanece `disabled: true` |
-| `data/profiles/profile-seed.json` | Perfil de exemplo para dev | VERIFICADO | JSON válido; id `profile-seed-engenheiro-software-01`; timestamps fixos determinísticos |
+| `data/profiles/6b3bbc18-8a5f-4eb4-a918-8d7e4190173a.json` | Perfil de exemplo para dev | VERIFICADO | JSON válido; id UUID v4; datas ISO 8601 |
 
 ---
 

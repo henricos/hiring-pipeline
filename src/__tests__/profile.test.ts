@@ -136,14 +136,11 @@ describe("LANGUAGE_LEVELS", () => {
 });
 
 describe("generateProfileId()", () => {
-  it("retorna string que começa com 'profile-'", () => {
+  it("retorna UUID v4 válido", () => {
     const id = generateProfileId();
-    expect(id).toMatch(/^profile-/);
-  });
-
-  it("retorna string com pelo menos 20 caracteres", () => {
-    const id = generateProfileId();
-    expect(id.length).toBeGreaterThanOrEqual(20);
+    expect(id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    );
   });
 
   it("gera IDs diferentes em chamadas consecutivas (colisão-seguro)", () => {
@@ -170,11 +167,11 @@ describe("Interface JobProfile", () => {
       behaviors: "Trabalho em equipe",
       challenges: "Crescer o time",
       additionalInfo: "Nenhuma",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    expect(profile.id).toMatch(/^profile-/);
+    expect(profile.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     expect(profile.title).toBe("Desenvolvedor Backend");
     expect(profile.experienceLevel).toBe("3-5 anos");
   });
@@ -203,8 +200,8 @@ describe("Interface JobProfile", () => {
       systemsRequired: "AWS, Databricks",
       networkFolders: "\\\\servidor\\dados",
       internalNotes: "Candidato preferencial interno",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     expect(profile.educationCourse).toBe("Ciência da Computação");

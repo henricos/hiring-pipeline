@@ -52,8 +52,8 @@ export interface JobProfile {
   // Observações internas (não publicadas externamente)
   internalNotes?: string;
   // Metadados
-  createdAt: number; // Unix timestamp em ms
-  updatedAt: number; // Unix timestamp em ms
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
 }
 
 // Constantes para opções dos selects
@@ -91,11 +91,6 @@ export const LANGUAGE_LEVELS: LanguageLevel[] = [
   "Fluente",
 ];
 
-/**
- * Gera um ID único para um perfil de vaga.
- * Formato: profile-{timestamp}-{random7chars}
- * Colisão-seguro para uso em ambiente single-user.
- */
 export function generateProfileId(): string {
-  return `profile-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  return crypto.randomUUID();
 }

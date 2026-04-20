@@ -83,7 +83,7 @@ separando por linguagem natural. Critérios de avaliação são apenas texto, se
 - Delimitação visual das seções do formulário (card vs. heading) — seguir o que ficar
   mais legível respeitando o No-Line Rule do DESIGN.md.
 - Estrutura exata de pastas e arquivos em src/ para os componentes de perfil.
-- Formato do ID do perfil (slug, UUID, nanoid) — escolher o mais simples e colisão-seguro.
+- Formato do ID do perfil — **resolvido pós-phase:** UUID v4 via `crypto.randomUUID()`; nome do arquivo JSON = UUID puro (sem prefixo).
 - Conteúdo da home page (/) — empty state simples ou placeholder enquanto não há dashboard.
 
 </decisions>

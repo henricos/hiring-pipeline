@@ -64,7 +64,7 @@ export async function createProfile(
   const data = extractProfileData(formData);
   if ("error" in data) return data;
 
-  const now = Date.now();
+  const now = new Date().toISOString();
   const profile: JobProfile = {
     id: generateProfileId(),
     ...data,
@@ -104,7 +104,7 @@ export async function updateProfile(
       ...data,
       id: profileId,
       createdAt: existing.createdAt,
-      updatedAt: Date.now(),
+      updatedAt: new Date().toISOString(),
     });
   } catch {
     return { error: "Não foi possível salvar o perfil. Tente novamente." };
