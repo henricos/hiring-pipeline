@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Briefcase } from "lucide-react";
+import { Users, Briefcase, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -14,7 +14,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Perfis", href: "/profiles", icon: Users, disabled: false },
-  { label: "Vagas", href: "/vacancies", icon: Briefcase, disabled: true },
+  { label: "Vagas", href: "/vacancies", icon: Briefcase, disabled: false },
+  { label: "Configurações", href: "/settings", icon: Settings, disabled: false },
 ];
 
 interface LeftRailProps {
