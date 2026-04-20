@@ -25,8 +25,8 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 
-# data directory (local dev — use bind mount in production)
-data-local/
+# Repositório local montado (dev) — bind mount em produção
+/data
 
 # testing
 /coverage

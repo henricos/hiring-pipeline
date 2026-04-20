@@ -1,7 +1,12 @@
+import { loadEnvConfig } from "@next/env";
 import type { NextConfig } from "next";
 import { execSync } from "child_process";
 import packageJson from "./package.json";
 import { normalizeBasePath } from "./src/lib/base-path";
+
+// Carrega .env.local antes de qualquer leitura de process.env neste arquivo.
+// Necessário porque next.config.ts é avaliado antes do Next.js injetar as env vars.
+loadEnvConfig(process.cwd());
 
 const appVersion =
   process.env.APP_VERSION ?? process.env.npm_package_version ?? packageJson.version;
