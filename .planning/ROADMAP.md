@@ -10,7 +10,7 @@
 
 - [x] **Phase 1: Foundation & Authentication** - Project scaffolding, Docker setup, single-user auth ✓ 2026-04-19
 - [x] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates ✓ 2026-04-20
-- [x] **Phase 3: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form ✓ 2026-04-20
+- [ ] **Phase 3: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
 - [ ] **Phase 4: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions (via CLI/skills)
 
 ---
@@ -122,7 +122,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
-| 3. Vacancy & GH Form | 5/5 | Complete | 2026-04-20 |
+| 3. Vacancy & GH Form | 0/5 | Planned | — |
 | 4. AI-Assisted Profiles | 0/? | Not started | — |
 
 ---
