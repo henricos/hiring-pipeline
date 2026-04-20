@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { VacancyForm } from "@/components/vacancy/vacancy-form";
+import { Button } from "@/components/ui/button";
 import { updateVacancy } from "@/app/actions/vacancy";
 import { vacancyRepository } from "@/lib/repositories/vacancy-repository";
 import { profileRepository } from "@/lib/repositories/profile-repository";
@@ -34,6 +35,34 @@ export default async function EditVacancyPage({
           vacancy={vacancy}
           onSubmitAction={submitWithId}
         />
+        <section className="mt-12 pt-8 border-t border-border/20">
+          <h2 className="text-base font-medium text-on-surface mb-2">
+            Formulário GH
+          </h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Gere o formulário de requisição de pessoal pronto para envio ao GH/Werecruiter.
+          </p>
+          <div className="flex gap-3">
+            <Button asChild variant="default">
+              <a
+                href={`/api/vacancies/${vacancy.id}/form`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Gerar formulário GH
+              </a>
+            </Button>
+            <Button asChild variant="outline">
+              <a
+                href={`/api/vacancies/${vacancy.id}/form?regen=1`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Regenerar
+              </a>
+            </Button>
+          </div>
+        </section>
       </div>
     </div>
   );
