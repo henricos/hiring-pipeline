@@ -51,8 +51,9 @@ export class JsonVacancyRepository implements VacancyRepository {
   }
 
   async findById(id: string): Promise<Vacancy | null> {
+    // Validação de ID propaga erro (não suprime — proteção contra path traversal)
+    const filePath = this.vacancyPath(id);
     try {
-      const filePath = this.vacancyPath(id);
       if (!fs.existsSync(filePath)) return null;
       return JSON.parse(fs.readFileSync(filePath, "utf-8")) as Vacancy;
     } catch {
