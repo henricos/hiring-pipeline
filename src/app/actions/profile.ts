@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { withBasePath } from "@/lib/base-path";
 import { profileRepository } from "@/lib/repositories/profile-repository";
 import type { JobProfile } from "@/lib/profile";
 import { generateProfileId } from "@/lib/profile";
@@ -79,7 +78,7 @@ export async function createProfile(
     return { error: "Não foi possível salvar o perfil. Tente novamente." };
   }
 
-  redirect(withBasePath("/profiles"));
+  redirect("/profiles");
 }
 
 export async function updateProfile(
@@ -111,7 +110,7 @@ export async function updateProfile(
     return { error: "Não foi possível salvar o perfil. Tente novamente." };
   }
 
-  redirect(withBasePath("/profiles"));
+  redirect("/profiles");
 }
 
 export async function deleteProfile(profileId: string): Promise<void> {
@@ -120,7 +119,7 @@ export async function deleteProfile(profileId: string): Promise<void> {
   } catch {
     // idempotente
   }
-  redirect(withBasePath("/profiles"));
+  redirect("/profiles");
 }
 
 export async function listProfiles(): Promise<JobProfile[]> {

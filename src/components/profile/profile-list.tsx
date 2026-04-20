@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ interface ProfileListProps {
 }
 
 export function ProfileList({ profiles }: ProfileListProps) {
+  const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<JobProfile | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -65,9 +67,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
             <div
               key={profile.id}
               className="flex items-center justify-between py-4 gap-4 cursor-pointer"
-              onClick={() => {
-                window.location.href = `/profiles/${profile.id}/edit`;
-              }}
+              onClick={() => router.push(`/profiles/${profile.id}/edit`)}
             >
               {/* Coluna esquerda: título e cargo sugerido */}
               <div className="flex-1 min-w-0">
