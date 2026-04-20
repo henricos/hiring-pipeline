@@ -10,8 +10,8 @@
 
 - [x] **Phase 1: Foundation & Authentication** - Project scaffolding, Docker setup, single-user auth ✓ 2026-04-19
 - [x] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates ✓ 2026-04-20
-- [ ] **Phase 3: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions
-- [ ] **Phase 4: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
+- [ ] **Phase 3: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
+- [ ] **Phase 4: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions (via CLI/skills)
 
 ---
 
@@ -70,25 +70,7 @@ Plans:
 
 ---
 
-### Phase 3: AI-Assisted Profile Refinement
-
-**Goal:** AI agents augment profile creation with intelligent suggestions and improvements
-
-**Depends on:** Phase 2
-
-**Requirements:** IA-01, IA-02, IA-03
-
-**Success Criteria** (what must be TRUE):
-1. Manager can request AI suggestions for requirements and skills based on job title and context
-2. Manager can request AI improvements to job description writing
-3. AI suggestions contextualize to P&D/Lyceum business area norms and language
-4. Manager can accept, reject, or refine AI suggestions before saving to profile
-
-**Plans:** TBD
-
----
-
-### Phase 4: Vacancy Opening & GH Form Generation
+### Phase 3: Vacancy Opening & GH Form Generation
 
 **Goal:** Manager can open vacancies from profiles and auto-generate HR submission form
 
@@ -109,14 +91,32 @@ Plans:
 
 ---
 
+### Phase 4: AI-Assisted Profile Refinement
+
+**Goal:** AI agents augment profile creation with intelligent suggestions and improvements (via CLI/skills — sem integração nativa na web app no v1)
+
+**Depends on:** Phase 2
+
+**Requirements:** IA-01, IA-02, IA-03
+
+**Success Criteria** (what must be TRUE):
+1. Manager can request AI suggestions for requirements and skills based on job title and context
+2. Manager can request AI improvements to job description writing
+3. AI suggestions contextualize to P&D/Lyceum business area norms and language
+4. Manager can accept, reject, or refine AI suggestions before saving to profile
+
+**Plans:** TBD
+
+---
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
-| 3. AI-Assisted Profiles | 0/? | Not started | — |
-| 4. Vacancy & GH Form | 0/? | Not started | — |
+| 3. Vacancy & GH Form | 0/? | Not started | — |
+| 4. AI-Assisted Profiles | 0/? | Not started | — |
 
 ---
 
