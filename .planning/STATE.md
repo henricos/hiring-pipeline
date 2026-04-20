@@ -35,6 +35,9 @@
 | 2026-04-19 | JSON persistence over SQLite | Portability between machines via git; allows version control of hiring data | Active |
 | 2026-04-19 | CLI external agents for AI (v1) | Validates hiring workflows quickly without native LLM integration complexity; Agent SDK integrates in v2 | Active |
 | 2026-04-19 | Defer candidate management to v2 | v1 focuses on vacancy opening (higher operational pain); candidate screening deferred to v2 | Active |
+| 2026-04-20 | Repository pattern for data layer | `ProfileRepository` interface + `JsonProfileRepository` in `src/lib/repositories/`; server actions never call `fs.*` directly — swap to DB = new implementation only, zero changes in actions or components | Active |
+| 2026-04-20 | `/data` folder structure: table=folder, record=file | `data/profiles/` (Phase 2), `data/vacancies/` (Phase 4), `data/templates/` (move template — Phase 4 chore) | Active |
+| 2026-04-20 | Excel template move to `data/templates/` | Template is sensitive operational data; Phase 4 will read from `data/templates/requisicao-de-pessoal.xlsx` and write generated file to OS temp dir for download — not committed to main repo | Pending (Phase 4) |
 
 ---
 

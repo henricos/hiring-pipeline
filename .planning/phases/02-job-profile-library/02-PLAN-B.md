@@ -6,6 +6,7 @@ wave: 2
 depends_on:
   - 02-PLAN-A
 files_modified:
+  - src/lib/repositories/profile-repository.ts
   - src/app/actions/profile.ts
 autonomous: true
 requirements:
@@ -17,16 +18,25 @@ requirements:
 
 must_haves:
   truths:
-    - "Manager pode criar perfil: createProfile() persiste um arquivo JSON em DATA_PATH/profiles/{id}.json"
-    - "Manager pode editar perfil: updateProfile() sobrescreve o arquivo JSON com dados atualizados"
-    - "Manager pode excluir perfil: deleteProfile() remove o arquivo JSON do disco"
-    - "Manager pode listar perfis: listProfiles() retorna todos os perfis do diretório profiles/"
-    - "Manager pode buscar perfil por ID: getProfile() retorna o perfil ou null se não encontrar"
-    - "Server actions redirecionam para /profiles após operação bem-sucedida"
-    - "Erros de IO são capturados e retornados como { error: string } — sem vazamento de stack trace"
+    - "ProfileRepository interface exportada em src/lib/repositories/profile-repository.ts com métodos list, findById, save, delete"
+    - "JsonProfileRepository implementa ProfileRepository persistindo em DATA_PATH/profiles/{id}.json"
+    - "profileRepository (singleton) exportado e pronto para uso pelas server actions"
+    - "Manager pode criar perfil: createProfile() delega para profileRepository.save() e redireciona para /profiles"
+    - "Manager pode editar perfil: updateProfile() carrega via findById, mescla campos, salva via save()"
+    - "Manager pode excluir perfil: deleteProfile() delega para profileRepository.delete()"
+    - "Manager pode listar perfis: listProfiles() delega para profileRepository.list()"
+    - "Manager pode buscar perfil por ID: getProfile() delega para profileRepository.findById()"
+    - "Erros de IO capturados e retornados como { error: string } nas actions — sem stack trace exposto"
+    - "Nenhuma chamada a fs.* dentro de src/app/actions/profile.ts — toda I/O passa pelo repository"
   artifacts:
+    - path: "src/lib/repositories/profile-repository.ts"
+      provides: "Interface ProfileRepository + implementação JsonProfileRepository + singleton profileRepository"
+      exports:
+        - ProfileRepository
+        - JsonProfileRepository
+        - profileRepository
     - path: "src/app/actions/profile.ts"
-      provides: "CRUD server actions para perfis de vaga"
+      provides: "Server actions CRUD que delegam ao repository"
       exports:
         - createProfile
         - updateProfile
@@ -35,13 +45,13 @@ must_haves:
         - getProfile
   key_links:
     - from: "src/app/actions/profile.ts"
-      to: "DATA_PATH/profiles/"
-      via: "ensureSubdir('profiles') + fs.writeFileSync"
-      pattern: "ensureSubdir.*profiles"
-    - from: "src/app/actions/profile.ts"
-      to: "src/lib/profile.ts"
-      via: "import type { JobProfile } from '@/lib/profile'"
-      pattern: "import.*JobProfile.*@/lib/profile"
+      to: "src/lib/repositories/profile-repository.ts"
+      via: "import { profileRepository } from '@/lib/repositories/profile-repository'"
+      pattern: "import.*profileRepository.*repositories/profile-repository"
+    - from: "src/lib/repositories/profile-repository.ts"
+      to: "src/lib/data-service.ts"
+      via: "import { ensureSubdir } from '@/lib/data-service'"
+      pattern: "ensureSubdir"
     - from: "src/app/actions/profile.ts"
       to: "/profiles"
       via: "redirect(withBasePath('/profiles'))"
@@ -49,14 +59,15 @@ must_haves:
 ---
 
 <objective>
-Criar as server actions de CRUD para perfis de vaga: createProfile, updateProfile, deleteProfile,
-listProfiles e getProfile. Toda persistência ocorre como arquivos JSON individuais em DATA_PATH/profiles/.
+Criar a camada de repositório para perfis (ProfileRepository interface + JsonProfileRepository)
+e as server actions que delegam exclusivamente ao repositório — sem acesso direto ao fs.
 
-Purpose: Camada de serviço que desacopla a UI da persistência. Componentes de formulário e lista
-consomem estas actions sem acessar o sistema de arquivos diretamente.
+Purpose: Separação de concerns que permite trocar JSON por banco de dados no futuro sem tocar
+nas server actions nem nos componentes. A interface ProfileRepository é o contrato; a
+implementação Json é apenas a estratégia atual.
 
-Output: src/app/actions/profile.ts com cinco funções exportadas, seguindo o padrão de error
-handling estabelecido em src/app/actions/auth.ts.
+Output: src/lib/repositories/profile-repository.ts com interface + implementação + singleton;
+src/app/actions/profile.ts com 5 funções que usam o repositório.
 </objective>
 
 <execution_context>
@@ -66,155 +77,238 @@ handling estabelecido em src/app/actions/auth.ts.
 
 <context>
 @.planning/PROJECT.md
-@.planning/ROADMAP.md
 @.planning/STATE.md
 @.planning/phases/02-job-profile-library/02-CONTEXT.md
 @.planning/phases/02-job-profile-library/02-PATTERNS.md
 @.planning/phases/02-job-profile-library/02-A-SUMMARY.md
 
 <interfaces>
-<!-- Contratos estabelecidos no PLAN-A que este plano consome -->
-
 De src/lib/profile.ts (criado em PLAN-A):
 ```typescript
 export interface JobProfile {
-  id: string;
-  title: string;
-  suggestedTitle: string;
-  experienceLevel: ExperienceLevel;
-  educationLevel: EducationLevel;
-  educationCourse?: string;
-  postGraduateLevel: PostGraduateLevel;
-  postGraduateCourse?: string;
-  certifications: CertificationLevel;
-  certificationsWhich?: string;
-  englishLevel: LanguageLevel;
-  spanishLevel: LanguageLevel;
-  otherLanguage?: string;
-  otherLanguageLevel?: LanguageLevel;
-  responsibilities: string;
-  qualifications: string;
-  behaviors: string;
-  challenges: string;
-  additionalInfo: string;
-  systemsRequired?: string;
-  networkFolders?: string;
-  internalNotes?: string;
-  createdAt: number;
-  updatedAt: number;
+  id: string; title: string; suggestedTitle: string;
+  experienceLevel: ExperienceLevel; educationLevel: EducationLevel;
+  educationCourse?: string; postGraduateLevel: PostGraduateLevel;
+  postGraduateCourse?: string; certifications: CertificationLevel;
+  certificationsWhich?: string; englishLevel: LanguageLevel;
+  spanishLevel: LanguageLevel; otherLanguage?: string;
+  otherLanguageLevel?: LanguageLevel; responsibilities: string;
+  qualifications: string; behaviors: string; challenges: string;
+  additionalInfo: string; systemsRequired?: string;
+  networkFolders?: string; internalNotes?: string;
+  createdAt: number; updatedAt: number;
 }
-
-export function generateProfileId(): string; // "profile-{timestamp}-{random7chars}"
+export function generateProfileId(): string;
 ```
 
 De src/lib/data-service.ts (Phase 1):
 ```typescript
-export function ensureSubdir(subdir: string): string; // retorna path absoluto, cria se não existir
-// Valida que subdir não contém ".." (path traversal protection já implementada)
+export function ensureSubdir(subdir: string): string;
+// Valida path traversal, retorna path absoluto, cria pasta se não existir
 ```
 
 De src/app/actions/auth.ts (padrão de server action):
 ```typescript
 "use server";
-// Funções async com _prevState como primeiro argumento
-// Erros retornados como { error: string }, nunca relançados para o client
-// redirect() chamado após sucesso — nunca dentro de try/catch
+// redirect() FORA de try/catch — NEXT_REDIRECT é exceção interna do Next.js
+// Erros retornados como { error: string }, nunca relançados
 ```
 
 De src/lib/base-path.ts:
 ```typescript
-export function withBasePath(path: string): string; // prefixa com APP_BASE_PATH
+export function withBasePath(path: string): string;
 ```
 </interfaces>
 </context>
 
 <tasks>
 
-<task type="auto" tdd="true">
-  <name>Task B-1: Criar server actions CRUD para perfis</name>
+<task type="auto">
+  <name>Task B-1: Criar ProfileRepository interface e JsonProfileRepository</name>
+  <files>
+    src/lib/repositories/profile-repository.ts
+  </files>
+  <read_first>
+    - src/lib/data-service.ts (OBRIGATÓRIO — ensureSubdir, validações existentes de path traversal)
+    - src/lib/profile.ts (interface JobProfile e generateProfileId)
+    - src/lib/auth.ts (padrão de arquivo lib — sem "use server")
+  </read_first>
+  <action>
+    Criar pasta src/lib/repositories/ e o arquivo profile-repository.ts.
+
+    Este arquivo NÃO usa "use server" — é um módulo de biblioteca puro importado por server code.
+
+    Conteúdo exato:
+
+    ```typescript
+    import fs from "fs";
+    import path from "path";
+    import { ensureSubdir } from "@/lib/data-service";
+    import type { JobProfile } from "@/lib/profile";
+
+    // ─── Interface pública ───────────────────────────────────────────────────────
+    // Trocar de JSON para banco de dados = nova implementação desta interface.
+    // Server actions e componentes não precisam mudar.
+
+    export interface ProfileRepository {
+      list(): Promise<JobProfile[]>;
+      findById(id: string): Promise<JobProfile | null>;
+      save(profile: JobProfile): Promise<void>;   // cria ou sobrescreve
+      delete(id: string): Promise<void>;          // idempotente
+    }
+
+    // ─── Implementação JSON ──────────────────────────────────────────────────────
+
+    export class JsonProfileRepository implements ProfileRepository {
+      private profilePath(id: string): string {
+        if (!id || id.includes("..") || id.includes("/") || id.includes("\\")) {
+          throw new Error(`ID de perfil inválido: "${id}"`);
+        }
+        const dir = ensureSubdir("profiles");
+        return path.join(dir, `${id}.json`);
+      }
+
+      async list(): Promise<JobProfile[]> {
+        try {
+          const dir = ensureSubdir("profiles");
+          const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json"));
+          return files
+            .map((file) => {
+              try {
+                return JSON.parse(
+                  fs.readFileSync(path.join(dir, file), "utf-8")
+                ) as JobProfile;
+              } catch {
+                return null;
+              }
+            })
+            .filter((p): p is JobProfile => p !== null);
+        } catch {
+          return [];
+        }
+      }
+
+      async findById(id: string): Promise<JobProfile | null> {
+        try {
+          const filePath = this.profilePath(id);
+          if (!fs.existsSync(filePath)) return null;
+          return JSON.parse(fs.readFileSync(filePath, "utf-8")) as JobProfile;
+        } catch {
+          return null;
+        }
+      }
+
+      async save(profile: JobProfile): Promise<void> {
+        const filePath = this.profilePath(profile.id);
+        fs.writeFileSync(filePath, JSON.stringify(profile, null, 2), "utf-8");
+      }
+
+      async delete(id: string): Promise<void> {
+        try {
+          const filePath = this.profilePath(id);
+          if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        } catch {
+          // idempotente — silencioso se não existir
+        }
+      }
+    }
+
+    // ─── Singleton ───────────────────────────────────────────────────────────────
+    // Trocar implementação aqui quando migrar para banco de dados.
+    // Nenhum outro arquivo precisa mudar.
+
+    export const profileRepository: ProfileRepository = new JsonProfileRepository();
+    ```
+  </action>
+  <verify>
+    <automated>npx tsc --noEmit 2>&1 | head -20</automated>
+  </verify>
+  <done>
+    - src/lib/repositories/profile-repository.ts existe
+    - grep "export interface ProfileRepository" src/lib/repositories/profile-repository.ts retorna a interface
+    - grep "export class JsonProfileRepository" src/lib/repositories/profile-repository.ts retorna a classe
+    - grep "export const profileRepository" src/lib/repositories/profile-repository.ts retorna o singleton
+    - npx tsc --noEmit sai com código 0
+  </done>
+</task>
+
+<task type="auto">
+  <name>Task B-2: Criar server actions CRUD delegando ao repository</name>
   <files>
     src/app/actions/profile.ts
   </files>
   <read_first>
-    - src/app/actions/auth.ts (OBRIGATÓRIO — padrão exato de "use server", error handling, redirect)
-    - src/lib/data-service.ts (OBRIGATÓRIO — ensureSubdir, validações de path traversal existentes)
-    - src/lib/base-path.ts (withBasePath para redirect correto)
-    - src/lib/env.ts (env.DATA_PATH usado indiretamente via data-service)
-    - .planning/phases/02-job-profile-library/02-CONTEXT.md (campos obrigatórios validados no server)
-    - .planning/phases/02-job-profile-library/02-PATTERNS.md (seção src/app/actions/profile.ts — assinaturas exatas)
+    - src/app/actions/auth.ts (OBRIGATÓRIO — padrão redirect fora de try/catch, error handling)
+    - src/lib/repositories/profile-repository.ts (criado em B-1 — métodos do singleton)
+    - src/lib/base-path.ts (withBasePath)
+    - .planning/phases/02-job-profile-library/02-CONTEXT.md (campos obrigatórios a validar)
   </read_first>
-  <behavior>
-    - createProfile() com title="" retorna { error: "Título é obrigatório" }
-    - createProfile() com title e suggestedTitle válidos persiste arquivo e redireciona para /profiles
-    - createProfile() persiste arquivo em {DATA_PATH}/profiles/{id}.json onde id começa com "profile-"
-    - updateProfile(id) com title="" retorna { error: "Título é obrigatório" }
-    - updateProfile(id) com dados válidos sobrescreve o arquivo existente preservando createdAt
-    - updateProfile("id-inexistente") retorna { error: "Perfil não encontrado" }
-    - deleteProfile(id) remove o arquivo {DATA_PATH}/profiles/{id}.json
-    - deleteProfile("id-inexistente") não lança exceção (idempotente)
-    - listProfiles() retorna array vazio quando pasta profiles/ está vazia
-    - listProfiles() retorna array com todos os perfis (um por arquivo .json)
-    - getProfile(id) retorna null quando arquivo não existe
-    - getProfile(id) retorna JobProfile quando arquivo existe
-  </behavior>
   <action>
-    Criar src/app/actions/profile.ts seguindo o padrão exato de src/app/actions/auth.ts.
+    Criar src/app/actions/profile.ts. Nenhuma chamada a fs.* neste arquivo — toda I/O passa
+    pelo profileRepository.
 
-    Estrutura do arquivo:
+    Conteúdo exato:
 
     ```typescript
     "use server";
 
-    import fs from "fs";
-    import path from "path";
     import { redirect } from "next/navigation";
     import { withBasePath } from "@/lib/base-path";
-    import { ensureSubdir } from "@/lib/data-service";
+    import { profileRepository } from "@/lib/repositories/profile-repository";
     import type { JobProfile } from "@/lib/profile";
     import { generateProfileId } from "@/lib/profile";
 
-    // Helper interno — não exportado
-    function getProfilePath(profileId: string): string {
-      const profilesDir = ensureSubdir("profiles");
-      // Validação extra de path traversal no ID
-      if (!profileId || profileId.includes("..") || profileId.includes("/") || profileId.includes("\\")) {
-        throw new Error(`ID de perfil inválido: "${profileId}"`);
-      }
-      return path.join(profilesDir, `${profileId}.json`);
-    }
+    // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-    // Helper interno para extrair campos do FormData
-    function extractProfileData(formData: FormData): Omit<JobProfile, "id" | "createdAt" | "updatedAt"> | { error: string } {
+    function extractProfileData(
+      formData: FormData
+    ): Omit<JobProfile, "id" | "createdAt" | "updatedAt"> | { error: string } {
       const title = (formData.get("title") as string | null)?.trim() ?? "";
       if (!title) return { error: "Título é obrigatório" };
 
-      const suggestedTitle = (formData.get("suggestedTitle") as string | null)?.trim() ?? "";
-      if (!suggestedTitle) return { error: "Cargo sugerido para anúncio é obrigatório" };
+      const suggestedTitle =
+        (formData.get("suggestedTitle") as string | null)?.trim() ?? "";
+      if (!suggestedTitle)
+        return { error: "Cargo sugerido para anúncio é obrigatório" };
 
       return {
         title,
         suggestedTitle,
         experienceLevel: formData.get("experienceLevel") as JobProfile["experienceLevel"],
         educationLevel: formData.get("educationLevel") as JobProfile["educationLevel"],
-        educationCourse: (formData.get("educationCourse") as string | null)?.trim() || undefined,
+        educationCourse:
+          (formData.get("educationCourse") as string | null)?.trim() || undefined,
         postGraduateLevel: formData.get("postGraduateLevel") as JobProfile["postGraduateLevel"],
-        postGraduateCourse: (formData.get("postGraduateCourse") as string | null)?.trim() || undefined,
+        postGraduateCourse:
+          (formData.get("postGraduateCourse") as string | null)?.trim() || undefined,
         certifications: formData.get("certifications") as JobProfile["certifications"],
-        certificationsWhich: (formData.get("certificationsWhich") as string | null)?.trim() || undefined,
+        certificationsWhich:
+          (formData.get("certificationsWhich") as string | null)?.trim() || undefined,
         englishLevel: formData.get("englishLevel") as JobProfile["englishLevel"],
         spanishLevel: formData.get("spanishLevel") as JobProfile["spanishLevel"],
-        otherLanguage: (formData.get("otherLanguage") as string | null)?.trim() || undefined,
-        otherLanguageLevel: (formData.get("otherLanguageLevel") as string | null) as JobProfile["otherLanguageLevel"] || undefined,
-        responsibilities: (formData.get("responsibilities") as string | null)?.trim() ?? "",
-        qualifications: (formData.get("qualifications") as string | null)?.trim() ?? "",
+        otherLanguage:
+          (formData.get("otherLanguage") as string | null)?.trim() || undefined,
+        otherLanguageLevel:
+          ((formData.get("otherLanguageLevel") as string | null) as JobProfile["otherLanguageLevel"]) ||
+          undefined,
+        responsibilities:
+          (formData.get("responsibilities") as string | null)?.trim() ?? "",
+        qualifications:
+          (formData.get("qualifications") as string | null)?.trim() ?? "",
         behaviors: (formData.get("behaviors") as string | null)?.trim() ?? "",
         challenges: (formData.get("challenges") as string | null)?.trim() ?? "",
-        additionalInfo: (formData.get("additionalInfo") as string | null)?.trim() ?? "",
-        systemsRequired: (formData.get("systemsRequired") as string | null)?.trim() || undefined,
-        networkFolders: (formData.get("networkFolders") as string | null)?.trim() || undefined,
-        internalNotes: (formData.get("internalNotes") as string | null)?.trim() || undefined,
+        additionalInfo:
+          (formData.get("additionalInfo") as string | null)?.trim() ?? "",
+        systemsRequired:
+          (formData.get("systemsRequired") as string | null)?.trim() || undefined,
+        networkFolders:
+          (formData.get("networkFolders") as string | null)?.trim() || undefined,
+        internalNotes:
+          (formData.get("internalNotes") as string | null)?.trim() || undefined,
       };
     }
+
+    // ─── Actions ─────────────────────────────────────────────────────────────────
 
     export async function createProfile(
       _prevState: { error?: string } | null,
@@ -232,9 +326,8 @@ export function withBasePath(path: string): string; // prefixa com APP_BASE_PATH
       };
 
       try {
-        const filePath = getProfilePath(profile.id);
-        fs.writeFileSync(filePath, JSON.stringify(profile, null, 2), "utf-8");
-      } catch (error) {
+        await profileRepository.save(profile);
+      } catch {
         return { error: "Não foi possível salvar o perfil. Tente novamente." };
       }
 
@@ -249,28 +342,23 @@ export function withBasePath(path: string): string; // prefixa com APP_BASE_PATH
       const data = extractProfileData(formData);
       if ("error" in data) return data;
 
-      let existing: JobProfile;
+      let existing: JobProfile | null;
       try {
-        const filePath = getProfilePath(profileId);
-        if (!fs.existsSync(filePath)) {
-          return { error: "Perfil não encontrado" };
-        }
-        existing = JSON.parse(fs.readFileSync(filePath, "utf-8")) as JobProfile;
+        existing = await profileRepository.findById(profileId);
       } catch {
         return { error: "Não foi possível carregar o perfil. Tente novamente." };
       }
 
-      const updated: JobProfile = {
-        ...existing,
-        ...data,
-        id: profileId,
-        createdAt: existing.createdAt,
-        updatedAt: Date.now(),
-      };
+      if (!existing) return { error: "Perfil não encontrado" };
 
       try {
-        const filePath = getProfilePath(profileId);
-        fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf-8");
+        await profileRepository.save({
+          ...existing,
+          ...data,
+          id: profileId,
+          createdAt: existing.createdAt,
+          updatedAt: Date.now(),
+        });
       } catch {
         return { error: "Não foi possível salvar o perfil. Tente novamente." };
       }
@@ -280,65 +368,36 @@ export function withBasePath(path: string): string; // prefixa com APP_BASE_PATH
 
     export async function deleteProfile(profileId: string): Promise<void> {
       try {
-        const filePath = getProfilePath(profileId);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        await profileRepository.delete(profileId);
       } catch {
-        // Silencioso se o arquivo não existe — idempotente
+        // idempotente
       }
       redirect(withBasePath("/profiles"));
     }
 
     export async function listProfiles(): Promise<JobProfile[]> {
-      try {
-        const profilesDir = ensureSubdir("profiles");
-        const files = fs.readdirSync(profilesDir).filter((f) => f.endsWith(".json"));
-        const profiles = files
-          .map((file) => {
-            try {
-              const content = fs.readFileSync(path.join(profilesDir, file), "utf-8");
-              return JSON.parse(content) as JobProfile;
-            } catch {
-              return null;
-            }
-          })
-          .filter((p): p is JobProfile => p !== null);
-        return profiles;
-      } catch {
-        return [];
-      }
+      return profileRepository.list();
     }
 
-    export async function getProfile(profileId: string): Promise<JobProfile | null> {
-      try {
-        const filePath = getProfilePath(profileId);
-        if (!fs.existsSync(filePath)) return null;
-        const content = fs.readFileSync(filePath, "utf-8");
-        return JSON.parse(content) as JobProfile;
-      } catch {
-        return null;
-      }
+    export async function getProfile(
+      profileId: string
+    ): Promise<JobProfile | null> {
+      return profileRepository.findById(profileId);
     }
     ```
 
-    IMPORTANTE: redirect() deve ser chamado FORA de try/catch (Next.js lança NEXT_REDIRECT
-    como exceção interna — capturá-lo quebraria o redirect). Verificar o padrão de auth.ts
-    onde o redirect também está fora do catch.
-
-    Após criar o arquivo, verificar que compila: `npx tsc --noEmit`
+    Verificar compilação após criar.
   </action>
   <verify>
     <automated>npx tsc --noEmit 2>&1 | head -20</automated>
   </verify>
   <done>
     - src/app/actions/profile.ts existe com "use server" na primeira linha
-    - Exporta: createProfile, updateProfile, deleteProfile, listProfiles, getProfile
+    - grep "use server" src/app/actions/profile.ts retorna linha 1
+    - grep "profileRepository" src/app/actions/profile.ts retorna ao menos 5 linhas (uma por action)
+    - grep "fs\." src/app/actions/profile.ts retorna vazio (sem chamadas diretas ao fs)
+    - grep "export async function" src/app/actions/profile.ts retorna 5 linhas
     - npx tsc --noEmit sai com código 0
-    - grep "use server" src/app/actions/profile.ts retorna a diretiva
-    - grep "export async function createProfile" src/app/actions/profile.ts retorna a função
-    - grep "export async function listProfiles" src/app/actions/profile.ts retorna a função
-    - grep "redirect(withBasePath" src/app/actions/profile.ts retorna ao menos uma linha
   </done>
 </task>
 
@@ -349,46 +408,46 @@ export function withBasePath(path: string): string; // prefixa com APP_BASE_PATH
 
 | Boundary | Description |
 |----------|-------------|
-| FormData → server action | Input não confiável do cliente chega via FormData; deve ser validado antes de persistir |
-| profileId parameter → file system | IDs passados como parâmetro podem conter path traversal sequences |
-| DATA_PATH/profiles/ → JSON files | Arquivos JSON lidos do disco podem estar corrompidos |
+| FormData → extractProfileData | Input não confiável do cliente; validado antes de persistir |
+| profileId → JsonProfileRepository.profilePath | IDs passados como parâmetro podem conter path traversal |
+| JSON files → JSON.parse | Arquivos podem estar corrompidos ou adulterados |
 
 ## STRIDE Threat Register
 
 | Threat ID | Category | Component | Disposition | Mitigation Plan |
 |-----------|----------|-----------|-------------|-----------------|
-| T-02B-01 | Tampering | getProfilePath() | mitigate | Validar que profileId não contém "..", "/", "\\" antes de construir o path; ensureSubdir() em data-service.ts já valida o subdir |
-| T-02B-02 | Tampering | extractProfileData() | mitigate | Extrair campos via formData.get() com trim(); campos obrigatórios validados antes de persistir |
-| T-02B-03 | Elevation of Privilege | createProfile / updateProfile | accept | Aplicação protegida por auth (Phase 1 middleware); todas as rotas exigem sessão válida |
-| T-02B-04 | Information Disclosure | listProfiles() / getProfile() | accept | Dados de hiring são internos ao gestor; single-user sem necessidade de ACL por perfil |
-| T-02B-05 | Denial of Service | fs.readdirSync em listProfiles() | accept | Volume de perfis em single-user é baixo (dezenas); sem risco de DoS em ambiente local |
-| T-02B-06 | Tampering | JSON.parse em getProfile/listProfiles | mitigate | Capturar exceção de JSON malformado; retornar null/skip ao invés de propagar erro |
+| T-02B-01 | Tampering | JsonProfileRepository.profilePath | mitigate | Valida que id não contém "..", "/", "\\" antes de construir path |
+| T-02B-02 | Tampering | extractProfileData | mitigate | Campos obrigatórios validados; trim() em todos os strings |
+| T-02B-03 | Elevation of Privilege | server actions | accept | Middleware de auth (Phase 1) protege todas as rotas; sem acesso sem sessão |
+| T-02B-04 | Information Disclosure | listProfiles / findById | accept | Dados internos do gestor; single-user sem multi-tenancy |
+| T-02B-05 | Tampering | JSON.parse em list/findById | mitigate | Try/catch em torno de JSON.parse; retorna null/skip em caso de erro |
 </threat_model>
 
 <verification>
-Após execução deste plano:
+1. `grep "export interface ProfileRepository" src/lib/repositories/profile-repository.ts`
+   — retorna a declaração da interface
 
-1. `grep -n "use server" src/app/actions/profile.ts | head -1`
+2. `grep "export const profileRepository" src/lib/repositories/profile-repository.ts`
+   — retorna o singleton
+
+3. `grep "use server" src/app/actions/profile.ts | head -1`
    — retorna "1:\"use server\""
 
-2. `grep "export async function" src/app/actions/profile.ts`
-   — retorna 5 linhas: createProfile, updateProfile, deleteProfile, listProfiles, getProfile
+4. `grep "fs\." src/app/actions/profile.ts`
+   — retorna vazio (nenhuma chamada direta ao fs nas actions)
 
-3. `grep "ensureSubdir" src/app/actions/profile.ts`
-   — retorna ao menos uma linha (uso da camada de persistência)
+5. `grep "profileRepository\." src/app/actions/profile.ts | wc -l`
+   — retorna ao menos 5 (uma chamada por action)
 
-4. `grep "redirect(withBasePath" src/app/actions/profile.ts`
-   — retorna ao menos uma linha (redirect após operações de mutação)
-
-5. `npx tsc --noEmit`
+6. `npx tsc --noEmit`
    — sai com código 0
 </verification>
 
 <success_criteria>
-- src/app/actions/profile.ts criado com as 5 funções exportadas
-- Path traversal bloqueado no nível do profileId parameter
-- redirect() fora de try/catch em createProfile, updateProfile e deleteProfile
-- Erros de IO retornam { error: string } — sem stack trace exposto
+- ProfileRepository interface define contrato de substituição futura por banco de dados
+- JsonProfileRepository encapsula toda I/O de arquivo — nenhum fs.* nas actions
+- Singleton profileRepository é o único ponto de troca de implementação
+- redirect() fora de try/catch em createProfile, updateProfile, deleteProfile
 - npx tsc --noEmit passa sem erros
 </success_criteria>
 
