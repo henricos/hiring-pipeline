@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import type { AreaSettings } from "@/lib/settings";
 import { settingsRepository } from "@/lib/repositories/settings-repository";
 
@@ -36,7 +37,7 @@ export async function updateSettings(
     };
 
     await settingsRepository.save(settings);
-    // Sem redirect — permanece na página após salvar (padrão D-05)
+    revalidatePath("/settings");
   } catch (error) {
     return { error: formatError(error) };
   }

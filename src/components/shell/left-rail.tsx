@@ -29,7 +29,7 @@ export function LeftRail({ onNavigationStart }: LeftRailProps) {
     <nav className="flex flex-col gap-0.5 px-2 py-2" aria-label="Navegação principal">
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
-        const isActive = pathname === item.href;
+        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 
         if (item.disabled) {
           return (

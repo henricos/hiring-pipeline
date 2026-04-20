@@ -26,7 +26,11 @@ export class JsonSettingsRepository implements SettingsRepository {
       return defaultSettings();
     }
     const content = fs.readFileSync(this.settingsPath, "utf-8");
-    return JSON.parse(content) as AreaSettings;
+    try {
+      return JSON.parse(content) as AreaSettings;
+    } catch {
+      return defaultSettings();
+    }
   }
 
   async save(settings: AreaSettings): Promise<void> {

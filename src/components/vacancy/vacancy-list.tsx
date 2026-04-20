@@ -99,7 +99,7 @@ export function VacancyList({ vacancies, profiles }: VacancyListProps) {
                     {vacancyTitle}
                   </p>
                   <p className="text-body-md text-on-surface/70">
-                    Qty: {vacancy.quantity}
+                    Qtd: {vacancy.quantity}
                     {vacancy.costCenter ? ` • ${vacancy.costCenter}` : ""}
                   </p>
                 </div>

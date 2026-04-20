@@ -40,7 +40,7 @@ export async function createVacancy(
     const costCenter = (formData.get("costCenter") as string) || "";
     const salaryRange = (formData.get("salaryRange") as string) || "";
     const confidential = formData.get("confidential") === "true";
-    const budgeted = formData.get("budgeted") !== "false";
+    const budgeted = formData.get("budgeted") === "true";
     const headcountIncrease = formData.get("headcountIncrease") === "true";
     const replacedPerson = headcountIncrease
       ? undefined
@@ -99,7 +99,7 @@ export async function updateVacancy(
     vacancy.costCenter = (formData.get("costCenter") as string) || "";
     vacancy.salaryRange = (formData.get("salaryRange") as string) || "";
     vacancy.confidential = formData.get("confidential") === "true";
-    vacancy.budgeted = formData.get("budgeted") !== "false";
+    vacancy.budgeted = formData.get("budgeted") === "true";
     vacancy.headcountIncrease = formData.get("headcountIncrease") === "true";
     vacancy.replacedPerson = vacancy.headcountIncrease
       ? undefined
@@ -152,5 +152,31 @@ export async function advanceVacancyStatus(vacancyId: string): Promise<void> {
     await vacancyRepository.save(vacancy);
   } catch (error) {
     console.error("Falha ao avançar status da vaga:", error);
+  }
+}
+
+// Reverte o status da vaga: Encerrada → Em andamento → Aberta (correção de clique acidental)
+export async function revertVacancyStatus(vacancyId: string): Promise<void> {
+  try {
+    const vacancy = await vacancyRepository.findById(vacancyId);
+    if (!vacancy) return;
+
+    const transitions: Record<string, string | null> = {
+      "Em andamento": "Aberta",
+      Encerrada: "Em andamento",
+      Aberta: null,
+    };
+
+    const prevStatus = transitions[vacancy.status];
+    if (!prevStatus) return;
+
+    vacancy.status = prevStatus as Vacancy["status"];
+    if (prevStatus !== "Encerrada") {
+      vacancy.closedAt = undefined;
+    }
+
+    await vacancyRepository.save(vacancy);
+  } catch (error) {
+    console.error("Falha ao reverter status da vaga:", error);
   }
 }
