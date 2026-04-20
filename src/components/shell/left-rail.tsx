@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Perfis", href: "/profiles", icon: Users, disabled: true },
+  { label: "Perfis", href: "/profiles", icon: Users, disabled: false },
   { label: "Vagas", href: "/vacancies", icon: Briefcase, disabled: true },
 ];
 
