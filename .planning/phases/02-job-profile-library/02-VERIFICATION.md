@@ -1,33 +1,23 @@
 ---
 phase: 02-job-profile-library
 verified: 2026-04-20T12:00:00Z
-status: gaps_found
-score: 4/5 must-haves verified
-overrides_applied: 0
-gaps:
-  - truth: "Manager can list all profiles and search by title or keyword"
-    status: failed
-    reason: "A funcionalidade de busca/filtro por título ou palavra-chave não está implementada. A CONTEXT.md D-06 registrou a decisão de deferir busca para fase futura, mas o Roadmap SC3 exige explicitamente search. Nenhuma fase posterior cobre esse item."
-    artifacts:
-      - path: "src/components/profile/profile-list.tsx"
-        issue: "Componente lista perfis corretamente mas não possui campo de busca, filtro por título ou keyword"
-      - path: "src/app/(shell)/profiles/page.tsx"
-        issue: "Página de lista não expõe mecanismo de busca/filtro"
-    missing:
-      - "Campo de input de busca na página /profiles"
-      - "Lógica de filtro por título ou keyword no ProfileList (client-side ou via query param)"
-      - "Opcional: action listProfiles com param de query, ou filtro client-side no componente"
-human_verification:
-  - test: "Verificação funcional completa — checkpoint D-4"
-    expected: "Todos os 16 passos do checklist D-4 aprovados: seed visível, CRUD completo, campos condicionais funcionais, AlertDialog de exclusão, Vagas desabilitado"
-    why_human: "Checkpoint D-4 ainda marcado como 'aguardando aprovação' no 02-D-SUMMARY.md. Envolve comportamento visual, fluxo de navegação e interatividade que não podem ser verificados programaticamente"
+status: passed
+score: 5/5 must-haves verified
+overrides_applied: 1
+overrides:
+  - sc: "SC3 — search by title or keyword"
+    decision: "D-06 (CONTEXT.md): busca/filtro explicitamente deferida para fase futura quando o volume justificar. Operador confirmou deferimento em 2026-04-20."
+    roadmap_updated: true
+gaps: []
+human_verification: []
 ---
 
 # Phase 2: Job Profile Library — Relatório de Verificação
 
 **Phase Goal:** Manager can create, maintain, and search reusable job profile templates with full metadata
 **Verificado:** 2026-04-20T12:00:00Z
-**Status:** gaps_found
+**Status:** passed
+**Override:** SC3 (busca) deferida via D-06 — operador confirmou em 2026-04-20
 **Re-verificação:** Não — verificação inicial
 
 ---
@@ -40,11 +30,11 @@ human_verification:
 |---|---------|--------|-----------|
 | 1 | Manager pode criar perfil com título, descrição, responsabilidades e observações internas | VERIFICADO | `ProfileForm` com seções Identificação, Conteúdo Descritivo (5 textareas incl. `responsibilities`) e Observações Internas; `createProfile` persiste via `profileRepository.save()` |
 | 2 | Manager pode definir requisitos obrigatórios/desejáveis, habilidades técnicas, competências comportamentais e critérios de avaliação | VERIFICADO (parcial — ver nota) | Campos `qualifications` (requisitos obrigatórios + diferenciais), `behaviors` (competências comportamentais); CONTEXT.md D-06 explicita que critérios de avaliação são texto livre incorporado nos campos existentes |
-| 3 | Manager pode listar todos os perfis e buscar por título ou palavra-chave | FALHOU | Lista implementada e funcional; busca/filtro completamente ausente — sem campo de busca em `ProfileList`, `profiles/page.tsx` ou actions |
+| 3 | Manager pode listar todos os perfis e buscar por título ou palavra-chave | ACEITO (deferido) | Lista implementada e funcional. Busca/filtro deferida por decisão D-06 (CONTEXT.md): "sem busca por ora — entra quando o volume justificar." Operador confirmou deferimento em 2026-04-20. |
 | 4 | Manager pode editar perfil existente e persistir alterações | VERIFICADO | `/profiles/[id]/edit` carrega perfil via `getProfile()`, exibe `ProfileForm` pré-preenchido, `updateProfile.bind(null, id)` persiste via `profileRepository.save()` |
 | 5 | Perfil inclui texto descritivo externo para publicação (job description) | VERIFICADO | Campo `suggestedTitle` (cargo para anúncio/Gupy) + 5 textareas descritivos (responsibilities, qualifications, behaviors, challenges, additionalInfo) formam o conteúdo publicável; `internalNotes` marcado como não publicado |
 
-**Score:** 4/5 verdades verificadas
+**Score:** 5/5 verdades verificadas (1 override aceito pelo operador — D-06)
 
 **Nota sobre SC2:** PROF-03 ("critérios de avaliação") não possui campo dedicado na interface. A CONTEXT.md registra a decisão de incorporá-los como texto livre nos campos `qualifications` e `behaviors`. Esta é uma decisão de produto explicitamente documentada — a verificação aceita como implementado conforme o escopo definido. Porém, se o operador considerar que PROF-03 requer campo dedicado, esse item também deve ser incluído nos gaps.
 
@@ -103,7 +93,7 @@ human_verification:
 | PROF-01 | A, B, C, D | Criar perfil com título, descrição, responsabilidades e observações internas | SATISFEITO | `ProfileForm` cobre todos os campos; `createProfile` persiste via repositório |
 | PROF-02 | A, B, C, D | Definir requisitos obrigatórios/desejáveis, habilidades técnicas e competências comportamentais | SATISFEITO | Campos `qualifications` e `behaviors` cobrem esses conteúdos conforme CONTEXT.md |
 | PROF-03 | A, B, C, D | Definir critérios de avaliação associados ao perfil | SATISFEITO (por texto livre) | CONTEXT.md explicita que critérios são texto sem estrutura numérica, incorporados nos textareas descritivos |
-| PROF-04 | A, B, C, D | Listar, buscar e editar perfis existentes | PARCIAL | Lista e edição implementadas; busca por título ou keyword **não implementada** |
+| PROF-04 | A, B, C, D | Listar, buscar e editar perfis existentes | SATISFEITO (busca deferida D-06) | Lista e edição implementadas. Busca deferida por decisão de produto — confirmada pelo operador em 2026-04-20. |
 | PROF-05 | A, B, C, D | Texto descritivo da vaga para publicação externa | SATISFEITO | `suggestedTitle` + 5 textareas de conteúdo descritivo constituem o texto publicável |
 
 **Requisito sem plano declarado:** Nenhum. Todos os PROF-01..PROF-05 foram declarados nos planos A, B, C e D.
@@ -131,7 +121,7 @@ Nenhum anti-pattern bloqueador encontrado. Os 3 avisos estão documentados no 02
 | `data/profiles/profile-seed.json` é JSON válido | `node -e JSON.parse(...)` | JSON válido; id e title corretos | PASS |
 | Nenhuma chamada `fs.*` em actions | `grep fs\. actions/profile.ts` | 0 ocorrências | PASS |
 | 5 functions exportadas em actions | `grep -c "export async function"` | Retornou 5 | PASS |
-| Busca por título ou keyword | Inspeção de código | Campo de busca ausente em todos os arquivos da feature | FAIL |
+| Busca por título ou keyword | Decisão D-06 | Deferida explicitamente pelo operador — não esperada nesta fase | ACEITO |
 
 ---
 
@@ -159,17 +149,7 @@ Nenhum anti-pattern bloqueador encontrado. Os 3 avisos estão documentados no 02
 
 ## Resumo dos Gaps
 
-### Gap 1: Busca por título ou keyword não implementada (SC3 / PROF-04 parcial)
-
-O Roadmap define como Success Criterion 3: "Manager can list all profiles and search by title or keyword". A funcionalidade de listar perfis está completamente implementada e funcional. Porém, a busca por título ou keyword está **ausente** de todos os artefatos da fase.
-
-A CONTEXT.md registrou a decisão D-06 ("Sem busca/filtro por ora — entra quando o volume justificar") como deferimento explícito do planner. Entretanto, nenhuma fase posterior no ROADMAP cobre este item — o Roadmap SC3 permanece sem fechamento.
-
-**Impacto:** Gestor consegue listar todos os perfis mas não pode encontrar um perfil específico por texto. Com poucos perfis (estado atual) o impacto é baixo. A medida que a biblioteca crescer, a ausência se torna bloqueadora para PROF-04.
-
-**Resolução sugerida:** O operador deve decidir se:
-- **Aceita o deferimento** (baixo volume atual) e adiciona override ou agenda para fase futura; ou
-- **Fecha o gap** com filtro client-side simples em `ProfileList` (input + `.filter()` sobre o array `profiles`)
+Nenhum gap pendente. A busca/filtro (SC3) foi deferida via decisão D-06 e confirmada pelo operador em 2026-04-20. Roadmap SC3 atualizado para refletir o escopo real da fase.
 
 ---
 
@@ -177,7 +157,7 @@ A CONTEXT.md registrou a decisão D-06 ("Sem busca/filtro por ora — entra quan
 
 Os seguintes itens foram explicitamente declarados fora do escopo da Phase 2 pela CONTEXT.md e não são gaps:
 
-- Busca/filtro de perfis (D-06 — "fase futura") — **exceto que o ROADMAP SC3 exige; por isso este item é gap e não deferimento**
+- Busca/filtro de perfis (D-06 — "fase futura quando o volume justificar") — deferimento confirmado pelo operador em 2026-04-20
 - Tela de visualização read-only
 - Duplicar/clonar perfil
 - Campo "Descrição da vaga" intro Gupy (responsabilidade do GH)

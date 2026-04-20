@@ -7,11 +7,11 @@
 
 ### Perfis de Vaga
 
-- [ ] **PROF-01**: Gestor pode criar um perfil-base de vaga com título, descrição, responsabilidades e observações internas
-- [ ] **PROF-02**: Gestor pode definir requisitos obrigatórios, desejáveis, habilidades técnicas e competências comportamentais no perfil
-- [ ] **PROF-03**: Gestor pode definir critérios de avaliação associados ao perfil
-- [ ] **PROF-04**: Gestor pode listar, buscar e editar perfis existentes
-- [ ] **PROF-05**: Gestor pode definir texto descritivo da vaga (para publicação externa) no perfil
+- [x] **PROF-01**: Gestor pode criar um perfil-base de vaga com título, descrição, responsabilidades e observações internas ✓ Phase 2
+- [x] **PROF-02**: Gestor pode definir requisitos obrigatórios, desejáveis, habilidades técnicas e competências comportamentais no perfil ✓ Phase 2
+- [x] **PROF-03**: Gestor pode definir critérios de avaliação associados ao perfil ✓ Phase 2
+- [x] **PROF-04**: Gestor pode listar e editar perfis existentes ✓ Phase 2 (busca deferida — D-06)
+- [x] **PROF-05**: Gestor pode definir texto descritivo da vaga (para publicação externa) no perfil ✓ Phase 2
 
 ### IA — Criação de Perfis
 
@@ -65,11 +65,11 @@
 |-------------|-------|--------|
 | APP-01 | Phase 1 | Pending |
 | APP-02 | Phase 1 | Pending |
-| PROF-01 | Phase 2 | Pending |
-| PROF-02 | Phase 2 | Pending |
-| PROF-03 | Phase 2 | Pending |
-| PROF-04 | Phase 2 | Pending |
-| PROF-05 | Phase 2 | Pending |
+| PROF-01 | Phase 2 | Complete ✓ 2026-04-20 |
+| PROF-02 | Phase 2 | Complete ✓ 2026-04-20 |
+| PROF-03 | Phase 2 | Complete ✓ 2026-04-20 |
+| PROF-04 | Phase 2 | Complete ✓ 2026-04-20 (busca deferida D-06) |
+| PROF-05 | Phase 2 | Complete ✓ 2026-04-20 |
 | IA-01 | Phase 3 | Pending |
 | IA-02 | Phase 3 | Pending |
 | IA-03 | Phase 3 | Pending |

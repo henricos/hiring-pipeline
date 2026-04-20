@@ -9,7 +9,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation & Authentication** - Project scaffolding, Docker setup, single-user auth ✓ 2026-04-19
-- [ ] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates
+- [x] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates ✓ 2026-04-20
 - [ ] **Phase 3: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions
 - [ ] **Phase 4: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
 
@@ -54,17 +54,17 @@ Plans:
 **Success Criteria** (what must be TRUE):
 1. Manager can create a job profile with title, description, responsibilities, and internal notes
 2. Manager can define required/desired requirements, technical skills, behavioral competencies, and evaluation criteria
-3. Manager can list all profiles and search by title or keyword
+3. Manager can list all profiles (search deferred — D-06)
 4. Manager can edit existing profile and persist changes
 5. Job profile includes external-facing job description text for publication
 
 **Plans:** 4 plans
 
 Plans:
-- [ ] 02-PLAN-A.md — Wave 1: shadcn components (select, textarea, alert-dialog) + schema src/lib/profile.ts
-- [ ] 02-PLAN-B.md — Wave 2: Server actions CRUD (createProfile, updateProfile, deleteProfile, listProfiles, getProfile)
-- [ ] 02-PLAN-C.md — Wave 3: Componentes UI (ProfileList com empty state + delete dialog, ProfileForm com 5 seções e campos condicionais)
-- [ ] 02-PLAN-D.md — Wave 4: Rotas de páginas (/profiles, /profiles/new, /profiles/[id]/edit) + left rail habilitado + checkpoint visual
+- [x] 02-PLAN-A.md — Wave 1: shadcn components (select, textarea, alert-dialog) + schema src/lib/profile.ts ✓ 2026-04-20
+- [x] 02-PLAN-B.md — Wave 2: Server actions CRUD (createProfile, updateProfile, deleteProfile, listProfiles, getProfile) ✓ 2026-04-20
+- [x] 02-PLAN-C.md — Wave 3: Componentes UI (ProfileList com empty state + delete dialog, ProfileForm com 5 seções e campos condicionais) ✓ 2026-04-20
+- [x] 02-PLAN-D.md — Wave 4: Rotas de páginas (/profiles, /profiles/new, /profiles/[id]/edit) + left rail habilitado + checkpoint visual ✓ 2026-04-20
 
 **UI hint:** yes
 
@@ -114,7 +114,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
-| 2. Job Profile Library | 0/4 | Planned | — |
+| 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
 | 3. AI-Assisted Profiles | 0/? | Not started | — |
 | 4. Vacancy & GH Form | 0/? | Not started | — |
 

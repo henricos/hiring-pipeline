@@ -12,11 +12,9 @@ Transformar um processo fragmentado em email e planilhas em um fluxo assistido, 
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Gestor pode cadastrar e manter perfis-base de vaga reutilizáveis — Validado em Phase 2 (2026-04-20)
 
 ### Active
-
-- [ ] Gestor pode cadastrar e manter perfis-base de vaga reutilizáveis
 - [ ] IA apoia criação e refinamento de perfis com sugestões de requisitos e descrições
 - [ ] Gestor pode abrir uma vaga a partir de um perfil existente com dados complementares
 - [ ] Sistema gera formulário preenchido da GH em Excel a partir da abertura de vaga
@@ -80,4 +78,4 @@ Este documento evolui a cada transição de fase e marco de milestone.
 4. Atualizar Context com estado atual
 
 ---
-*Last updated: 2026-04-19 after initialization*
+*Last updated: 2026-04-20 after Phase 2 completion*

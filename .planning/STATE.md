@@ -3,7 +3,7 @@
 **Last updated:** 2026-04-20  
 **Mode:** YOLO (iterate on feedback, validate with users)
 **Phase 1 Status:** Complete ✓ 2026-04-19
-**Phase 2 Status:** Ready to execute — 4 planos planejados ✓ 2026-04-20
+**Phase 2 Status:** Complete ✓ 2026-04-20
 
 ---
 
@@ -11,15 +11,16 @@
 
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
-**Current Focus:** Phase 2 (Job Profile Library)
+**Phase 3 Status:** Ready to plan
+**Current Focus:** Phase 3 (AI-Assisted Profile Refinement)
 
 ---
 
 ## Current Position
 
 **Milestone:** v1 Hiring Pipeline  
-**Roadmap Progress:** Phase 1 concluída ✓ — Phase 2 planejada, pronta para execução  
-**Overall Progress:** [###-------] 30%
+**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 a planejar  
+**Overall Progress:** [######----] 50%
 
 **At risk:** None (early stage)
 
@@ -63,12 +64,12 @@ None yet.
 ## Session Continuity
 
 ### Starting Phase
-Phase 1: Foundation & Authentication
+Phase 3: AI-Assisted Profile Refinement
 
 ### What Needs to Happen Next
-1. `/gsd-execute-phase 2` — Executar os 4 planos (Wave 1 → Wave 2 → Wave 3 → Wave 4)
-2. Validar critérios de sucesso (CRUD de perfis, rotas /profiles, left rail habilitado)
-3. Transição para Phase 3 (AI-Assisted Profile Refinement)
+1. `/gsd-discuss-phase 3` — Discutir e definir contexto da Phase 3 antes de planejar (recomendado)
+2. `/gsd-plan-phase 3` — Planejar agentes de IA para sugestões de requisitos e refinamento de descrições
+3. Validar critérios de sucesso (sugestões contextualizadas, accept/reject flow, linguagem P&D/Lyceum)
 
 ### Phase 2 Planning Summary (2026-04-20)
 - 4 planos criados: PLAN-A (schema + shadcn), PLAN-B (server actions CRUD), PLAN-C (componentes ProfileList + ProfileForm), PLAN-D (rotas + left rail + checkpoint visual)
