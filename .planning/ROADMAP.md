@@ -85,7 +85,14 @@ Plans:
 4. Manager can view list of open vacancies with current status
 5. Manager can track vacancy progression from open through closure
 
-**Plans:** TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Wave 1: Data layer (Vacancy schema, VacancyRepository, Badge + adm-zip install, unit tests)
+- [ ] 03-02-PLAN.md — Wave 2: Server actions + repositories (vacancy CRUD, SettingsRepository, AreaSettings)
+- [ ] 03-03-PLAN.md — Wave 3: UI components e rotas (/vacancies, /settings, VacancyForm, VacancyList, SettingsForm, left-rail)
+- [ ] 03-04-PLAN.md — Wave 4: Route handler download + Skill /abrir-vaga (VAG-02)
+- [ ] 03-05-PLAN.md — Wave 2: Excel generator (adm-zip cirúrgico, escapeXml, generateVacancyForm, testes)
 
 **UI hint:** yes
 
@@ -115,7 +122,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
-| 3. Vacancy & GH Form | 0/? | Not started | — |
+| 3. Vacancy & GH Form | 0/5 | Planned | — |
 | 4. AI-Assisted Profiles | 0/? | Not started | — |
 
 ---
@@ -123,3 +130,4 @@ Plans:
 *Roadmap created: 2026-04-19*
 *Phase 1 planned: 2026-04-19*
 *Phase 2 planned: 2026-04-20*
+*Phase 3 planned: 2026-04-20*
