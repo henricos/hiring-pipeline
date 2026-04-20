@@ -1,9 +1,9 @@
 # State: Hiring Pipeline v1
 
-**Last updated:** 2026-04-19  
+**Last updated:** 2026-04-20  
 **Mode:** YOLO (iterate on feedback, validate with users)
 **Phase 1 Status:** Complete ✓ 2026-04-19
-**Phase 2 Status:** Context gathered — ready for planning
+**Phase 2 Status:** Ready to execute — 4 planos planejados ✓ 2026-04-20
 
 ---
 
@@ -18,8 +18,8 @@
 ## Current Position
 
 **Milestone:** v1 Hiring Pipeline  
-**Roadmap Progress:** Phase 1 concluída ✓ — Phase 2 context gathered, ready for planning  
-**Overall Progress:** [##--------] 25%
+**Roadmap Progress:** Phase 1 concluída ✓ — Phase 2 planejada, pronta para execução  
+**Overall Progress:** [###-------] 30%
 
 **At risk:** None (early stage)
 
@@ -63,14 +63,18 @@ None yet.
 Phase 1: Foundation & Authentication
 
 ### What Needs to Happen Next
-1. `/gsd-execute-phase 1` — Executar os 6 planos (Wave 0 → Wave 1 → Wave 2)
-2. Validar critérios de sucesso (login exigido, base path funciona, Docker builda)
-3. Transição para Phase 2
+1. `/gsd-execute-phase 2` — Executar os 4 planos (Wave 1 → Wave 2 → Wave 3 → Wave 4)
+2. Validar critérios de sucesso (CRUD de perfis, rotas /profiles, left rail habilitado)
+3. Transição para Phase 3 (AI-Assisted Profile Refinement)
+
+### Phase 2 Planning Summary (2026-04-20)
+- 4 planos criados: PLAN-A (schema + shadcn), PLAN-B (server actions CRUD), PLAN-C (componentes ProfileList + ProfileForm), PLAN-D (rotas + left rail + checkpoint visual)
+- Verificação: PASSED (1ª verificação, 0 blockers, 0 warnings)
+- Pesquisa pulada — contexto suficiente via CONTEXT.md + UI-SPEC.md
 
 ### Phase 1 Planning Summary (2026-04-19)
 - 6 planos criados: PLAN-A (Wave 0 testes), PLAN-B (scaffolding), PLAN-C (auth), PLAN-D (data service), PLAN-E (shell UI), PLAN-F (Docker + design)
 - Verificação: PASSED após 1 iteração de revisão (2 warnings corrigidos, 0 blockers)
-- Requer Nyquist Wave 0 antes de implementação
 
 ### Open Questions
 - Database location strategy: how will `/data` volume be synchronized in production?

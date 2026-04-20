@@ -58,7 +58,13 @@ Plans:
 4. Manager can edit existing profile and persist changes
 5. Job profile includes external-facing job description text for publication
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-PLAN-A.md — Wave 1: shadcn components (select, textarea, alert-dialog) + schema src/lib/profile.ts
+- [ ] 02-PLAN-B.md — Wave 2: Server actions CRUD (createProfile, updateProfile, deleteProfile, listProfiles, getProfile)
+- [ ] 02-PLAN-C.md — Wave 3: Componentes UI (ProfileList com empty state + delete dialog, ProfileForm com 5 seções e campos condicionais)
+- [ ] 02-PLAN-D.md — Wave 4: Rotas de páginas (/profiles, /profiles/new, /profiles/[id]/edit) + left rail habilitado + checkpoint visual
 
 **UI hint:** yes
 
@@ -108,7 +114,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
-| 2. Job Profile Library | 0/? | Not started | — |
+| 2. Job Profile Library | 0/4 | Planned | — |
 | 3. AI-Assisted Profiles | 0/? | Not started | — |
 | 4. Vacancy & GH Form | 0/? | Not started | — |
 
@@ -116,3 +122,4 @@ Plans:
 
 *Roadmap created: 2026-04-19*
 *Phase 1 planned: 2026-04-19*
+*Phase 2 planned: 2026-04-20*
