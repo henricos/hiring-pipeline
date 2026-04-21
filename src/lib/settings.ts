@@ -31,6 +31,9 @@ export interface AreaSettings {
   workScheduleOther?: string; // texto livre quando workSchedule === "Outro"
   travelRequired?: boolean;
   workMode?: WorkMode;
+
+  // ── Instruções para IA (Phase 4 — D-14) ──────────────────────
+  aiProfileInstructions?: string; // instruções para a skill /refinar-perfil
 }
 
 // Padrão com strings vazias — nunca null
@@ -53,5 +56,6 @@ export function defaultSettings(): AreaSettings {
     workScheduleOther: "",
     travelRequired: false,
     workMode: "Presencial",
+    aiProfileInstructions: "",
   };
 }

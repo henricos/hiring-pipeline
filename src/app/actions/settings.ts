@@ -55,6 +55,9 @@ export async function updateSettings(
     const travelRequired = formData.get("travelRequired") === "true";
     const workMode = ((formData.get("workMode") as string) || "Presencial") as AreaSettings["workMode"];
 
+    // Instruções para IA (Phase 4 — D-14)
+    const aiProfileInstructions = (formData.get("aiProfileInstructions") as string) || "";
+
     const settings: AreaSettings = {
       managerName,
       godfather,
@@ -73,6 +76,7 @@ export async function updateSettings(
       workScheduleOther,
       travelRequired,
       workMode,
+      aiProfileInstructions,
     };
 
     await settingsRepository.save(settings);
