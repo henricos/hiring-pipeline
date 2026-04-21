@@ -1,6 +1,6 @@
 # Phase 5: Market Research & Holistic Profile Refinement - Context
 
-**Gathered:** 2026-04-21
+**Gathered:** 2026-04-21 (atualizado 2026-04-21 — sessão de discuss com --analyse)
 **Status:** Ready for planning
 **Origin:** v1.0 leftover descoberta após Phase 4 (antes do bump SemVer). Não é v1.1 — é sobra da v1.0. Plano original discutido em sessão de plan mode cujo arquivo de origem (handoff externo) está em `/home/henrico/.claude/plans/eu-preciso-criar-um-calm-church.md`; todo o conteúdo relevante está materializado neste CONTEXT.md para não depender daquele path.
 
@@ -72,6 +72,9 @@ Cinco entregáveis, em ordem de dependência:
 
 - **D-09:** **A lista de portais NÃO é congelada neste CONTEXT.md.** Ela é output do sub-plan 05-01, que deve investigar o estado atual (abril/2026) via WebSearch: cobertura real, qualidade de snippet, taxa de sucesso de WebFetch em cada um, presença de faixa salarial. Sem essa discovery, a skill nasce com premissas ruins.
 - **D-10:** Candidatos iniciais a validar em 05-01: Gupy (via Google), vagas.com.br, Glassdoor BR, Catho, `site:linkedin.com/jobs`, InfoJobs, Remotar. Lista final pode adicionar ou remover. Output documenta também queries default por senioridade (ex: "senior java architect são paulo", "staff engineer brasil", "arquiteto de soluções java python").
+  - **Prioridade alta (definida em discuss):** Gupy (`site:gupy.io` via Google), LinkedIn (`site:linkedin.com/jobs` via Google), vagas.com.br, InfoJobs BR — investigar estes primeiro no 05-01.
+  - **Best-effort:** Glassdoor BR (útil para faixas salariais, mas WebFetch frequentemente 403).
+  - **Queries:** 05-01 deve testar **misto PT+EN** e documentar qual idioma retorna mais cobertura para cargos de engenharia P&D em SP. Exemplo PT: "engenheiro sênior java python são paulo"; Exemplo EN: "senior java architect são paulo".
 
 ### Evolução `/refinar-perfil` (05-03)
 
@@ -82,9 +85,14 @@ Cinco entregáveis, em ordem de dependência:
   3. Perfil atual sendo refinado
 - **D-13:** O system prompt **orienta a IA a priorizar a pesquisa quando presente** E a sempre respeitar os 4 campos fixos do JobProfile (D-01). A riqueza extra que a pesquisa traz (stack híbrido, arquétipo) tem que ser expressada dentro de `responsibilities` / `qualifications` / `behaviors` / `challenges` — não inventa campo novo, não injeta texto fora-do-schema.
 - **D-14:** **Novo Step 5 — revisão holística** (inserido entre o ciclo A/R/J e o save final):
-  - IA lê o perfil pós-edição completo e aponta: inconsistências entre responsabilidades × qualificações, lacunas (ex: responsabilidade cita arquitetura mas não há qualification correspondente), redundâncias, descalibração `title` × `experienceLevel` × conteúdo.
-  - Apresenta findings em lista numerada → por item, gestor escolhe **[A]plicar sugestão**, **[I]gnorar**, **[J]ustar** (itera em linguagem natural).
-  - Ao final, confirma salvamento (como hoje, step 6 existente).
+  - IA lê o perfil pós-edição completo e detecta os seguintes tipos de incoerência (todos decididos em discuss):
+    1. **Lacunas responsabilidades × qualificações** — responsabilidade cita arquitetura/IA/liderança mas nenhuma qualificação correspondente existe
+    2. **Redundâncias entre campos** — mesmo ponto dito de formas diferentes em responsibilities E qualifications, ou behaviors E challenges
+    3. **Descalibração título × conteúdo** — título diz "Sênior" mas responsabilidades parecem de Pleno, ou vice-versa; `title` × `experienceLevel` desalinhados
+    4. **Lacunas comportamentais** — cargo exige liderança/mentoria nas responsabilidades mas nenhum behavior correspondente aparece
+  - Apresenta findings em **lista numerada** → por item, gestor escolhe **[A]plicar sugestão**, **[I]gnorar**, **[J]ustar** (itera em linguagem natural). Mesmo padrão [A/I/J] já familiar do Step 4.
+  - **Sem limite de findings** — IA lista todas as incoerências encontradas; gestor decide o que resolver.
+  - Ao final, confirma salvamento (step 6 existente — renumerado de 5 para 6 com a inserção do holístico).
 
 ### `aiProfileInstructions` da área P&D/Lyceum (05-04)
 
@@ -102,12 +110,29 @@ Cinco entregáveis, em ordem de dependência:
 - **D-20:** Isto **NÃO é v1.1 nem v2.0**. É sobra da v1.0 descoberta após a phase 4 ser marcada como "Complete" no GSD — o bump SemVer (`npm version`) não foi executado ainda, então v1.0 continua aberta na prática. `/fechar-versao` só roda depois que a phase 5 for validada.
 - **D-21:** Verificação end-to-end acontece **no sub-plan 05-05** (piloto), não em sub-plan de verificação separado. O piloto é a verificação.
 
+### Validade e listagem de pesquisas (05-03)
+
+- **D-22:** Quando `/refinar-perfil` listar pesquisas disponíveis no Step 2, exibir **data legível** ao lado de cada arquivo (ex: `senior-pd-java-python-ts-sp-2026-04-21.json — 3 dias atrás`). Sem bloqueio por idade — gestor decide se usa pesquisa antiga. Sem threshold configurável no v1.
+
+### Seed para aiProfileInstructions P&D/Lyceum (05-04)
+
+- **D-23:** O sub-plan 05-04 parte com os seguintes vetores já validados pelo gestor como input para a discussão socrática:
+  - **Arquétipo:** Misto dos 3 perfis (evangelizador/POC-driver, arquiteto técnico, engenheiro de produto) — proporção varia por seniority e papel específico. Não existe "arquétipo único" da área.
+  - **Domínio prioritário para o aiProfileInstructions:**
+    - IA generativa aplicada (LLMs, APIs de IA) — os engenheiros de P&D usam e produzem IA como parte do produto
+    - Cultura de experimentação/POC — prosperar em ambiguidade; não exigir spec 100% antes de codar
+    - Stack tri-linguagem (Java + Python + TypeScript) — "fullstack" na área significa essa combinação específica
+    - **EdTech/ensino superior NÃO é foco** do aiProfileInstructions — o contexto de produto é implícito; o valor do campo está em orientar a IA sobre o tipo de engenheiro, não sobre o domínio do produto.
+  - **Red flags a sinalizar nas qualificações geradas:**
+    - Foco exclusivo em uma única linguagem/stack (rigidez incompatível com P&D)
+    - Ausência de experiência com LLMs/APIs de IA (para cargos Sênior+, relevante a partir de 2025/2026)
+  - Estes vetores orientam o roteiro socrático de 05-04 (quais perguntas fazer, em que ordem, o que já está semi-decidido vs. a explorar).
+
 ### Claude's Discretion
 
 - Estrutura exata do system prompt da `/pesquisar-mercado` (como pedir para a IA extrair stack/arquétipo de snippets irregulares).
 - Heurística de priorização quando há mais jobs candidatos a WebFetch do que a profundidade escolhida permite.
-- Formato exato da apresentação dos findings no Step 5 holístico.
-- Roteiro detalhado da discussão socrática em 05-04 (perguntas, ordem, critérios de parada).
+- Roteiro detalhado da discussão socrática em 05-04 (perguntas, ordem, critérios de parada) — guiado pelos vetores de D-23.
 
 </decisions>
 
