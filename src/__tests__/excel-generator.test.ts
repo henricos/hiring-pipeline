@@ -8,7 +8,7 @@ vi.mock("@/lib/env", () => ({
   env: { DATA_PATH: path.join(os.tmpdir(), "test-excel-generator") },
 }));
 
-const { escapeXml, generateVacancyForm } = await import(
+const { escapeXml, generateVacancyForm, serializeStringArray } = await import(
   "@/lib/excel-generator"
 );
 const { createDefaultVacancy } = await import("@/lib/vacancy");
@@ -228,5 +228,20 @@ describe("validateCellMapping", () => {
     if (!xml) return;
     expect(xml).toContain('r="B27"');
     expect(xml).toContain("EQUIPE_UNICA");
+  });
+});
+
+describe("serializeStringArray", () => {
+  it('retorna "- a\\n- b" para ["a", "b"]', () => {
+    expect(serializeStringArray(["a", "b"])).toBe("- a\n- b");
+  });
+  it("filtra itens vazios", () => {
+    expect(serializeStringArray(["a", "", "b"])).toBe("- a\n- b");
+  });
+  it("retorna string vazia para array vazio", () => {
+    expect(serializeStringArray([])).toBe("");
+  });
+  it("funciona com item único", () => {
+    expect(serializeStringArray(["item único"])).toBe("- item único");
   });
 });
