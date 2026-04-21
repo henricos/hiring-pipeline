@@ -77,7 +77,6 @@ Escolha (1 ou 2): ?
 
 **Dados Financeiros:**
 ```
-Centro de custo (ou deixe em branco): ?
 Faixa salarial (ex: R$ 8k - 12k): ?
 ```
 
@@ -89,24 +88,8 @@ Aumento de quadro? (Sim/Não)
   Se Não: Nome da pessoa substituída: ?
 ```
 
-**Horário e Modalidade:**
+**Data de Contratação:**
 ```
-Horário:
-  1. Das 08h às 17h
-  2. Das 09h às 18h
-  3. Outro
-Escolha: ?
-
-Modalidade:
-  1. Presencial
-  2. Remoto
-  3. Híbrido
-Escolha: ?
-```
-
-**Disponibilidade e Data:**
-```
-Disponibilidade para viagens? (Sim/Não)
 Data prevista de contratação (YYYY-MM-DD): ?
 ```
 
@@ -119,8 +102,13 @@ Padrinho (via settings): [godfather]
 Reporte imediato (via settings): [immediateReport]
 Reporte mediato (via settings): [mediateReport]
 Composição da equipe (via settings): [teamComposition]
+Centro de custo (via settings): [costCenter]
+Horário de trabalho (via settings): [workSchedule]
+Modalidade (via settings): [workMode]
+Viagens necessárias (via settings): [travelRequired]
 
-Estes dados foram preenchidos automaticamente. Quer alterar algum? (Sim/Não)
+Estes dados foram preenchidos automaticamente a partir das configurações da área.
+Quer alterar algum? (Sim/Não)
 ```
 
 If Sim, allow editing. If Não, prosseguir.
@@ -143,15 +131,11 @@ cat > $DATA_PATH/vacancies/{uuid}.json << 'EOF'
   "status": "Aberta",
   "requestType": "{requestType}",
   "quantity": {quantity},
-  "costCenter": "{costCenter}",
   "salaryRange": "{salaryRange}",
   "confidential": {confidential},
   "budgeted": {budgeted},
   "headcountIncrease": {headcountIncrease},
   "replacedPerson": "{replacedPerson or null}",
-  "workSchedule": "{workSchedule}",
-  "travelRequired": {travelRequired},
-  "workMode": "{workMode}",
   "expectedHireDate": "{expectedHireDate}",
   "openedAt": "{ISO8601-now}",
   "closedAt": null
@@ -191,6 +175,7 @@ Vaga salva em: $DATA_PATH/vacancies/{uuid}.json
 - **D-02 context:** Skill collects data in natural language, saves JSON to DATA_PATH/vacancies/, then exits. The web app reads the JSON on first access.
 - **Error handling:** If profile not found or JSON write fails, explain the issue clearly and suggest next steps (e.g., "Crie o perfil primeiro na web app").
 - **Dates:** Always ask for dates in YYYY-MM-DD format (ISO 8601). Current date = `node -e "console.log(new Date().toISOString().split('T')[0])"`
+- **Campos de AreaSettings:** costCenter, workSchedule, workMode, travelRequired vêm de settings.json (migrados na Phase 3 — GAP-12). Não coletar do gestor — pré-carregar de settings no Step 4. Não incluir no JSON da vaga (Step 5).
 
 ## Troubleshooting
 
@@ -214,5 +199,5 @@ export DATA_PATH=/path/to/data-repo
 ---
 
 **Skill created:** 2026-04-20
-**Updated:** —
+**Updated:** 2026-04-21 (Phase 4 — D-18: auditoria contra schemas pós-GAP-12)
 **Status:** Ready for Claude Code integration
