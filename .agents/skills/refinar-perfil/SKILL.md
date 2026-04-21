@@ -52,10 +52,10 @@ cat $DATA_PATH/settings.json
 
 Extrair do perfil:
 - `title` — título do cargo (usar no prompt da IA como contexto)
-- `responsibilities[]` — array de responsabilidades
-- `qualifications[]` — array de requisitos e qualificações
-- `behaviors[]` — array de competências comportamentais
-- `challenges[]` — array de principais desafios
+- `responsibilities[]` — array de strings
+- `qualifications[]` — array de `{ text: string, required: boolean }` (obrigatórios e diferenciais)
+- `behaviors[]` — array de strings
+- `challenges[]` — array de strings
 
 Extrair de settings.json (se existir):
 - `aiProfileInstructions` — injetar como contexto do sistema em TODAS as sugestões geradas
@@ -100,6 +100,8 @@ Aguardar seleção. Prosseguir conforme escolha:
 Para CADA campo da modalidade selecionada, executar o seguinte ciclo:
 
 **4.1 — Exibir ANTES (conteúdo atual):**
+
+Para `responsibilities`, `behaviors`, `challenges` (string[]):
 ```
 ── {nome do campo} ────────────────────────────────
 ANTES (conteúdo atual):
@@ -108,11 +110,25 @@ ANTES (conteúdo atual):
   ...
 ```
 
+Para `qualifications` (ProfileItem[] com required):
+```
+── Requisitos e qualificações ─────────────────────
+ANTES (conteúdo atual):
+  1. [Obrigatório] TypeScript avançado
+  2. [Obrigatório] Git
+  3. [Diferencial] Docker
+  ...
+```
+
 **4.2 — Gerar sugestão de IA:**
 
-Usar o seguinte contexto no prompt:
+Para `responsibilities`, `behaviors`, `challenges`:
 - System: "Você é um especialista em recrutamento para {title}. {aiProfileInstructions}"
 - Pedido: "Analise e melhore a lista de {nome do campo} para este cargo. Retorne apenas a lista revisada, um item por linha, sem numeração."
+
+Para `qualifications`:
+- System: "Você é um especialista em recrutamento para {title}. {aiProfileInstructions}"
+- Pedido: "Analise e melhore a lista de requisitos e qualificações para este cargo. Para cada item, indique se é Obrigatório ou Diferencial. Retorne no formato: '[Obrigatório] texto' ou '[Diferencial] texto', um por linha, sem numeração."
 
 **4.3 — Exibir DEPOIS (sugestão):**
 ```
@@ -164,6 +180,19 @@ console.log('Perfil atualizado com sucesso.');
 Substituir `{json_array_*}` pelo JSON.stringify() de cada array (apenas os campos alterados).
 Campos rejeitados mantêm o valor original — não sobrescrever.
 
+**Formato correto para qualifications** (ProfileItem[] — NÃO string[]):
+```json
+[
+  { "text": "TypeScript avançado", "required": true },
+  { "text": "Docker", "required": false }
+]
+```
+
+Para converter a resposta da IA (formato `[Obrigatório] texto` / `[Diferencial] texto`) em ProfileItem[]:
+- Linha começa com `[Obrigatório]` → `{ text: "...", required: true }`
+- Linha começa com `[Diferencial]` → `{ text: "...", required: false }`
+- Linha sem prefixo → `{ text: "...", required: true }` (padrão conservador)
+
 ### Step 6: Confirmar Conclusão
 
 ```
@@ -180,7 +209,7 @@ Próximas ações:
 
 - **aiProfileInstructions é o contexto principal:** Ler settings.json ANTES de gerar qualquer sugestão. Injetar o campo como contexto do sistema ("Você é um especialista em {aiProfileInstructions}..."). Se settings.json não existir ou o campo estiver vazio, avisar o gestor e prosseguir com contexto genérico.
 - **IDs são da lista, nunca do gestor:** Sempre usar o ID obtido do `ls` na Step 1. Nunca aceitar um UUID digitado livremente pelo gestor — isso previne path traversal e sobrescrita de arquivo errado.
-- **Campos são string[] desde Phase 4 (D-01):** responsibilities, qualifications, behaviors, challenges são arrays. Ao exibir, mostrar como lista numerada. Ao gravar, usar JSON.stringify(array) no node -e.
+- **Tipos dos campos:** `responsibilities`, `behaviors`, `challenges` são `string[]`. `qualifications` é `ProfileItem[]` — array de `{ text: string, required: boolean }`. Ao exibir qualifications, mostrar `[Obrigatório]`/`[Diferencial]` por item. Ao gravar qualifications, usar o formato de objeto (ver Step 5). Os outros 3 campos gravam como string[] simples.
 - **node -e em vez de heredoc:** O heredoc shell tem problemas com aspas simples e duplas em conteúdo. O node -e lê e grava JSON diretamente, preservando escape correto.
 - **Aceitar/Rejeitar/Ajustar:** O gestor tem controle total. A IA sugere — o gestor decide. "Ajustar" permite iterar quantas vezes o gestor quiser antes de aceitar ou rejeitar.
 - **Sem backup explícito (D-13):** DATA_PATH é um repositório git. O histórico de versões está disponível via `git log` no diretório de dados.

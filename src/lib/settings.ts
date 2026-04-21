@@ -34,6 +34,10 @@ export interface AreaSettings {
 
   // ── Instruções para IA (Phase 4 — D-14) ──────────────────────
   aiProfileInstructions?: string; // instruções para a skill /refinar-perfil
+
+  // ── Rótulos de qualificações para o Excel ─────────────────────
+  qualificationsRequiredLabel?: string; // título antes dos itens obrigatórios (default "Requisitos:")
+  qualificationsOptionalLabel?: string; // título antes dos itens opcionais (default "Diferenciais:")
 }
 
 // Padrão com strings vazias — nunca null
@@ -57,5 +61,7 @@ export function defaultSettings(): AreaSettings {
     travelRequired: false,
     workMode: "Presencial",
     aiProfileInstructions: "",
+    qualificationsRequiredLabel: "Requisitos:",
+    qualificationsOptionalLabel: "Diferenciais:",
   };
 }

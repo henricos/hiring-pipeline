@@ -35,7 +35,13 @@ function extractProfileData(
     // additionalInfo, systemsRequired, networkFolders migrados para AreaSettings (GAP-12)
     // string[] desde Phase 4 (D-01) — DynamicListField envia hidden inputs repetidos; getAll coleta todos
     responsibilities: (formData.getAll("responsibilities") as string[]).filter(Boolean),
-    qualifications: (formData.getAll("qualifications") as string[]).filter(Boolean),
+    qualifications: (() => {
+      const texts = (formData.getAll("qualifications") as string[]).map(s => s.trim());
+      const requireds = formData.getAll("qualifications_required") as string[];
+      return texts
+        .map((text, i) => ({ text, required: requireds[i] !== "false" }))
+        .filter(item => item.text);
+    })(),
     behaviors: (formData.getAll("behaviors") as string[]).filter(Boolean),
     challenges: (formData.getAll("challenges") as string[]).filter(Boolean),
     internalNotes:

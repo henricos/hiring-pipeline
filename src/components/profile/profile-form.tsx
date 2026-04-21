@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { DynamicListField } from "@/components/ui/dynamic-list-field";
+import { ProfileItemField } from "@/components/ui/profile-item-field";
 import type { JobProfile } from "@/lib/profile";
 import {
   EXPERIENCE_LEVELS,
@@ -284,7 +285,7 @@ export function ProfileForm({ profile, backHref, onSubmitAction }: ProfileFormPr
             labelClassName={LABEL_CLASS}
           />
 
-          <DynamicListField
+          <ProfileItemField
             name="qualifications"
             label="Requisitos e qualificações"
             initialItems={profile?.qualifications ?? []}

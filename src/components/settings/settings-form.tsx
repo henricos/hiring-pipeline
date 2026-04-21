@@ -392,6 +392,38 @@ export function SettingsForm({
               className={`${INPUT_CLASS} min-h-[120px] resize-y`}
             />
           </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="qualificationsRequiredLabel" className={LABEL_CLASS}>
+              Rótulo obrigatórios no Excel
+            </Label>
+            <p className="text-[0.6875rem] text-on-surface/50">
+              Título exibido antes dos itens obrigatórios no formulário GH.
+            </p>
+            <Input
+              id="qualificationsRequiredLabel"
+              name="qualificationsRequiredLabel"
+              defaultValue={initialSettings.qualificationsRequiredLabel ?? "Requisitos:"}
+              placeholder="Requisitos:"
+              className={INPUT_CLASS}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="qualificationsOptionalLabel" className={LABEL_CLASS}>
+              Rótulo diferenciais no Excel
+            </Label>
+            <p className="text-[0.6875rem] text-on-surface/50">
+              Título exibido antes dos itens opcionais no formulário GH.
+            </p>
+            <Input
+              id="qualificationsOptionalLabel"
+              name="qualificationsOptionalLabel"
+              defaultValue={initialSettings.qualificationsOptionalLabel ?? "Diferenciais:"}
+              placeholder="Diferenciais:"
+              className={INPUT_CLASS}
+            />
+          </div>
         </div>
 
         {/* ── Feedback ───────────────────────────────────────────── */}

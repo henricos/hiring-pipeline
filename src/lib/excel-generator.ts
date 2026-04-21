@@ -2,7 +2,7 @@ import AdmZip from "adm-zip";
 import fs from "fs";
 import path from "path";
 import type { Vacancy } from "@/lib/vacancy";
-import type { JobProfile } from "@/lib/profile";
+import type { JobProfile, ProfileItem } from "@/lib/profile";
 import type { AreaSettings } from "@/lib/settings";
 
 // Escapa os 5 caracteres especiais do XML (per Pitfall 4: RESEARCH.md)
@@ -34,12 +34,38 @@ export function toExcelDate(isoStr: string | undefined | null): string {
  * Formato de saída: "- item1\n- item2\n..." (D-05 — Phase 4)
  * Filtra itens vazios antes de serializar.
  */
-export function serializeStringArray(items: string[]): string {
+export function serializeStringArray(items: string[] | null | undefined): string {
   if (!items || items.length === 0) return "";
   return items
     .filter(Boolean)
     .map(item => `- ${item}`)
     .join("\n");
+}
+
+/**
+ * Serializa ProfileItem[] para o Excel com dois blocos rotulados.
+ * Itens obrigatórios aparecem sob requiredLabel; opcionais sob optionalLabel.
+ * Se só houver um tipo, apenas aquele bloco é emitido.
+ */
+export function serializeProfileItems(
+  items: ProfileItem[] | null | undefined,
+  requiredLabel = "Requisitos:",
+  optionalLabel = "Diferenciais:"
+): string {
+  if (!items || items.length === 0) return "";
+  const required = items.filter(i => i.required && i.text.trim());
+  const optional = items.filter(i => !i.required && i.text.trim());
+  const parts: string[] = [];
+  if (required.length > 0) {
+    parts.push(requiredLabel);
+    required.forEach(i => parts.push(`- ${i.text}`));
+  }
+  if (optional.length > 0) {
+    if (parts.length > 0) parts.push("");
+    parts.push(optionalLabel);
+    optional.forEach(i => parts.push(`- ${i.text}`));
+  }
+  return parts.join("\n");
 }
 
 // Mapeamento de campos → endereços de célula no template sheet1.xml
@@ -374,7 +400,11 @@ export function generateVacancyForm(
     [CELL_MAPPING.educationCourse]: profile.educationCourse ?? "",
     [CELL_MAPPING.postGraduateLevel]: profile.postGraduateLevel ?? "",
     [CELL_MAPPING.responsibilities]: serializeStringArray(profile.responsibilities),
-    [CELL_MAPPING.qualifications]:   serializeStringArray(profile.qualifications),
+    [CELL_MAPPING.qualifications]:   serializeProfileItems(
+      profile.qualifications,
+      settings.qualificationsRequiredLabel || "Requisitos:",
+      settings.qualificationsOptionalLabel || "Diferenciais:"
+    ),
     [CELL_MAPPING.behaviors]:        serializeStringArray(profile.behaviors),
     [CELL_MAPPING.challenges]:       serializeStringArray(profile.challenges),
 

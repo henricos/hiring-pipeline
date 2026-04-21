@@ -8,7 +8,7 @@ vi.mock("@/lib/env", () => ({
   env: { DATA_PATH: path.join(os.tmpdir(), "test-excel-generator") },
 }));
 
-const { escapeXml, generateVacancyForm, serializeStringArray } = await import(
+const { escapeXml, generateVacancyForm, serializeStringArray, serializeProfileItems } = await import(
   "@/lib/excel-generator"
 );
 const { createDefaultVacancy } = await import("@/lib/vacancy");
@@ -124,7 +124,7 @@ describe("generateVacancyForm", () => {
       englishLevel: "Avançado",
       spanishLevel: "Básico",
       responsibilities: ["Desenvolver features do produto"],
-      qualifications: ["5+ anos de experiência"],
+      qualifications: [{ text: "5+ anos de experiência", required: true }],
       behaviors: ["Trabalho em equipe"],
       challenges: ["Escalar o sistema"],
       additionalInfo: "",
@@ -175,7 +175,7 @@ describe("validateCellMapping", () => {
       englishLevel: "Avançado",
       spanishLevel: "Não exigido",
       responsibilities: ["RESP_UNICA"],
-      qualifications: ["QUAL_UNICA"],
+      qualifications: [{ text: "QUAL_UNICA", required: true }],
       behaviors: ["COMP_UNICA"],
       challenges: ["DESAFIO_UNICO"],
       additionalInfo: "",
@@ -216,11 +216,11 @@ describe("validateCellMapping", () => {
     expect(xml).toContain('r="AD4"');
   });
 
-  it("escreve responsibilities na célula B44", async () => {
+  it("escreve responsibilities na célula B44 com formato bullet", async () => {
     const xml = await generateAndReadSheet();
     if (!xml) return;
     expect(xml).toContain('r="B44"');
-    expect(xml).toContain("RESP_UNICA");
+    expect(xml).toContain("- RESP_UNICA");
   });
 
   it("escreve teamComposition na célula B27", async () => {
@@ -243,5 +243,59 @@ describe("serializeStringArray", () => {
   });
   it("funciona com item único", () => {
     expect(serializeStringArray(["item único"])).toBe("- item único");
+  });
+});
+
+describe("serializeProfileItems", () => {
+  it("separa obrigatórios e opcionais em dois blocos rotulados", () => {
+    const items = [
+      { text: "TypeScript", required: true },
+      { text: "Docker", required: false },
+    ];
+    const result = serializeProfileItems(items);
+    expect(result).toBe("Requisitos:\n- TypeScript\n\nDiferenciais:\n- Docker");
+  });
+
+  it("emite apenas o bloco obrigatório quando não há opcionais", () => {
+    const items = [
+      { text: "React", required: true },
+      { text: "Node.js", required: true },
+    ];
+    const result = serializeProfileItems(items);
+    expect(result).toBe("Requisitos:\n- React\n- Node.js");
+  });
+
+  it("emite apenas o bloco opcional quando não há obrigatórios", () => {
+    const items = [{ text: "Kubernetes", required: false }];
+    const result = serializeProfileItems(items);
+    expect(result).toBe("Diferenciais:\n- Kubernetes");
+  });
+
+  it("usa rótulos customizados quando fornecidos", () => {
+    const items = [
+      { text: "Java", required: true },
+      { text: "SpringBoot", required: false },
+    ];
+    const result = serializeProfileItems(
+      items,
+      "Você deve ter:",
+      "Seria ótimo se você tiver:"
+    );
+    expect(result).toContain("Você deve ter:");
+    expect(result).toContain("Seria ótimo se você tiver:");
+    expect(result).toContain("- Java");
+    expect(result).toContain("- SpringBoot");
+  });
+
+  it("retorna string vazia para array vazio", () => {
+    expect(serializeProfileItems([])).toBe("");
+  });
+
+  it("filtra itens com text vazio", () => {
+    const items = [
+      { text: "React", required: true },
+      { text: "", required: true },
+    ];
+    expect(serializeProfileItems(items)).toBe("Requisitos:\n- React");
   });
 });

@@ -98,7 +98,7 @@ Plans:
 - [x] 03-08-PLAN.md — Wave 1 (gap): Formatação de datas DD/MM/YYYY + data de abertura no Excel (GAP-06, GAP-08) ✓ 2026-04-21
 - [x] 03-09-PLAN.md — Wave 1 (gap): Checkboxes VML — limpeza de resíduos do template + marcação correta (GAP-07, GAP-09, GAP-10) ✓ 2026-04-21
 - [x] 03-10-PLAN.md — Wave 2 (gap): workSchedule — campo workScheduleOther, checkbox correto no Excel (GAP-05) ✓ 2026-04-21
-- [ ] 03-11-PLAN.md — Wave 1 (gap): Layout UI — seções Status e Formulário GH side by side no card (GAP-11)
+- [x] 03-11-PLAN.md — Wave 1 (gap): Layout UI — seções Status e Formulário GH side by side no card (GAP-11)
 - [x] 03-12-PLAN.md — Wave 3 (gap): Migrar campos fixos de perfil/vaga para Configurações da Área (GAP-12) ✓ 2026-04-21
 
 **UI hint:** yes

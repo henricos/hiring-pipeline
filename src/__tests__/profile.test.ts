@@ -14,6 +14,7 @@ import type {
   CertificationLevel,
   LanguageLevel,
   JobProfile,
+  ProfileItem,
 } from "@/lib/profile";
 
 describe("Tipos union de ExperienceLevel", () => {
@@ -163,7 +164,10 @@ describe("Interface JobProfile", () => {
       englishLevel: "Intermediário",
       spanishLevel: "Não exigido",
       responsibilities: ["Desenvolver APIs REST", "Revisar código"],
-      qualifications: ["TypeScript avançado", "Node.js (desejável)"],
+      qualifications: [
+        { text: "TypeScript avançado", required: true },
+        { text: "Node.js", required: false },
+      ],
       behaviors: ["Proatividade", "Trabalho em equipe"],
       challenges: ["Escalar o sistema legado"],
       additionalInfo: "Nenhuma",
@@ -193,7 +197,7 @@ describe("Interface JobProfile", () => {
       otherLanguage: "Francês",
       otherLanguageLevel: "Básico",
       responsibilities: ["Construir pipelines de dados"],
-      qualifications: ["Python, SQL"],
+      qualifications: [{ text: "Python, SQL", required: true }],
       behaviors: ["Curiosidade analítica"],
       challenges: ["Escalar infraestrutura"],
       additionalInfo: "Ambiente remoto",
@@ -213,7 +217,7 @@ describe("Interface JobProfile", () => {
   });
 });
 
-describe("Campos descritivos são string[] (D-01 — Phase 4)", () => {
+describe("Campos descritivos do JobProfile", () => {
   const profile: JobProfile = {
     id: "test-id",
     title: "Dev Backend",
@@ -223,7 +227,7 @@ describe("Campos descritivos são string[] (D-01 — Phase 4)", () => {
     postGraduateLevel: "Não exigido",
     certifications: "Não",
     responsibilities: ["Desenvolver APIs REST"],
-    qualifications: ["TypeScript avançado"],
+    qualifications: [{ text: "TypeScript avançado", required: true }],
     behaviors: ["Proatividade"],
     challenges: ["Escalar sistema legado"],
     createdAt: "2026-04-21T00:00:00.000Z",
@@ -233,13 +237,26 @@ describe("Campos descritivos são string[] (D-01 — Phase 4)", () => {
   it("responsibilities é string[]", () => {
     expect(Array.isArray(profile.responsibilities)).toBe(true);
   });
-  it("qualifications é string[]", () => {
+  it("qualifications é ProfileItem[]", () => {
     expect(Array.isArray(profile.qualifications)).toBe(true);
+    expect(profile.qualifications[0]).toHaveProperty("text");
+    expect(profile.qualifications[0]).toHaveProperty("required");
   });
   it("behaviors é string[]", () => {
     expect(Array.isArray(profile.behaviors)).toBe(true);
   });
   it("challenges é string[]", () => {
     expect(Array.isArray(profile.challenges)).toBe(true);
+  });
+});
+
+describe("ProfileItem", () => {
+  it("aceita required: true", () => {
+    const item: ProfileItem = { text: "TypeScript avançado", required: true };
+    expect(item.required).toBe(true);
+  });
+  it("aceita required: false (diferencial)", () => {
+    const item: ProfileItem = { text: "Docker", required: false };
+    expect(item.required).toBe(false);
   });
 });

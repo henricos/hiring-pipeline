@@ -58,6 +58,10 @@ export async function updateSettings(
     // Instruções para IA (Phase 4 — D-14)
     const aiProfileInstructions = (formData.get("aiProfileInstructions") as string) || "";
 
+    // Rótulos de qualificações para o Excel
+    const qualificationsRequiredLabel = (formData.get("qualificationsRequiredLabel") as string) || "Requisitos:";
+    const qualificationsOptionalLabel = (formData.get("qualificationsOptionalLabel") as string) || "Diferenciais:";
+
     const settings: AreaSettings = {
       managerName,
       godfather,
@@ -77,6 +81,8 @@ export async function updateSettings(
       travelRequired,
       workMode,
       aiProfileInstructions,
+      qualificationsRequiredLabel,
+      qualificationsOptionalLabel,
     };
 
     await settingsRepository.save(settings);

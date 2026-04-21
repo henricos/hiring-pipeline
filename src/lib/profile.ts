@@ -1,3 +1,9 @@
+// Item estruturado de lista — texto + classificação obrigatório/opcional
+export interface ProfileItem {
+  text: string;
+  required: boolean;
+}
+
 // Tipos union para campos de seleção
 export type ExperienceLevel =
   | "< 1 ano"
@@ -41,10 +47,10 @@ export interface JobProfile {
   otherLanguage?: string; // opcional — migrado para AreaSettings (GAP-12)
   otherLanguageLevel?: LanguageLevel; // opcional — migrado para AreaSettings (GAP-12)
   // Conteúdo descritivo (5 textareas — núcleo do perfil)
-  responsibilities: string[]; // Responsabilidades e atribuições — string[] desde Phase 4 (D-01)
-  qualifications: string[]; // Requisitos e qualificações (obrigatórios + diferenciais) — string[] desde Phase 4 (D-01)
-  behaviors: string[]; // Características e competências comportamentais — string[] desde Phase 4 (D-01)
-  challenges: string[]; // Principais desafios — string[] desde Phase 4 (D-01)
+  responsibilities: string[]; // Responsabilidades e atribuições
+  qualifications: ProfileItem[]; // Requisitos e qualificações — itens com classificação obrigatório/opcional
+  behaviors: string[]; // Características e competências comportamentais
+  challenges: string[]; // Principais desafios
   additionalInfo?: string; // opcional — migrado para AreaSettings (GAP-12)
   // Infraestrutura (opcional)
   systemsRequired?: string; // opcional — migrado para AreaSettings (GAP-12)

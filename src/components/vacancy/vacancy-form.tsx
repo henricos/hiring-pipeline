@@ -190,36 +190,37 @@ export function VacancyForm({
               </span>
             </label>
 
-            {/* Checkbox controlado: aumento de quadro */}
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                name="headcountIncrease"
-                value="true"
-                checked={headcountIncrease}
-                onChange={(e) => setHeadcountIncrease(e.target.checked)}
-                className="w-4 h-4 rounded-sm accent-tertiary"
-              />
-              <span className="text-[0.875rem] text-on-surface">
-                Aumento de quadro
-              </span>
-            </label>
-          </div>
-
-          {/* Campo condicional: nome do substituído (quando headcountIncrease=false) */}
-          {!headcountIncrease && (
-            <div className="space-y-1.5 ml-6 transition-all duration-150">
-              <Label htmlFor="replacedPerson" className={LABEL_CLASS}>
-                Nome da pessoa substituída
-              </Label>
-              <Input
-                id="replacedPerson"
-                name="replacedPerson"
-                defaultValue={vacancy?.replacedPerson ?? ""}
-                className={INPUT_CLASS}
-              />
+            {/* Checkbox controlado: aumento de quadro — inline com campo de substituição */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="flex items-center gap-2 cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  name="headcountIncrease"
+                  value="true"
+                  checked={headcountIncrease}
+                  onChange={(e) => setHeadcountIncrease(e.target.checked)}
+                  className="w-4 h-4 rounded-sm accent-tertiary"
+                />
+                <span className="text-[0.875rem] text-on-surface">
+                  Aumento de quadro
+                </span>
+              </label>
+              {!headcountIncrease && (
+                <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+                  <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.05em] text-on-surface/60 shrink-0">
+                    Substitui
+                  </span>
+                  <Input
+                    id="replacedPerson"
+                    name="replacedPerson"
+                    required
+                    defaultValue={vacancy?.replacedPerson ?? ""}
+                    className={`flex-1 ${INPUT_CLASS}`}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Data prevista de contratação — workSchedule, workMode, travelRequired migrados para Configurações da Área (GAP-12) */}
           <div className="space-y-1.5">

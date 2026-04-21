@@ -10,12 +10,17 @@ const LABEL_CLASS =
 const INPUT_CLASS =
   "rounded-sm bg-surface-container-low focus-visible:bg-surface-container-lowest focus-visible:border-b-2 focus-visible:border-b-tertiary";
 
+interface Item {
+  id: string;
+  value: string;
+}
+
 interface DynamicListFieldProps {
-  name: string;        // nome do campo para FormData (repetido nos hidden inputs)
-  label: string;       // texto do Label acima da lista
-  initialItems?: string[];   // itens iniciais — array do perfil existente
-  required?: boolean;  // se true, o primeiro input recebe required
-  labelClassName?: string;   // sobrescreve LABEL_CLASS se fornecido
+  name: string;
+  label: string;
+  initialItems?: string[];
+  required?: boolean;
+  labelClassName?: string;
 }
 
 export function DynamicListField({
@@ -25,19 +30,20 @@ export function DynamicListField({
   required,
   labelClassName,
 }: DynamicListFieldProps) {
-  // PITFALL CRÍTICO: initializar com [""] se array vazio — garante ao menos 1 input
-  const [items, setItems] = useState<string[]>(
-    initialItems && initialItems.length > 0 ? initialItems : [""]
-  );
+  const [items, setItems] = useState<Item[]>(() => {
+    const source = initialItems && initialItems.length > 0 ? initialItems : [""];
+    return source.map(value => ({ id: crypto.randomUUID(), value }));
+  });
 
-  const update = (index: number, value: string) =>
-    setItems(prev => prev.map((item, i) => (i === index ? value : item)));
+  const update = (id: string, value: string) =>
+    setItems(prev => prev.map(item => (item.id === id ? { ...item, value } : item)));
 
-  const add = () => setItems(prev => [...prev, ""]);
+  const add = () =>
+    setItems(prev => [...prev, { id: crypto.randomUUID(), value: "" }]);
 
-  const remove = (index: number) => {
-    if (items.length === 1) return; // manter ao menos 1 input
-    setItems(prev => prev.filter((_, i) => i !== index));
+  const remove = (id: string) => {
+    if (items.length === 1) return;
+    setItems(prev => prev.filter(item => item.id !== id));
   };
 
   return (
@@ -45,16 +51,16 @@ export function DynamicListField({
       <Label className={labelClassName ?? LABEL_CLASS}>{label}</Label>
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={item.id} className="flex gap-2">
             {/*
               PITFALL: o <Input> visível NÃO tem name.
               Somente o hidden input tem name — evita duplicação no FormData.
-              A server action usa formData.getAll(name) para receber o array.
+              CONTRATO: getAll(name) requer .filter(Boolean) — pode enviar strings vazias.
             */}
-            <input type="hidden" name={name} value={item} />
+            <input type="hidden" name={name} value={item.value} />
             <Input
-              value={item}
-              onChange={e => update(index, e.target.value)}
+              value={item.value}
+              onChange={e => update(item.id, e.target.value)}
               required={required && index === 0}
               className={`flex-1 ${INPUT_CLASS}`}
             />
@@ -62,7 +68,7 @@ export function DynamicListField({
               type="button"
               variant="outline"
               size="icon"
-              onClick={() => remove(index)}
+              onClick={() => remove(item.id)}
               disabled={items.length === 1}
               className="rounded-sm shrink-0"
               aria-label="Remover item"

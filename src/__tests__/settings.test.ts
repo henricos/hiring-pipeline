@@ -73,6 +73,32 @@ describe("AreaSettings", () => {
   });
 });
 
+describe("AreaSettings — rótulos de qualificações", () => {
+  it("defaultSettings() inclui qualificationsRequiredLabel como 'Requisitos:'", () => {
+    const defaults = defaultSettings();
+    expect(defaults.qualificationsRequiredLabel).toBe("Requisitos:");
+  });
+
+  it("defaultSettings() inclui qualificationsOptionalLabel como 'Diferenciais:'", () => {
+    const defaults = defaultSettings();
+    expect(defaults.qualificationsOptionalLabel).toBe("Diferenciais:");
+  });
+
+  it("aceita rótulos customizados como strings opcionais", () => {
+    const settings: AreaSettings = {
+      managerName: "",
+      godfather: "",
+      immediateReport: "",
+      mediateReport: "",
+      teamComposition: "",
+      qualificationsRequiredLabel: "Você deve ter:",
+      qualificationsOptionalLabel: "Seria ótimo se você tiver:",
+    };
+    expect(settings.qualificationsRequiredLabel).toBe("Você deve ter:");
+    expect(settings.qualificationsOptionalLabel).toBe("Seria ótimo se você tiver:");
+  });
+});
+
 describe("AreaSettings — campo aiProfileInstructions (D-14 — Phase 4)", () => {
   it("aceita aiProfileInstructions como string opcional", () => {
     const settings: AreaSettings = {
