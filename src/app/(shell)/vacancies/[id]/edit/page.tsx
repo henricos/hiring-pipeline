@@ -37,40 +37,49 @@ export default async function EditVacancyPage({
         <h1 className="text-[1.5rem] font-medium tracking-tight text-on-surface mb-8">
           Editar vaga
         </h1>
-        <VacancyForm
-          profiles={profiles}
-          vacancy={vacancy}
-          onSubmitAction={submitWithId}
-        />
-        <section className="mt-8 pt-8 border-t border-border/20">
-          <h2 className="text-base font-medium text-on-surface mb-1">
-            Status da vaga
-          </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Altere o status da vaga conforme o andamento do processo seletivo.
-          </p>
-          <VacancyStatusSelect vacancyId={id} currentStatus={vacancy.status} />
-        </section>
+        {/* Container visual com fundo sutil — envolve formulário + ações */}
+        <div className="bg-surface-container-low rounded-md p-0">
+          <VacancyForm
+            profiles={profiles}
+            vacancy={vacancy}
+            onSubmitAction={submitWithId}
+          />
 
-        <section className="mt-8 pt-8 border-t border-border/20">
-          <h2 className="text-base font-medium text-on-surface mb-2">
-            Formulário GH
-          </h2>
-          <p className="text-sm text-muted-foreground mb-6">
-            Gere o formulário de requisição de pessoal pronto para envio ao GH/Werecruiter.
-          </p>
-          <div className="flex gap-3">
-            <Button asChild variant="default">
-              <a
-                href={`${apiPrefix}/api/vacancies/${vacancy.id}/form?regen=1`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Gerar formulário GH
-              </a>
-            </Button>
+          {/* ── Seção de Ações: Status e Formulário GH lado a lado ── */}
+          <div className="px-8 pb-8 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border/20">
+              {/* Card: Status da vaga */}
+              <div className="bg-white rounded-md p-6">
+                <h2 className="text-base font-medium text-on-surface mb-1">
+                  Status da vaga
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Altere o status da vaga conforme o andamento do processo seletivo.
+                </p>
+                <VacancyStatusSelect vacancyId={id} currentStatus={vacancy.status} />
+              </div>
+
+              {/* Card: Formulário GH */}
+              <div className="bg-white rounded-md p-6">
+                <h2 className="text-base font-medium text-on-surface mb-1">
+                  Formulário GH
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Gere o formulário de requisição de pessoal pronto para envio ao GH/Werecruiter.
+                </p>
+                <Button asChild variant="default">
+                  <a
+                    href={`${apiPrefix}/api/vacancies/${vacancy.id}/form?regen=1`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Gerar formulário GH
+                  </a>
+                </Button>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

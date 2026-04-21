@@ -16,9 +16,11 @@ export default function NewVacancyPage() {
         <h1 className="text-[1.5rem] font-medium tracking-tight text-on-surface mb-8">
           Abrir nova vaga
         </h1>
-        <Suspense fallback={<div>Carregando formulário...</div>}>
-          <NewVacancyForm />
-        </Suspense>
+        <div className="bg-surface-container-low rounded-md">
+          <Suspense fallback={<div className="p-8">Carregando formulário...</div>}>
+            <NewVacancyForm />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

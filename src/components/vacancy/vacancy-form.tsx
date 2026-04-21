@@ -68,7 +68,7 @@ export function VacancyForm({
   );
 
   return (
-    <div className="bg-white rounded-md px-8 py-8 max-w-3xl">
+    <div className="bg-white rounded-md px-8 py-8 w-full">
       <form action={submitAction} className="space-y-0">
         {/* ── Seção 1: Perfil da Vaga ────────────────────────────── */}
         <h2 className={SECTION_HEADING_CLASS}>Perfil da Vaga</h2>
