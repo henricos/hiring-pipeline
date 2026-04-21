@@ -96,8 +96,8 @@ Plans:
 - [x] 03-06-PLAN.md — Wave 3 (gap): UI fixes — remover botão de status da lista, Select de status na edição, botão único de formulário GH
 - [x] 03-07-PLAN.md — Wave 3 (gap): Mapeamento Excel corrigido — inspeção via AdmZip dos exemplos, CELL_MAPPING atualizado, testes validados
 - [x] 03-08-PLAN.md — Wave 1 (gap): Formatação de datas DD/MM/YYYY + data de abertura no Excel (GAP-06, GAP-08) ✓ 2026-04-21
-- [ ] 03-09-PLAN.md — Wave 1 (gap): Checkboxes VML — limpeza de resíduos do template + marcação correta (GAP-07, GAP-09, GAP-10)
-- [ ] 03-10-PLAN.md — Wave 2 (gap): workSchedule — campo workScheduleOther, checkbox correto no Excel (GAP-05)
+- [x] 03-09-PLAN.md — Wave 1 (gap): Checkboxes VML — limpeza de resíduos do template + marcação correta (GAP-07, GAP-09, GAP-10) ✓ 2026-04-21
+- [x] 03-10-PLAN.md — Wave 2 (gap): workSchedule — campo workScheduleOther, checkbox correto no Excel (GAP-05) ✓ 2026-04-21
 - [ ] 03-11-PLAN.md — Wave 1 (gap): Layout UI — seções Status e Formulário GH side by side no card (GAP-11)
 - [ ] 03-12-PLAN.md — Wave 3 (gap): Migrar campos fixos de perfil/vaga para Configurações da Área (GAP-12)
 
@@ -129,7 +129,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
-| 3. Vacancy & GH Form | 8/12 | Gap closure | — |
+| 3. Vacancy & GH Form | 10/12 | Gap closure | — |
 | 4. AI-Assisted Profiles | 0/? | Not started | — |
 
 ---

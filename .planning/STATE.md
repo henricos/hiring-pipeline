@@ -25,7 +25,7 @@ progress:
 
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
-**Phase 3 Status:** Ready to execute (12 plans — 7 executed, 5 gap-closure planned)
+**Phase 3 Status:** Executing (12 plans — 10 executed, 2 gap-closure remaining)
 **Current Focus:** Phase 03 — vacancy-gh-form
 
 ---
@@ -94,9 +94,9 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### Última Sessão (2026-04-21)
 
-- Plano 03-11 concluído: layout das páginas de vaga reestruturado (GAP-11)
-- Status e Formulário GH side by side em grid md:grid-cols-2 dentro de container bg-surface-container-low
-- Parado em: aguardando commit via /commit-push para edit/page.tsx, new/page.tsx, vacancy-form.tsx + 03-11-SUMMARY.md
+- Plano 03-10 concluído: workScheduleOther adicionado ao schema, formulário com campo condicional, gerador Excel com checkboxes ctrlProp3/4 e Z18 condicional (GAP-05)
+- Commits: a1b3ca1 (schema+actions), ba3e474 (form+excel)
+- Parado em: aguardando plano 03-11 (layout GAP-11) — STATE indica que já pode ter sido executado em sessão anterior
 
 ### Phase 2 Planning Summary (2026-04-20)
 
