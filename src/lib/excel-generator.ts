@@ -16,6 +16,19 @@ export function escapeXml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * Converte string ISO 8601 (YYYY-MM-DD ou YYYY-MM-DDTHH:mm:ss.sssZ) para DD/MM/YYYY.
+ * Retorna string vazia se input for falsy ou inválido.
+ */
+export function toExcelDate(isoStr: string | undefined | null): string {
+  if (!isoStr) return "";
+  // Extrair apenas a parte da data (antes do "T" se houver)
+  const datePart = isoStr.split("T")[0];
+  const [year, month, day] = datePart.split("-");
+  if (!year || !month || !day) return isoStr; // fallback se formato inesperado
+  return `${day}/${month}/${year}`;
+}
+
 // Mapeamento de campos → endereços de célula no template sheet1.xml
 // Fonte: inspeção via AdmZip dos arquivos em data/examples/ (confirmado em 2026-04-21)
 // Todos os endereços validados contra exemplos preenchidos manualmente.
@@ -49,6 +62,7 @@ const CELL_MAPPING: Record<string, string> = {
   travelRequired: "L20",
   workMode: "P23",
   expectedHireDate: "K24",
+  openedAt: "AH4", // Data de abertura da vaga (GAP-06)
 
   // Grupo 3: Dados Comuns da Área (AreaSettings)
   managerName: "H10",
@@ -119,7 +133,8 @@ export function generateVacancyForm(
     [CELL_MAPPING.workSchedule]: vacancy.workSchedule,
     [CELL_MAPPING.travelRequired]: vacancy.travelRequired ? "Sim" : "Não",
     [CELL_MAPPING.workMode]: vacancy.workMode,
-    [CELL_MAPPING.expectedHireDate]: vacancy.expectedHireDate,
+    [CELL_MAPPING.expectedHireDate]: toExcelDate(vacancy.expectedHireDate),
+    [CELL_MAPPING.openedAt]: toExcelDate(vacancy.openedAt),
 
     // Grupo 3: Configurações da área
     [CELL_MAPPING.managerName]: settings.managerName ?? "",
