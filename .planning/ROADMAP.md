@@ -85,7 +85,7 @@ Plans:
 4. Manager can view list of open vacancies with current status
 5. Manager can track vacancy progression from open through closure
 
-**Plans:** 7 plans
+**Plans:** 12 plans
 
 Plans:
 - [x] 03-01-PLAN.md — Wave 1: Data layer (Vacancy schema, VacancyRepository, Badge + adm-zip install, unit tests)
@@ -93,8 +93,13 @@ Plans:
 - [x] 03-03-PLAN.md — Wave 3: UI components e rotas (/vacancies, /settings, VacancyForm, VacancyList, SettingsForm, left-rail)
 - [x] 03-04-PLAN.md — Wave 4: Route handler download + Skill /abrir-vaga (VAG-02)
 - [x] 03-05-PLAN.md — Wave 2: Excel generator (adm-zip cirúrgico, escapeXml, generateVacancyForm, testes)
-- [ ] 03-06-PLAN.md — Wave 3 (gap): UI fixes — remover botão de status da lista, Select de status na edição, botão único de formulário GH
-- [ ] 03-07-PLAN.md — Wave 3 (gap): Mapeamento Excel corrigido — inspeção via AdmZip dos exemplos, CELL_MAPPING atualizado, testes validados
+- [x] 03-06-PLAN.md — Wave 3 (gap): UI fixes — remover botão de status da lista, Select de status na edição, botão único de formulário GH
+- [x] 03-07-PLAN.md — Wave 3 (gap): Mapeamento Excel corrigido — inspeção via AdmZip dos exemplos, CELL_MAPPING atualizado, testes validados
+- [ ] 03-08-PLAN.md — Wave 1 (gap): Formatação de datas DD/MM/YYYY + data de abertura no Excel (GAP-06, GAP-08)
+- [ ] 03-09-PLAN.md — Wave 1 (gap): Checkboxes VML — limpeza de resíduos do template + marcação correta (GAP-07, GAP-09, GAP-10)
+- [ ] 03-10-PLAN.md — Wave 2 (gap): workSchedule — campo workScheduleOther, checkbox correto no Excel (GAP-05)
+- [ ] 03-11-PLAN.md — Wave 1 (gap): Layout UI — seções Status e Formulário GH side by side no card (GAP-11)
+- [ ] 03-12-PLAN.md — Wave 3 (gap): Migrar campos fixos de perfil/vaga para Configurações da Área (GAP-12)
 
 **UI hint:** yes
 
