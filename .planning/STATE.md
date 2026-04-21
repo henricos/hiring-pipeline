@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Complete
-last_updated: "2026-04-21T21:00:00.000Z"
+status: In Progress
+last_updated: "2026-04-21T23:00:00.000Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
   total_plans: 29
   completed_plans: 29
-  percent: 100
+  percent: 80
 ---
 
 # State: Hiring Pipeline v1
@@ -27,19 +27,20 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Current Focus:** v1.0 completo — validação manual das skills /refinar-perfil e /abrir-vaga recomendada
+**Phase 5 Status:** Added 2026-04-21 — not planned yet (Market Research & Holistic Profile Refinement)
+**Current Focus:** Phase 5 — sobra de v1.0 descoberta após phase 4. Próximo: /gsd-plan-phase 5
 
 ---
 
 ## Current Position
 
-Phase: 04 (ai-assisted-profile-refinement) — COMPLETE ✓ 2026-04-21
-Plan: 5 of 5 complete
-**Milestone:** v1 Hiring Pipeline — COMPLETO  
-**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓  
-**Overall Progress:** [##########] 100%
+Phase: 05 (market-research-holistic-refinement) — NOT PLANNED
+Plan: 0 of 5 planned
+**Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
+**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
+**Overall Progress:** [########--] 80%
 
-**At risk:** None (early stage)
+**At risk:** None
 
 ---
 
@@ -80,19 +81,26 @@ None yet.
 - AI agents accessed via CLI skills (Claude Code, Cursor, Codex)
 - Vacancy opening prioritized because it's highest operational drudgery (manual Excel fills)
 
+### Roadmap Evolution
+
+- 2026-04-21: Phase 5 added — Market Research & Holistic Profile Refinement (sobra de v1.0, antes do bump SemVer). Brief completo em `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (decisões D-01 a D-21, canonical refs, sub-plans, verification). JobProfile schema declared immutable for this phase — riqueza extra (stack híbrido, arquétipo) tem que caber nos campos existentes.
+
 ---
 
 ## Session Continuity
 
 ### Starting Phase
 
-Phase 3: Vacancy Opening & GH Form Generation
+Phase 5: Market Research & Holistic Profile Refinement
 
 ### What Needs to Happen Next
 
-1. v1.0 completo — todas as 4 fases entregues e verificadas
-2. Recomendado: validação manual das skills /refinar-perfil e /abrir-vaga em sessão real (ver 04-05-PLAN.md Task 3)
-3. Tech debt opcional: resolver F-04 (key instável no DynamicListField) e F-05 (assertions bullet no excel-generator.test.ts) antes do próximo milestone
+1. Rodar `/gsd-plan-phase 5` para detalhar os 5 sub-plans (05-01 a 05-05)
+2. Sub-plan 05-01 é bloqueante: research e decisão de portais BR antes de implementar a skill
+3. Sub-plan 05-04 (definir aiProfileInstructions de P&D/Lyceum) pode consumir output de 05-02 como insumo
+4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
+5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
+6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
 
 ### Sessão de Execução Phase 04 — Plano 04-05 (2026-04-21)
 

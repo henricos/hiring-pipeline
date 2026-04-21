@@ -12,6 +12,7 @@
 - [x] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates ✓ 2026-04-20
 - [ ] **Phase 3: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form
 - [x] **Phase 4: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions (via CLI/skills) ✓ 2026-04-21
+- [ ] **Phase 5: Market Research & Holistic Profile Refinement** - Skill /pesquisar-mercado, pasta data/research/, evolução do /refinar-perfil com contexto de mercado + revisão holística, e definição do aiProfileInstructions de P&D/Lyceum
 
 ---
 
@@ -130,6 +131,34 @@ Plans:
 
 ---
 
+### Phase 5: Market Research & Holistic Profile Refinement
+
+**Goal:** Extend the AI-assisted refinement capability with market research context and holistic coherence review, and seed the P&D/Lyceum area with a robust `aiProfileInstructions` value. JobProfile schema remains immutable in this phase — all richness (hybrid stack, archetype, market tier) must fit into existing fields via prompt intelligence.
+
+**Depends on:** Phase 4
+
+**Requirements:** Evolution of IA-01, IA-02, IA-03 (no new requirements mapped; this is a v1.0 "sobra" / leftover phase)
+
+**Success Criteria** (what must be TRUE):
+1. A `/pesquisar-mercado` skill exists and produces structured JSONs in `data/research/` with `summary` + `profileHints` blocks
+2. `/refinar-perfil` can load an existing market research file as variable context alongside `aiProfileInstructions` and uses it in suggestion prompts
+3. `/refinar-perfil` performs a holistic coherence review (new Step 5) before saving, flagging inconsistencies across the 4 profile fields
+4. The P&D/Lyceum area has a well-articulated `aiProfileInstructions` value persisted via `/settings`
+5. Piloto executado: perfil Senior P&D (Java + Python + TS) gerado end-to-end pelo fluxo completo, respeitando o schema imutável do JobProfile
+
+**Plans:** 5 plans (not planned yet)
+
+Plans:
+- [ ] 05-01-PLAN.md — Research e decisão de portais BR + queries default (bloqueia 05-02)
+- [ ] 05-02-PLAN.md — Skill `/pesquisar-mercado` + pasta `data/research/` + convenção slug-data
+- [ ] 05-03-PLAN.md — Evolução `/refinar-perfil`: contexto de pesquisa no Step 2 + novo Step 5 holístico
+- [ ] 05-04-PLAN.md — Definir `aiProfileInstructions` da área P&D/Lyceum (discussão socrática + persistência via /settings)
+- [ ] 05-05-PLAN.md — Execução piloto: perfil Senior P&D Java+Python+TS via fluxo completo
+
+**Context:** `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (brief completo com decisões D-01 a D-21, canonical refs, sub-plans e verification)
+
+---
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -138,6 +167,7 @@ Plans:
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
+| 5. Market Research & Holistic Refinement | 0/5 | Not planned | — |
 
 ---
 
@@ -147,3 +177,4 @@ Plans:
 *Phase 3 planned: 2026-04-20*
 *Phase 3 gap closure planned: 2026-04-20*
 *Phase 4 planned: 2026-04-21*
+*Phase 5 added: 2026-04-21*
