@@ -26,18 +26,18 @@ progress:
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
-**Phase 4 Status:** Planejada ✓ 2026-04-21 (5 planos, 3 waves)
-**Current Focus:** Phase 04 — AI-Assisted Profile Refinement (execução)
+**Phase 4 Status:** Em execução — 5/5 planos concluídos (aguardando validação manual Task 3 do 04-05)
+**Current Focus:** Phase 04 — Wave 2 concluída: skill /refinar-perfil criada + /abrir-vaga revisada
 
 ---
 
 ## Current Position
 
-Phase: 04 (ai-assisted-profile-refinement) — IN PROGRESS
-Plan: 3 of 5 complete
+Phase: 04 (ai-assisted-profile-refinement) — IN PROGRESS (aguardando validação manual 04-05 Task 3)
+Plan: 5 of 5 complete
 **Milestone:** v1 Hiring Pipeline  
-**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 em execução  
-**Overall Progress:** [######----] 60%
+**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 skills prontas (validação pendente)  
+**Overall Progress:** [##########] 100% (skills entregues)
 
 **At risk:** None (early stage)
 
@@ -90,9 +90,17 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Phase 4 em execução — planos 04-01, 04-02 e 04-03 concluídos
-2. Próximo: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
-3. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+1. Phase 4 completa (5/5 planos executados) — aguardando validação manual do operador (04-05 Task 3)
+2. Validação: executar /refinar-perfil e /abrir-vaga em sessão real conforme instruções em 04-05-PLAN.md Task 3
+3. Após validação: Phase 4 encerrada — IA-01, IA-02, IA-03 entregues
+
+### Sessão de Execução Phase 04 — Plano 04-05 (2026-04-21)
+
+- Plano 04-05 concluído: Wave 2 — skill /refinar-perfil + revisão /abrir-vaga
+- .agents/skills/refinar-perfil/SKILL.md criado: Steps 1-6, 3 modalidades (IA-01/02/03), ciclo A/R/J, gravação node -e, segurança path traversal
+- .agents/skills/abrir-vaga/SKILL.md revisado: Step 3 sem campos AreaSettings, Step 4 pré-carrega 4 campos, Step 5 JSON alinhado com vacancy.ts
+- Commits: efa8705 (refinar-perfil), 1b63a4c (abrir-vaga revisada)
+- Parado em: 04-05 Tasks 1-2 concluídas — Task 3 é checkpoint manual de validação pelo operador
 
 ### Sessão de Execução Phase 04 — Plano 04-03 (2026-04-21)
 
