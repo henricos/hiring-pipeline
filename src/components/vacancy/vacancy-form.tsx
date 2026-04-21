@@ -61,6 +61,9 @@ export function VacancyForm({
   const [workMode, setWorkMode] = useState<WorkMode>(
     vacancy?.workMode ?? "Presencial"
   );
+  const [workScheduleOther, setWorkScheduleOther] = useState(
+    vacancy?.workScheduleOther ?? ""
+  );
 
   // Campo condicional: nome do substituído aparece quando headcountIncrease=false
   const [headcountIncrease, setHeadcountIncrease] = useState(
@@ -248,6 +251,23 @@ export function VacancyForm({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Campo condicional: texto livre quando workSchedule === "Outro" */}
+          {workSchedule === "Outro" && (
+            <div className="space-y-1.5 ml-6 transition-all duration-150">
+              <Label htmlFor="workScheduleOther" className={LABEL_CLASS}>
+                Descrever horário de trabalho
+              </Label>
+              <Input
+                id="workScheduleOther"
+                name="workScheduleOther"
+                value={workScheduleOther}
+                onChange={(e) => setWorkScheduleOther(e.target.value)}
+                placeholder="Ex: Das 07h30 às 16h30"
+                className={INPUT_CLASS}
+              />
+            </div>
+          )}
 
           {/* Modalidade */}
           <div className="space-y-1.5">

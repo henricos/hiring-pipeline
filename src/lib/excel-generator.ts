@@ -58,7 +58,7 @@ const CELL_MAPPING: Record<string, string> = {
   budgeted: "J14",
   headcountIncrease: "J16",
   replacedPerson: "AE16",
-  workSchedule: "Z18",
+  workScheduleOther: "Z18",  // Preenche célula Z18 somente quando workSchedule==="Outro" (GAP-05)
   travelRequired: "L20",
   workMode: "P23",
   expectedHireDate: "K24",
@@ -89,6 +89,14 @@ interface CheckboxGroup {
 }
 
 const CHECKBOX_GROUPS: Record<string, CheckboxGroup> = {
+  workSchedule: {
+    options: {
+      "Das 08h às 17h": "ctrlProp3",
+      "Das 09h às 18h": "ctrlProp4",
+      "Outro":           null,  // sem checkbox; texto vai para célula Z18 via workScheduleOther
+    },
+    allGroup: ["ctrlProp3", "ctrlProp4"],
+  },
   workMode: {
     options: {
       "Presencial": "ctrlProp68",
@@ -173,6 +181,15 @@ function applyCheckboxGroups(
   vacancy: Vacancy,
   profile: JobProfile
 ): void {
+  // workSchedule
+  {
+    const group = CHECKBOX_GROUPS.workSchedule;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[vacancy.workSchedule];
+    if (target) setCtrlPropChecked(zip, target, true);
+    // "Outro" → target é null → nenhum checkbox marcado; texto vai para Z18 via cellValues
+  }
+
   // workMode
   {
     const group = CHECKBOX_GROUPS.workMode;
@@ -274,7 +291,9 @@ export function generateVacancyForm(
     [CELL_MAPPING.budgeted]: vacancy.budgeted ? "Sim" : "Não",
     [CELL_MAPPING.headcountIncrease]: vacancy.headcountIncrease ? "Sim" : "Não",
     [CELL_MAPPING.replacedPerson]: vacancy.replacedPerson ?? "",
-    [CELL_MAPPING.workSchedule]: vacancy.workSchedule,
+    [CELL_MAPPING.workScheduleOther]: vacancy.workSchedule === "Outro"
+      ? (vacancy.workScheduleOther ?? "")
+      : "",
     [CELL_MAPPING.travelRequired]: vacancy.travelRequired ? "Sim" : "Não",
     [CELL_MAPPING.workMode]: vacancy.workMode,
     [CELL_MAPPING.expectedHireDate]: toExcelDate(vacancy.expectedHireDate),
