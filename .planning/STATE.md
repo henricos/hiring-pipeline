@@ -34,7 +34,7 @@ progress:
 ## Current Position
 
 Phase: 04 (ai-assisted-profile-refinement) — IN PROGRESS
-Plan: 2 of 5 complete
+Plan: 3 of 5 complete
 **Milestone:** v1 Hiring Pipeline  
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 em execução  
 **Overall Progress:** [######----] 60%
@@ -90,10 +90,21 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Phase 4 em execução — planos 04-01 e 04-02 concluídos
-2. Próximo: 04-03 (AreaSettings + campo aiProfileInstructions + ProfileForm com DynamicListField)
-3. Wave 1 dados: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
-4. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+1. Phase 4 em execução — planos 04-01, 04-02 e 04-03 concluídos
+2. Próximo: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
+3. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+
+### Sessão de Execução Phase 04 — Plano 04-03 (2026-04-21)
+
+- Plano 04-03 concluído: Wave 1b — aiProfileInstructions + SettingsForm + ProfileForm com DynamicListField
+- settings.ts: aiProfileInstructions?: string adicionado à interface + defaultSettings() retorna ""
+- actions/settings.ts: parsing e persistência de aiProfileInstructions via formData.get()
+- settings-form.tsx: nova seção 5 "Instruções para IA" com textarea aiProfileInstructions
+- profile-form.tsx: 4 campos descritivos migrados de Textarea para DynamicListField
+- actions/profile.ts: já usava formData.getAll() desde 04-02 (Regra 1 aplicada no plano anterior)
+- Commits: e3e9b41 (settings.ts + actions/settings.ts), ddfa401 (settings-form.tsx), 722ca5a (profile-form.tsx)
+- npm test: 98/98 GREEN | typecheck: zero erros
+- Parado em: 04-03 completo — próximo é 04-04 (zeragem base dev + recriação perfis reais)
 
 ### Sessão de Execução Phase 04 — Plano 04-02 (2026-04-21)
 
