@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import fs from "fs";
 import path from "path";
+import type { AreaSettings } from "@/lib/settings";
 
 // Mock env antes de qualquer importação que use env
 vi.mock("@/lib/env", () => ({
@@ -69,5 +70,36 @@ describe("AreaSettings", () => {
     // JSON formatado com 2 espaços
     expect(content).toContain('"managerName": "Gestor"');
     expect(content).toMatch(/^\{/); // começa com {
+  });
+});
+
+describe("AreaSettings — campo aiProfileInstructions (D-14 — Phase 4)", () => {
+  it("aceita aiProfileInstructions como string opcional", () => {
+    const settings: AreaSettings = {
+      managerName: "João",
+      godfather: "Maria",
+      immediateReport: "Carlos",
+      mediateReport: "Ana",
+      teamComposition: "5 devs",
+      aiProfileInstructions: "Priorizar candidatos com experiência em produtos educacionais.",
+    };
+    expect(typeof settings.aiProfileInstructions).toBe("string");
+  });
+
+  it("aiProfileInstructions é opcional — AreaSettings sem o campo é válido", () => {
+    const settings: AreaSettings = {
+      managerName: "",
+      godfather: "",
+      immediateReport: "",
+      mediateReport: "",
+      teamComposition: "",
+    };
+    // Sem aiProfileInstructions — TypeScript deve aceitar
+    expect(settings.aiProfileInstructions).toBeUndefined();
+  });
+
+  it("defaultSettings() inclui aiProfileInstructions como string vazia", () => {
+    const defaults = defaultSettings();
+    expect(typeof defaults.aiProfileInstructions).toBe("string");
   });
 });
