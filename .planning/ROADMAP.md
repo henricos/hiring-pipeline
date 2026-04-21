@@ -99,7 +99,7 @@ Plans:
 - [x] 03-09-PLAN.md — Wave 1 (gap): Checkboxes VML — limpeza de resíduos do template + marcação correta (GAP-07, GAP-09, GAP-10) ✓ 2026-04-21
 - [x] 03-10-PLAN.md — Wave 2 (gap): workSchedule — campo workScheduleOther, checkbox correto no Excel (GAP-05) ✓ 2026-04-21
 - [ ] 03-11-PLAN.md — Wave 1 (gap): Layout UI — seções Status e Formulário GH side by side no card (GAP-11)
-- [ ] 03-12-PLAN.md — Wave 3 (gap): Migrar campos fixos de perfil/vaga para Configurações da Área (GAP-12)
+- [x] 03-12-PLAN.md — Wave 3 (gap): Migrar campos fixos de perfil/vaga para Configurações da Área (GAP-12) ✓ 2026-04-21
 
 **UI hint:** yes
 
@@ -129,7 +129,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
-| 3. Vacancy & GH Form | 10/12 | Gap closure | — |
+| 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 0/? | Not started | — |
 
 ---

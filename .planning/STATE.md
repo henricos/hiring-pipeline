@@ -25,15 +25,15 @@ progress:
 
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
-**Phase 3 Status:** Executing (12 plans — 10 executed, 2 gap-closure remaining)
-**Current Focus:** Phase 03 — vacancy-gh-form
+**Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
+**Current Focus:** Phase 04 — AI-Assisted Profile Refinement
 
 ---
 
 ## Current Position
 
-Phase: 03 (vacancy-gh-form) — EXECUTING
-Plan: 11 of 12
+Phase: 03 (vacancy-gh-form) — COMPLETE ✓
+Plan: 12 of 12
 **Milestone:** v1 Hiring Pipeline  
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 (Vacancy & GH Form) a planejar  
 **Overall Progress:** [######----] 50%
@@ -89,14 +89,14 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Executar plano 03-12 — GAPs restantes (se houver) ou validação final da fase 03
-2. Validar visualmente no browser: edit/page.tsx com Status + Formulário GH side by side; new/page.tsx com card consistente
+1. Fase 03 completa — iniciar planejamento da Fase 04 (AI-Assisted Profile Refinement)
+2. Validação visual opcional: /settings com seções Idiomas, Infraestrutura e Dados Fixos da Vaga; /vacancies/new sem campos migrados; /profiles/new sem seções de idioma e infra
 
 ### Última Sessão (2026-04-21)
 
-- Plano 03-10 concluído: workScheduleOther adicionado ao schema, formulário com campo condicional, gerador Excel com checkboxes ctrlProp3/4 e Z18 condicional (GAP-05)
-- Commits: a1b3ca1 (schema+actions), ba3e474 (form+excel)
-- Parado em: aguardando plano 03-11 (layout GAP-11) — STATE indica que já pode ter sido executado em sessão anterior
+- Plano 03-12 concluído: 10 campos fixos por área migrados de JobProfile/Vacancy para AreaSettings (GAP-12)
+- Commits: 3ae3e42 (schema — settings/vacancy/profile), bec532a (actions + forms + excel-generator)
+- Parado em: fase 03 completa (12/12 planos executados)
 
 ### Phase 2 Planning Summary (2026-04-20)
 
