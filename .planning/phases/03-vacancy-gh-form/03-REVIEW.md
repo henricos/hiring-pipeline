@@ -1,167 +1,244 @@
 ---
 phase: 03-vacancy-gh-form
-reviewed: 2026-04-20T00:00:00Z
+reviewed: 2026-04-21T00:00:00Z
 depth: standard
-files_reviewed: 23
+files_reviewed: 13
 files_reviewed_list:
-  - .agents/skills/abrir-vaga/SKILL.md
-  - package.json
-  - src/app/actions/settings.ts
-  - src/app/actions/vacancy.ts
-  - src/app/api/vacancies/[id]/form/route.ts
-  - src/app/(shell)/settings/page.tsx
-  - src/app/(shell)/vacancies/[id]/edit/page.tsx
-  - src/app/(shell)/vacancies/new/page.tsx
-  - src/app/(shell)/vacancies/page.tsx
-  - src/components/settings/settings-form.tsx
-  - src/components/shell/left-rail.tsx
-  - src/components/ui/badge.tsx
-  - src/components/vacancy/vacancy-form.tsx
-  - src/components/vacancy/vacancy-list.tsx
   - src/lib/excel-generator.ts
-  - src/lib/repositories/settings-repository.ts
-  - src/lib/repositories/vacancy-repository.ts
   - src/lib/settings.ts
   - src/lib/vacancy.ts
+  - src/lib/profile.ts
+  - src/app/actions/settings.ts
+  - src/app/actions/vacancy.ts
+  - src/app/actions/profile.ts
+  - src/app/(shell)/vacancies/[id]/edit/page.tsx
+  - src/app/(shell)/vacancies/new/page.tsx
+  - src/components/settings/settings-form.tsx
+  - src/components/vacancy/vacancy-form.tsx
+  - src/components/profile/profile-form.tsx
   - src/__tests__/excel-generator.test.ts
-  - src/__tests__/settings.test.ts
-  - src/__tests__/vacancy-repository.test.ts
-  - src/__tests__/vacancy.test.ts
 findings:
   critical: 0
-  warning: 3
+  warning: 5
   info: 3
-  total: 6
+  total: 8
 status: issues_found
 ---
 
-# Phase 03: Code Review Report
+# Fase 03: Code Review Report
 
-**Reviewed:** 2026-04-20
+**Reviewed:** 2026-04-21T00:00:00Z
 **Depth:** standard
-**Files Reviewed:** 23
+**Files Reviewed:** 13
 **Status:** issues_found
 
-## Summary
+## Resumo
 
-Esta revisão cobre a fase 03 completa: abertura de vagas via formulário web, geração de formulário Excel (xlsx), ações de servidor, repositórios JSON e skill `/abrir-vaga`. O código está bem estruturado, com separação clara entre perfil, vaga e configurações da área, e proteções explícitas contra path traversal nos repositórios.
+Revisão cobre o gerador de formulário GH em `.xlsx` (`excel-generator.ts`), a migração de campos de `Vacancy`/`JobProfile` para `AreaSettings` (GAP-12), e as actions/componentes correspondentes.
 
-O problema mais relevante encontrado é uma inconsistência na lógica de leitura do checkbox "Vaga orçada": enquanto os outros checkboxes (`confidential`, `headcountIncrease`) usam `=== "true"`, `budgeted` usa `!== "false"` — o que faz ele sempre salvar `true`, mesmo quando o usuário desmarcar o campo. Os demais achados são menores.
+O código está funcionalmente correto para o caminho feliz. Os problemas encontrados são: substituição dupla de células no gerador (bug latente de lógica), falha silenciosa no `setCtrlPropChecked` quando `lockText` está ausente no XML, casts de enum sem validação nas server actions, e dados de teste desatualizados após GAP-12.
+
+Não foram encontrados problemas de segurança críticos.
 
 ---
 
 ## Warnings
 
-### WR-01: Checkbox `budgeted` sempre salva `true` (lógica invertida)
+### WR-01: Substituição dupla de célula em `generateVacancyForm`
 
-**File:** `src/app/actions/vacancy.ts:43` e `src/app/actions/vacancy.ts:102`
+**File:** `src/lib/excel-generator.ts:322-348`
 
-**Issue:** O checkbox `budgeted` no formulário tem `value="true"` e, quando desmarcado, não é incluído no FormData (o comportamento padrão de checkboxes HTML). A lógica atual usa:
+**Issue:** O loop de edição cirúrgica aplica dois regexes sequencialmente sobre o mesmo `cellAddr`. O Padrão 1 (`emptyCellRe`) transforma `<c r="D6" s="1"/>` em `<c r="D6" s="1" t="inlineStr"><is><t>VALOR</t></is></c>`. Em seguida, o Padrão 2 (`existingCellRe`) casa com esse resultado expandido e o substitui novamente com o mesmo `escapedValue`. A substituição dupla é atualmente idempotente, mas é um bug latente: se a extração do atributo `s=` pelo Padrão 2 falhar ao processar o resultado do Padrão 1 (que agora contém `t="inlineStr"` entre outros atributos), o estilo pode ser perdido. Além disso, a iteração redundante torna o fluxo mais difícil de raciocinar.
 
-```ts
-const budgeted = formData.get("budgeted") !== "false";
-```
+**Fix:** Tornar as passagens mutuamente exclusivas usando detecção de substituição:
 
-Quando o campo está ausente (desmarcado), `formData.get("budgeted")` retorna `null`. Como `null !== "false"` é `true`, `budgeted` sempre recebe o valor `true`, independentemente da ação do usuário. Isso ocorre tanto em `createVacancy` (linha 43) quanto em `updateVacancy` (linha 102).
-
-**Fix:** Usar o mesmo padrão adotado pelos outros checkboxes:
-
-```ts
-// Antes (bugado):
-const budgeted = formData.get("budgeted") !== "false";
-
-// Depois (correto):
-const budgeted = formData.get("budgeted") === "true";
-```
-
----
-
-### WR-02: `settings-repository.get()` não captura erro de JSON malformado
-
-**File:** `src/lib/repositories/settings-repository.ts:29`
-
-**Issue:** O método `get()` faz `JSON.parse(content)` sem nenhum tratamento de erro. Se o arquivo `settings.json` estiver corrompido (escrita interrompida, edição manual incorreta), a exceção propaga sem controle e derruba a requisição com um 500 não tratado. O `vacancy-repository` tem comportamento análogo em `findById` (linha 58), mas ali o `try/catch` externo captura e retorna `null`.
-
-```ts
-// Linha 29 — sem proteção:
-return JSON.parse(content) as AreaSettings;
-```
-
-**Fix:** Envolver o parse em try/catch e retornar o padrão em caso de falha:
-
-```ts
-async get(): Promise<AreaSettings> {
-  if (!fs.existsSync(this.settingsPath)) {
-    return defaultSettings();
-  }
-  try {
-    const content = fs.readFileSync(this.settingsPath, "utf-8");
-    return JSON.parse(content) as AreaSettings;
-  } catch {
-    return defaultSettings();
-  }
+```typescript
+// Tenta padrão de célula vazia; só aplica Padrão 2 se nada foi substituído
+const before = sheetXml;
+sheetXml = sheetXml.replace(
+  emptyCellRe,
+  `<c r="${cellAddr}" s="$1" t="inlineStr"><is><t>${escapedValue}</t></is></c>`
+);
+if (sheetXml === before) {
+  // Célula vazia não encontrada — tenta célula com conteúdo existente
+  sheetXml = sheetXml.replace(existingCellRe, (_match, attrs) => {
+    const styleMatch = /s="(\d+)"/.exec(attrs);
+    const styleAttr = styleMatch ? ` s="${styleMatch[1]}"` : "";
+    return `<c r="${cellAddr}"${styleAttr} t="inlineStr"><is><t>${escapedValue}</t></is></c>`;
+  });
 }
 ```
 
 ---
 
-### WR-03: Navegação ativa no `LeftRail` usa comparação exata, não prefixo
+### WR-02: Falha silenciosa em `setCtrlPropChecked` quando `lockText` está ausente
 
-**File:** `src/components/shell/left-rail.tsx:32`
+**File:** `src/lib/excel-generator.ts:166-168`
 
-**Issue:** A detecção de item ativo usa `pathname === item.href` (igualdade exata). Para a rota `/vacancies`, isso funciona na listagem, mas qualquer sub-rota (`/vacancies/new`, `/vacancies/[id]/edit`) deixa o item "Vagas" sem destaque visual, o que prejudica a orientação do usuário na navegação.
+**Issue:** A inserção de `checked="Checked"` depende de `lockText="1"` estar presente no XML do ctrlProp:
 
-```ts
-const isActive = pathname === item.href;
+```typescript
+xml = xml.replace(/(\s+lockText=)/, ' checked="Checked"$1');
 ```
 
-**Fix:** Usar comparação por prefixo para que itens-pai fiquem ativos nas sub-rotas:
+Se um arquivo `ctrlPropN.xml` não contiver `lockText` (template de versão diferente ou gerado por outra ferramenta), a substituição não encontra o padrão, o checkbox permanece desmarcado e nenhum aviso é emitido. O `if (!entry) return;` na linha 158 cobre entradas ausentes no ZIP, mas não cobre a ausência do atributo dentro de uma entrada existente.
 
-```ts
-const isActive =
-  item.href === "/"
-    ? pathname === "/"
-    : pathname === item.href || pathname.startsWith(item.href + "/");
+**Fix:** Detectar a falha de substituição e logar um aviso:
+
+```typescript
+if (checked) {
+  const updated = xml.replace(/(\s+lockText=)/, ' checked="Checked"$1');
+  if (updated === xml) {
+    console.warn(
+      `[excel-generator] setCtrlPropChecked: lockText não encontrado em ${ctrlPropName}. Checkbox pode não ser marcado.`
+    );
+  }
+  xml = updated;
+}
+```
+
+---
+
+### WR-03: Cast de enum sem validação em `updateSettings` (englishLevel, spanishLevel, workMode, workSchedule)
+
+**File:** `src/app/actions/settings.ts:32-33, 50, 56`
+
+**Issue:** Os valores lidos do FormData são castados diretamente para os tipos de enum sem verificar se estão no conjunto válido:
+
+```typescript
+const englishLevel = ((formData.get("englishLevel") as string) || "Não exigido") as AreaSettings["englishLevel"];
+const workMode = ((formData.get("workMode") as string) || "Presencial") as AreaSettings["workMode"];
+```
+
+Um valor arbitrário enviado diretamente no corpo da requisição (ex.: via `curl` ou extensão de browser) seria persistido no `settings.json`. Consequência: o lookup em `CHECKBOX_GROUPS` retornaria `undefined` para o valor inválido, nenhum checkbox seria marcado, e a célula de texto receberia o valor corrompido.
+
+**Fix:** Validar contra os arrays de constantes antes de usar:
+
+```typescript
+import { LANGUAGE_LEVELS } from "@/lib/profile";
+import { WORK_MODES, WORK_SCHEDULES } from "@/lib/vacancy";
+
+const englishLevelRaw = (formData.get("englishLevel") as string) || "Não exigido";
+const englishLevel = (LANGUAGE_LEVELS as readonly string[]).includes(englishLevelRaw)
+  ? (englishLevelRaw as AreaSettings["englishLevel"])
+  : ("Não exigido" as const);
+
+const workModeRaw = (formData.get("workMode") as string) || "Presencial";
+const workMode = (WORK_MODES as readonly string[]).includes(workModeRaw)
+  ? (workModeRaw as AreaSettings["workMode"])
+  : ("Presencial" as const);
+
+// Idem para spanishLevel e workSchedule
+```
+
+---
+
+### WR-04: Cast de enum sem validação e mutação antes de validação em `updateVacancy` (requestType)
+
+**File:** `src/app/actions/vacancy.ts:91, 102`
+
+**Issue:** Em `updateVacancy`, `requestType` é atribuído diretamente sem fallback e sem validação:
+
+```typescript
+vacancy.requestType = (formData.get("requestType") as string) as Vacancy["requestType"];
+```
+
+Se `formData.get("requestType")` retornar `null` (campo ausente), `vacancy.requestType` recebe `null as any`. O guard na linha 102 captura isso, mas o objeto já está mutado em memória no caminho de erro. Em `createVacancy` (linha 39) há um fallback `|| "Recrutamento externo"`, o que é mais seguro. A inconsistência entre os dois handlers é um risco de manutenção.
+
+**Fix:** Alinhar com o padrão de `createVacancy` e validar contra `REQUEST_TYPES`:
+
+```typescript
+import { REQUEST_TYPES } from "@/lib/vacancy";
+
+const requestTypeRaw = (formData.get("requestType") as string) || "Recrutamento externo";
+vacancy.requestType = (REQUEST_TYPES as readonly string[]).includes(requestTypeRaw)
+  ? (requestTypeRaw as Vacancy["requestType"])
+  : "Recrutamento externo";
+```
+
+---
+
+### WR-05: Dados de teste em `validateCellMapping` desatualizados após GAP-12
+
+**File:** `src/__tests__/excel-generator.test.ts:169-191`
+
+**Issue:** O objeto `profile` passado em `generateAndReadSheet` inclui campos que foram migrados para `AreaSettings` no GAP-12: `englishLevel`, `spanishLevel`, `additionalInfo`, `systemsRequired`, `networkFolders`. O gerador agora lê esses valores de `settings`, não de `profile`. O objeto `settings` passado no teste (linhas 185-191) não define nenhum desses campos, portanto todas as células correspondentes (`U37`, `U39`, `G66`, `G68`, etc.) serão preenchidas com string vazia. Os testes de célula passam porque apenas verificam a presença do endereço no XML, não o valor, mas a cobertura real do mapeamento pós-GAP-12 é menor do que parece.
+
+**Fix:** Mover os campos migrados do objeto `profile` para o objeto `settings` no setup do teste:
+
+```typescript
+const settings = {
+  managerName: "GESTOR_UNICO",
+  godfather: "PADRINHO_UNICO",
+  immediateReport: "IMEDIATO_UNICO",
+  mediateReport: "MEDIATO_UNICO",
+  teamComposition: "EQUIPE_UNICA",
+  // Campos migrados de profile via GAP-12:
+  englishLevel: "Avançado",
+  spanishLevel: "Não exigido",
+  additionalInfo: "INFO_UNICA",
+  systemsRequired: "SISTEMAS_UNICOS",
+  networkFolders: "PASTAS_UNICAS",
+} as any;
+
+const profile = {
+  title: "TITULO_TESTE_UNICO",
+  suggestedTitle: "SUG_TITULO_UNICO",
+  experienceLevel: "5-10 anos",
+  educationLevel: "Superior completo",
+  educationCourse: "Engenharia",
+  postGraduateLevel: "Não exigido",
+  certifications: "Não",
+  responsibilities: "RESP_UNICA",
+  qualifications: "QUAL_UNICA",
+  behaviors: "COMP_UNICA",
+  challenges: "DESAFIO_UNICO",
+} as any;
 ```
 
 ---
 
 ## Info
 
-### IN-01: Hardcoded developer path em teste de integração
+### IN-01: Escrita de `workMode` como texto e como checkbox sem documentação da intencionalidade
 
-**File:** `src/__tests__/excel-generator.test.ts:96`
+**File:** `src/lib/excel-generator.ts:315`
 
-**Issue:** O caminho `/home/henrico/github/henricos/hiring-pipeline-data` está codificado diretamente no array de tentativas de localização do template. Em qualquer outra máquina (CI, outros colaboradores) este path não existirá, causando skip silencioso do único teste de integração real do gerador de Excel.
+**Issue:** `workMode` é escrito tanto como string na célula `P23` (via `cellValues`) quanto como checkbox VML nos ctrlProps 68/69/70 (via `applyCheckboxGroups`). Se o template não usa a célula `P23` para texto (apenas checkboxes visuais), a escrita na célula é inócua mas gera ruído. Se `P23` for de outro campo no template, haveria sobrescrita incorreta. O comentário no código não esclarece a intenção.
 
-```ts
-"/home/henrico/github/henricos/hiring-pipeline-data",
-```
+**Fix:** Adicionar comentário inline explicando que a célula `P23` é intencional (ex.: campo de texto auxiliar ao lado do checkbox) ou remover a entrada de `workMode` do `cellValues` se confirmado que o template usa apenas checkboxes para esse campo.
 
-**Fix:** Remover o caminho absoluto hardcoded. O fallback para `process.env.DATA_PATH` e `/data` já cobrem os casos de dev e produção:
+---
 
-```ts
-const dataPaths = [
-  process.env.DATA_PATH,
-  "/data",
-].filter(Boolean) as string[];
+### IN-02: Regex de remoção de `checked="Checked"` usa `\s+` em vez de `\s*`
+
+**File:** `src/lib/excel-generator.ts:163`
+
+**Issue:** O padrão de remoção `/\s+checked="Checked"/` exige pelo menos um espaço antes do atributo. Se o XML produzido por uma versão futura da ferramenta gerar `...foo="bar"checked="Checked"...` sem espaço (inválido em XML mas tolerado por parsers lenientes), a remoção falharia silenciosamente e o checkbox ficaria permanentemente marcado.
+
+**Fix:**
+
+```typescript
+xml = xml.replace(/\s*checked="Checked"/, "");
 ```
 
 ---
 
-### IN-02: `console.error` em server actions silencia erros operacionais de delete/status
+### IN-03: `deleteVacancy`, `advanceVacancyStatus` e `revertVacancyStatus` engolam erros silenciosamente
 
-**File:** `src/app/actions/vacancy.ts:129` e `src/app/actions/vacancy.ts:154`
+**File:** `src/app/actions/vacancy.ts:114-120, 123-146, 148-168`
 
-**Issue:** `deleteVacancy` e `advanceVacancyStatus` capturam exceções e apenas chamam `console.error`, sem retornar erro ao cliente. Se a operação falhar (ex.: permissão negada no disco), o componente `VacancyList` chama `router.refresh()` como se tudo tivesse ocorrido com sucesso. O usuário não recebe feedback de falha.
+**Issue:** As três funções capturam exceções com `console.error` e retornam sem propagar o erro ao chamador. Se a operação falhar (ex.: permissão negada no disco, repositório corrompido), o componente chamador recebe uma resposta de sucesso implícita e chama `router.refresh()` como se tudo tivesse ocorrido corretamente. O usuário não recebe nenhum feedback de falha.
 
-**Fix:** Retornar um objeto `{ error: string }` e tratar no lado do cliente, ou pelo menos relançar para que o framework capture:
+**Fix:** Retornar um objeto de resultado que permita ao componente exibir feedback:
 
-```ts
-export async function deleteVacancy(vacancyId: string): Promise<{ error?: string } | void> {
+```typescript
+export async function deleteVacancy(vacancyId: string): Promise<{ error?: string }> {
   try {
     await vacancyRepository.delete(vacancyId);
+    return {};
   } catch (error) {
+    console.error("Falha ao excluir vaga:", error);
     return { error: formatError(error) };
   }
 }
@@ -169,16 +246,6 @@ export async function deleteVacancy(vacancyId: string): Promise<{ error?: string
 
 ---
 
-### IN-03: Ordenação de vagas duplicada no repositório e no componente
-
-**File:** `src/lib/repositories/vacancy-repository.ts:44-46` e `src/components/vacancy/vacancy-list.tsx:42-44`
-
-**Issue:** `VacancyRepository.list()` já retorna vagas ordenadas por `openedAt` descendente. O componente `VacancyList` realiza a mesma ordenação novamente ao receber os dados. A lógica duplicada não causa um bug, mas cria acoplamento implícito e pode causar confusão se a ordenação do repositório for alterada futuramente.
-
-**Fix:** Remover a ordenação redundante do componente e confiar na ordenação do repositório, ou tornar a responsabilidade explícita em apenas um dos dois lugares (preferencialmente no repositório, já que é o contrato público).
-
----
-
-_Reviewed: 2026-04-20_
+_Reviewed: 2026-04-21T00:00:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
