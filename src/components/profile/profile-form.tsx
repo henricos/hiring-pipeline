@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { DynamicListField } from "@/components/ui/dynamic-list-field";
 import type { JobProfile } from "@/lib/profile";
 import {
   EXPERIENCE_LEVELS,
@@ -275,57 +276,34 @@ export function ProfileForm({ profile, backHref, onSubmitAction }: ProfileFormPr
         {/* ── Seção 3: Conteúdo Descritivo ──────────────────────── */}
         <h2 className={SECTION_HEADING_CLASS}>Conteúdo Descritivo</h2>
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="responsibilities" className={LABEL_CLASS}>
-              Responsabilidades e atribuições
-            </Label>
-            <Textarea
-              id="responsibilities"
-              name="responsibilities"
-              required
-              defaultValue={profile?.responsibilities ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
+          <DynamicListField
+            name="responsibilities"
+            label="Responsabilidades e atribuições"
+            initialItems={profile?.responsibilities ?? []}
+            required
+            labelClassName={LABEL_CLASS}
+          />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="qualifications" className={LABEL_CLASS}>
-              Requisitos e qualificações
-            </Label>
-            <Textarea
-              id="qualifications"
-              name="qualifications"
-              required
-              defaultValue={profile?.qualifications ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
+          <DynamicListField
+            name="qualifications"
+            label="Requisitos e qualificações"
+            initialItems={profile?.qualifications ?? []}
+            labelClassName={LABEL_CLASS}
+          />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="behaviors" className={LABEL_CLASS}>
-              Características e competências comportamentais
-            </Label>
-            <Textarea
-              id="behaviors"
-              name="behaviors"
-              required
-              defaultValue={profile?.behaviors ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
+          <DynamicListField
+            name="behaviors"
+            label="Características e competências comportamentais"
+            initialItems={profile?.behaviors ?? []}
+            labelClassName={LABEL_CLASS}
+          />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="challenges" className={LABEL_CLASS}>
-              Principais desafios
-            </Label>
-            <Textarea
-              id="challenges"
-              name="challenges"
-              required
-              defaultValue={profile?.challenges ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
+          <DynamicListField
+            name="challenges"
+            label="Principais desafios"
+            initialItems={profile?.challenges ?? []}
+            labelClassName={LABEL_CLASS}
+          />
 
           {/* additionalInfo, systemsRequired, networkFolders migrados para Configurações da Área (GAP-12) */}
         </div>
