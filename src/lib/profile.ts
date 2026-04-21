@@ -41,10 +41,10 @@ export interface JobProfile {
   otherLanguage?: string; // opcional — migrado para AreaSettings (GAP-12)
   otherLanguageLevel?: LanguageLevel; // opcional — migrado para AreaSettings (GAP-12)
   // Conteúdo descritivo (5 textareas — núcleo do perfil)
-  responsibilities: string; // Responsabilidades e atribuições
-  qualifications: string; // Requisitos e qualificações (obrigatórios + diferenciais)
-  behaviors: string; // Características e competências comportamentais
-  challenges: string; // Principais desafios
+  responsibilities: string[]; // Responsabilidades e atribuições — string[] desde Phase 4 (D-01)
+  qualifications: string[]; // Requisitos e qualificações (obrigatórios + diferenciais) — string[] desde Phase 4 (D-01)
+  behaviors: string[]; // Características e competências comportamentais — string[] desde Phase 4 (D-01)
+  challenges: string[]; // Principais desafios — string[] desde Phase 4 (D-01)
   additionalInfo?: string; // opcional — migrado para AreaSettings (GAP-12)
   // Infraestrutura (opcional)
   systemsRequired?: string; // opcional — migrado para AreaSettings (GAP-12)

@@ -33,12 +33,11 @@ function extractProfileData(
       (formData.get("certificationsWhich") as string | null)?.trim() || undefined,
     // englishLevel, spanishLevel, otherLanguage, otherLanguageLevel migrados para AreaSettings (GAP-12)
     // additionalInfo, systemsRequired, networkFolders migrados para AreaSettings (GAP-12)
-    responsibilities:
-      (formData.get("responsibilities") as string | null)?.trim() ?? "",
-    qualifications:
-      (formData.get("qualifications") as string | null)?.trim() ?? "",
-    behaviors: (formData.get("behaviors") as string | null)?.trim() ?? "",
-    challenges: (formData.get("challenges") as string | null)?.trim() ?? "",
+    // string[] desde Phase 4 (D-01) — DynamicListField envia hidden inputs repetidos; getAll coleta todos
+    responsibilities: (formData.getAll("responsibilities") as string[]).filter(Boolean),
+    qualifications: (formData.getAll("qualifications") as string[]).filter(Boolean),
+    behaviors: (formData.getAll("behaviors") as string[]).filter(Boolean),
+    challenges: (formData.getAll("challenges") as string[]).filter(Boolean),
     internalNotes:
       (formData.get("internalNotes") as string | null)?.trim() || undefined,
   };
