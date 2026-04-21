@@ -18,9 +18,9 @@ function formatError(error: unknown): string {
 // Salva configurações da área — Grupo 3: dados comuns a todas as vagas (D-05, D-06)
 // Não redireciona — permanece na página de configurações após salvar
 export async function updateSettings(
-  _prevState: { error?: string } | null,
+  _prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string } | void> {
+): Promise<{ error?: string; success?: boolean } | void> {
   try {
     const managerName = (formData.get("managerName") as string) || "";
     const godfather = (formData.get("godfather") as string) || "";
@@ -80,4 +80,5 @@ export async function updateSettings(
   } catch (error) {
     return { error: formatError(error) };
   }
+  return { success: true };
 }

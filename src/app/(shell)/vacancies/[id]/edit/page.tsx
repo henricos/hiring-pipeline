@@ -42,6 +42,7 @@ export default async function EditVacancyPage({
           <VacancyForm
             profiles={profiles}
             vacancy={vacancy}
+            backHref="/vacancies"
             onSubmitAction={submitWithId}
           />
 

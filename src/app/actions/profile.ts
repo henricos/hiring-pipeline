@@ -72,9 +72,9 @@ export async function createProfile(
 
 export async function updateProfile(
   profileId: string,
-  _prevState: { error?: string } | null,
+  _prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string } | void> {
+): Promise<{ error?: string; success?: boolean } | void> {
   const data = extractProfileData(formData);
   if ("error" in data) return data;
 
@@ -99,7 +99,7 @@ export async function updateProfile(
     return { error: "Não foi possível salvar o perfil. Tente novamente." };
   }
 
-  redirect("/profiles");
+  return { success: true };
 }
 
 export async function deleteProfile(profileId: string): Promise<void> {

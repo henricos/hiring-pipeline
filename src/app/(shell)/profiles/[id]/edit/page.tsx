@@ -20,7 +20,7 @@ export default async function EditProfilePage({ params }: EditProfilePageProps) 
         <h1 className="text-[1.5rem] font-medium tracking-tight text-on-surface mb-8">
           Editar perfil
         </h1>
-        <ProfileForm profile={profile} onSubmitAction={submitWithId} />
+        <ProfileForm profile={profile} backHref="/profiles" onSubmitAction={submitWithId} />
       </div>
     </div>
   );

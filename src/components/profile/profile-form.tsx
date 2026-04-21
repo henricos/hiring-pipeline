@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useActionState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,14 +22,15 @@ import {
   CERTIFICATION_LEVELS,
 } from "@/lib/profile";
 
-type ActionState = { error?: string } | null;
+type ActionState = { error?: string; success?: boolean } | null;
 
 interface ProfileFormProps {
   profile?: JobProfile;
+  backHref?: string;
   onSubmitAction: (
     prevState: ActionState,
     formData: FormData
-  ) => Promise<{ error?: string } | void>;
+  ) => Promise<ActionState | void>;
 }
 
 const LABEL_CLASS =
@@ -38,12 +40,24 @@ const INPUT_CLASS =
 const SECTION_HEADING_CLASS =
   "text-[1.125rem] font-medium text-on-surface mt-8 mb-4";
 
-export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
+export function ProfileForm({ profile, backHref, onSubmitAction }: ProfileFormProps) {
   const [state, submitAction, isPending] = useActionState(
     (prevState: ActionState | void, formData: FormData) =>
       onSubmitAction((prevState ?? null) as ActionState, formData),
     null
   );
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const prevStateRef = useRef<ActionState>(null);
+  useEffect(() => {
+    if (state !== prevStateRef.current && state?.success) {
+      setShowSuccess(true);
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      prevStateRef.current = state;
+      return () => clearTimeout(timer);
+    }
+    prevStateRef.current = state ?? null;
+  }, [state]);
 
   // Campos condicionais — estados controlados
   const [educationLevel, setEducationLevel] = useState(
@@ -335,7 +349,7 @@ export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
           </div>
         </div>
 
-        {/* ── Erro de server action ──────────────────────────────── */}
+        {/* ── Feedback ───────────────────────────────────────────── */}
         {state?.error && (
           <div className="flex items-center gap-3 p-3 mt-6 bg-destructive/8 rounded-sm border border-destructive/25">
             <p className="text-[0.75rem] font-medium text-destructive">
@@ -343,9 +357,21 @@ export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
             </p>
           </div>
         )}
+        {showSuccess && (
+          <div className="p-3 mt-6 rounded-sm border border-emerald-200 bg-emerald-50">
+            <p className="text-[0.75rem] font-medium text-emerald-700">
+              Perfil salvo com sucesso.
+            </p>
+          </div>
+        )}
 
-        {/* ── Botão Salvar ───────────────────────────────────────── */}
-        <div className="flex justify-end mt-8">
+        {/* ── Botões de ação ─────────────────────────────────────── */}
+        <div className="flex justify-end gap-3 mt-8">
+          {backHref && (
+            <Button asChild variant="outline" disabled={isPending} className="rounded-sm">
+              <Link href={backHref}>Voltar</Link>
+            </Button>
+          )}
           <Button
             type="submit"
             disabled={isPending}

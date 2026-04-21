@@ -77,9 +77,9 @@ export async function createVacancy(
 // Atualiza campos específicos da vaga (preserva id, profileId, status, openedAt, closedAt)
 export async function updateVacancy(
   vacancyId: string,
-  _prevState: { error?: string } | null,
+  _prevState: { error?: string; success?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string } | void> {
+): Promise<{ error?: string; success?: boolean } | void> {
   try {
     const vacancy = await vacancyRepository.findById(vacancyId);
     if (!vacancy) {
@@ -107,7 +107,7 @@ export async function updateVacancy(
   } catch (error) {
     return { error: formatError(error) };
   }
-  redirect(`/vacancies/${vacancyId}`);
+  return { success: true };
 }
 
 // Exclui vaga pelo ID (idempotente)

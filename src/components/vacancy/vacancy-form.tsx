@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,7 @@ import type { Vacancy, RequestType } from "@/lib/vacancy";
 import { REQUEST_TYPES } from "@/lib/vacancy";
 import type { JobProfile } from "@/lib/profile";
 
-type ActionState = { error?: string } | null;
+type ActionState = { error?: string; success?: boolean } | null;
 
 const LABEL_CLASS =
   "text-[0.6875rem] font-semibold uppercase tracking-[0.05em] text-on-surface/60";
@@ -29,15 +30,17 @@ const SECTION_HEADING_CLASS =
 interface VacancyFormProps {
   profiles: JobProfile[];
   vacancy?: Vacancy;
+  backHref?: string;
   onSubmitAction: (
     prevState: ActionState,
     formData: FormData
-  ) => Promise<{ error?: string } | void>;
+  ) => Promise<ActionState | void>;
 }
 
 export function VacancyForm({
   profiles,
   vacancy,
+  backHref,
   onSubmitAction,
 }: VacancyFormProps) {
   const router = useRouter();
@@ -47,6 +50,18 @@ export function VacancyForm({
       onSubmitAction((prevState ?? null) as ActionState, formData),
     null
   );
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const prevStateRef = useRef<ActionState>(null);
+  useEffect(() => {
+    if (state !== prevStateRef.current && state?.success) {
+      setShowSuccess(true);
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      prevStateRef.current = state;
+      return () => clearTimeout(timer);
+    }
+    prevStateRef.current = state ?? null;
+  }, [state]);
 
   // Campos controlados (selects + condicionais)
   const [selectedProfileId, setSelectedProfileId] = useState(
@@ -221,7 +236,7 @@ export function VacancyForm({
           </div>
         </div>
 
-        {/* ── Erro de server action ──────────────────────────────── */}
+        {/* ── Feedback ───────────────────────────────────────────── */}
         {state?.error && (
           <div className="flex items-center gap-3 p-3 mt-6 bg-destructive/8 rounded-sm border border-destructive/25">
             <p className="text-[0.75rem] font-medium text-destructive">
@@ -229,18 +244,31 @@ export function VacancyForm({
             </p>
           </div>
         )}
+        {showSuccess && (
+          <div className="p-3 mt-6 rounded-sm border border-emerald-200 bg-emerald-50">
+            <p className="text-[0.75rem] font-medium text-emerald-700">
+              Vaga salva com sucesso.
+            </p>
+          </div>
+        )}
 
         {/* ── Botões de ação ─────────────────────────────────────── */}
         <div className="flex justify-end gap-3 mt-8">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isPending}
-            className="rounded-sm"
-          >
-            Cancelar
-          </Button>
+          {backHref ? (
+            <Button asChild variant="outline" disabled={isPending} className="rounded-sm">
+              <Link href={backHref}>Voltar</Link>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isPending}
+              className="rounded-sm"
+            >
+              Cancelar
+            </Button>
+          )}
           <Button
             type="submit"
             disabled={isPending}
