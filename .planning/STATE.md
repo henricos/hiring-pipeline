@@ -33,11 +33,11 @@ progress:
 
 ## Current Position
 
-Phase: 03 (vacancy-gh-form) — COMPLETE ✓
-Plan: 12 of 12
+Phase: 04 (ai-assisted-profile-refinement) — IN PROGRESS
+Plan: 1 of 5 complete
 **Milestone:** v1 Hiring Pipeline  
-**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 (Vacancy & GH Form) a planejar  
-**Overall Progress:** [######----] 50%
+**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 em execução  
+**Overall Progress:** [######----] 60%
 
 **At risk:** None (early stage)
 
@@ -90,11 +90,20 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Phase 4 planejada — 5 planos em 3 waves prontos para execução
-2. Wave 0: atualizar testes para string[] (RED intencional)
-3. Wave 1: migração schema + DynamicListField + aiProfileInstructions + zeragem base dev
-4. Wave 2: criar /refinar-perfil + revisar /abrir-vaga + validação manual
-5. Próximo: `/gsd-execute-phase 4`
+1. Phase 4 em execução — plano 04-01 (Wave 0 RED) concluído
+2. Próximo: 04-02 (Wave 1 — schema + serializeStringArray + DynamicListField)
+3. Wave 1 restante: 04-03 (settings + ProfileForm + actions)
+4. Wave 1 dados: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
+5. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+
+### Sessão de Execução Phase 04 — Plano 04-01 (2026-04-21)
+
+- Plano 04-01 concluído: Wave 0 RED — 3 arquivos de teste atualizados
+- profile.test.ts: 12 erros TS2322 (string[] vs string) via tsc --noEmit
+- excel-generator.test.ts: 4 falhas runtime (serializeStringArray not a function)
+- settings.test.ts: 4 erros TS2353/TS2339 + 1 falha runtime (defaultSettings sem aiProfileInstructions)
+- Commits: 32f422e (profile.test.ts), 8e29b3a (excel-generator.test.ts), 4e5d196 (settings.test.ts)
+- Parado em: 04-01 completo — próximo é 04-02 (Wave 1 schema migration)
 
 ### Sessão de Discuss Phase 04 (2026-04-21)
 
