@@ -1,8 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import type { Vacancy } from "@/lib/vacancy";
-import { generateVacancyId } from "@/lib/vacancy";
+import type { Vacancy, VacancyStatus } from "@/lib/vacancy";
+import { generateVacancyId, VACANCY_STATUSES } from "@/lib/vacancy";
 import { vacancyRepository } from "@/lib/repositories/vacancy-repository";
 import { profileRepository } from "@/lib/repositories/profile-repository";
 
@@ -178,5 +178,30 @@ export async function revertVacancyStatus(vacancyId: string): Promise<void> {
     await vacancyRepository.save(vacancy);
   } catch (error) {
     console.error("Falha ao reverter status da vaga:", error);
+  }
+}
+
+// Altera o status da vaga para qualquer estado válido (GAP-02)
+export async function changeVacancyStatus(
+  vacancyId: string,
+  newStatus: VacancyStatus
+): Promise<void> {
+  // Guard: rejeita valores fora do enum fechado (T-03-06-01)
+  if (!VACANCY_STATUSES.includes(newStatus)) return;
+
+  try {
+    const vacancy = await vacancyRepository.findById(vacancyId);
+    if (!vacancy) return;
+
+    vacancy.status = newStatus;
+    if (newStatus === "Encerrada") {
+      vacancy.closedAt = new Date().toISOString();
+    } else {
+      vacancy.closedAt = undefined;
+    }
+
+    await vacancyRepository.save(vacancy);
+  } catch (error) {
+    console.error("Falha ao alterar status da vaga:", error);
   }
 }

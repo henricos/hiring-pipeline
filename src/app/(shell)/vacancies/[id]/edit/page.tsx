@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { VacancyForm } from "@/components/vacancy/vacancy-form";
 import { Button } from "@/components/ui/button";
-import { updateVacancy, revertVacancyStatus } from "@/app/actions/vacancy";
+import { VacancyStatusSelect } from "@/components/vacancy/vacancy-status-select";
+import { updateVacancy } from "@/app/actions/vacancy";
 import { vacancyRepository } from "@/lib/repositories/vacancy-repository";
 import { profileRepository } from "@/lib/repositories/profile-repository";
 import { env } from "@/lib/env";
@@ -25,7 +26,6 @@ export default async function EditVacancyPage({
 
   // Injeta o ID da vaga via bind, seguindo padrão de profiles/[id]/edit/page.tsx
   const submitWithId = updateVacancy.bind(null, id);
-  const revertStatusAction = revertVacancyStatus.bind(null, id);
 
   // basePath para links de API que não passam pelo roteador do Next.js
   const basePath = normalizeBasePath(env.APP_BASE_PATH);
@@ -42,22 +42,15 @@ export default async function EditVacancyPage({
           vacancy={vacancy}
           onSubmitAction={submitWithId}
         />
-        {vacancy.status !== "Aberta" && (
-          <section className="mt-8 pt-8 border-t border-border/20">
-            <h2 className="text-base font-medium text-on-surface mb-1">
-              Status da vaga
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Status atual: <strong>{vacancy.status}</strong>
-            </p>
-            <form action={revertStatusAction}>
-              <Button type="submit" variant="outline" size="sm">
-                ← Voltar para{" "}
-                {vacancy.status === "Encerrada" ? "Em andamento" : "Aberta"}
-              </Button>
-            </form>
-          </section>
-        )}
+        <section className="mt-8 pt-8 border-t border-border/20">
+          <h2 className="text-base font-medium text-on-surface mb-1">
+            Status da vaga
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Altere o status da vaga conforme o andamento do processo seletivo.
+          </p>
+          <VacancyStatusSelect vacancyId={id} currentStatus={vacancy.status} />
+        </section>
 
         <section className="mt-8 pt-8 border-t border-border/20">
           <h2 className="text-base font-medium text-on-surface mb-2">
@@ -69,20 +62,11 @@ export default async function EditVacancyPage({
           <div className="flex gap-3">
             <Button asChild variant="default">
               <a
-                href={`${apiPrefix}/api/vacancies/${vacancy.id}/form`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Gerar formulário GH
-              </a>
-            </Button>
-            <Button asChild variant="outline">
-              <a
                 href={`${apiPrefix}/api/vacancies/${vacancy.id}/form?regen=1`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Regenerar
+                Gerar formulário GH
               </a>
             </Button>
           </div>
