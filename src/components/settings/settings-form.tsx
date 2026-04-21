@@ -373,6 +373,27 @@ export function SettingsForm({
           </div>
         </div>
 
+        {/* ── Seção 5: Instruções para IA ────────────────────────── */}
+        <h2 className={SECTION_HEADING_CLASS}>Instruções para IA</h2>
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="aiProfileInstructions" className={LABEL_CLASS}>
+              Instruções para IA montar perfil
+            </Label>
+            <p className="text-[0.6875rem] text-on-surface/50">
+              Descreva o contexto da área, produtos, linguagem preferida e o que
+              priorizar em candidatos. A IA usará estas instruções ao sugerir perfis.
+            </p>
+            <Textarea
+              id="aiProfileInstructions"
+              name="aiProfileInstructions"
+              defaultValue={initialSettings.aiProfileInstructions ?? ""}
+              placeholder="Ex: Área de P&D focada em produtos educacionais para o ensino superior. Priorizar candidatos com experiência em EdTech ou ambientes acadêmicos..."
+              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
+            />
+          </div>
+        </div>
+
         {/* ── Feedback ───────────────────────────────────────────── */}
         {state?.error && (
           <div className="flex items-center gap-3 p-3 mt-6 bg-destructive/8 rounded-sm border border-destructive/25">
