@@ -14,7 +14,7 @@ Terceira rodada de validação — após fechamento de GAP-05..12 (planos 03-08 
 
 ### 1. Download do formulário Excel GH
 expected: Arquivo requisicao-{id}.xlsx baixado com: (a) todos os checkboxes com exatamente 1 opção marcada por grupo, (b) datas AH4 e K24 no formato DD/MM/YYYY, (c) campos migrados (inglês, modalidade, cc) preenchidos a partir de AreaSettings
-result: [pending]
+result: failed — checkboxes todos errados: workSchedule trocado (08h→09h), workMode invertido (Presencial→Remoto+Híbrido), travelRequired invertido, englishLevel/spanishLevel com múltiplos marcados. Ver GAP-13..17.
 
 ### 2. Criação de vaga end-to-end no browser
 expected: Manager cria nova vaga em /vacancies/new, formulário salva com sucesso, redireciona para /vacancies, vaga aparece na lista com badge "Aberta"
@@ -34,7 +34,7 @@ result: passed — GAP-03 resolvido em 03-06
 
 ### 6. Novas seções de Configurações
 expected: /settings exibe seções Idiomas, Infraestrutura e Dados Fixos da Vaga; salvar persiste os valores; Excel reflete os valores salvos
-result: [pending]
+result: failed — layout das seções incorreto: additionalInfo está em Infraestrutura (deve ir para fim de Dados Fixos da Vaga); costCenter está em Dados Fixos da Vaga (deve ir para Dados da Área). Ver GAP-13.
 
 ### 7. Ausência de campos migrados nos formulários
 expected: Formulário de vaga (/vacancies/new, /vacancies/[id]/edit) NÃO exibe: centro de custo, modalidade, horário, disponibilidade para viagens; Formulário de perfil NÃO exibe: inglês, espanhol, outro idioma, infra, informações complementares
@@ -48,8 +48,8 @@ result: [pending]
 
 total: 8
 passed: 4
-issues: 0
-pending: 4
+issues: 2
+pending: 2
 skipped: 0
 blocked: 0
 
@@ -126,3 +126,33 @@ status: resolved
 severity: major
 description: Campos fixos por área devem sair de Vacancy/JobProfile e ir para AreaSettings.
 fix: AreaSettings expandida, formulários atualizados, excel-generator lê de settings (03-12).
+
+### GAP-13 — Layout das seções de configurações incorreto
+status: failed
+severity: minor
+description: additionalInfo (informações complementares) está na seção Infraestrutura mas deve ficar no final da seção Dados Fixos da Vaga. costCenter (centro de custo) está em Dados Fixos da Vaga mas deve ir para Dados da Área.
+area: ui — settings-form.tsx
+
+### GAP-14 — workSchedule: ctrlProps trocados no mapeamento de checkboxes
+status: failed
+severity: major
+description: Escolher "Das 08h às 17h" marca o checkbox "09h às 18h" no Excel. ctrlProp3 e ctrlProp4 estão mapeados na ordem inversa em CHECKBOX_GROUPS.workSchedule.
+area: excel-generator.ts
+
+### GAP-15 — workMode: ctrlProps errados — Presencial marca Remoto+Híbrido
+status: failed
+severity: major
+description: Escolher "Presencial" resulta em Remoto e Híbrido marcados no Excel. O mapeamento ctrlProp68/69/70 está incorreto — os números reais diferem da inspeção de 2026-04-21.
+area: excel-generator.ts
+
+### GAP-16 — travelRequired: lógica de preenchimento invertida
+status: failed
+severity: minor
+description: Campo não selecionado gera checkbox marcado no Excel; o comportamento esperado é o oposto. A lógica booleana ou o ctrlProp de travelRequired está invertido.
+area: excel-generator.ts
+
+### GAP-17 — englishLevel e spanishLevel: múltiplos checkboxes marcados (residuais persistem)
+status: failed
+severity: major
+description: Após migração para AreaSettings (GAP-12), os grupos de idioma continuam marcando múltiplos checkboxes simultaneamente. O reset via allGroup não está funcionando — provável combinação de ctrlProps errados e/ou applyCheckboxGroups não recebendo settings corretamente.
+area: excel-generator.ts
