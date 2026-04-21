@@ -29,6 +29,19 @@ export function toExcelDate(isoStr: string | undefined | null): string {
   return `${day}/${month}/${year}`;
 }
 
+/**
+ * Serializa string[] para formato de bullets de texto.
+ * Formato de saída: "- item1\n- item2\n..." (D-05 — Phase 4)
+ * Filtra itens vazios antes de serializar.
+ */
+export function serializeStringArray(items: string[]): string {
+  if (!items || items.length === 0) return "";
+  return items
+    .filter(Boolean)
+    .map(item => `- ${item}`)
+    .join("\n");
+}
+
 // Mapeamento de campos → endereços de célula no template sheet1.xml
 // Fonte: inspeção via AdmZip dos arquivos em data/examples/ (confirmado em 2026-04-21)
 // Todos os endereços validados contra exemplos preenchidos manualmente.
@@ -360,10 +373,10 @@ export function generateVacancyForm(
     [CELL_MAPPING.educationLevel]: profile.educationLevel ?? "",
     [CELL_MAPPING.educationCourse]: profile.educationCourse ?? "",
     [CELL_MAPPING.postGraduateLevel]: profile.postGraduateLevel ?? "",
-    [CELL_MAPPING.responsibilities]: profile.responsibilities ?? "",
-    [CELL_MAPPING.qualifications]: profile.qualifications ?? "",
-    [CELL_MAPPING.behaviors]: profile.behaviors ?? "",
-    [CELL_MAPPING.challenges]: profile.challenges ?? "",
+    [CELL_MAPPING.responsibilities]: serializeStringArray(profile.responsibilities),
+    [CELL_MAPPING.qualifications]:   serializeStringArray(profile.qualifications),
+    [CELL_MAPPING.behaviors]:        serializeStringArray(profile.behaviors),
+    [CELL_MAPPING.challenges]:       serializeStringArray(profile.challenges),
 
     // Grupo 2: Vaga (requestType e experienceLevel são radio buttons visuais — sem célula de input livre)
     [CELL_MAPPING.quantity]: vacancy.quantity.toString(),
