@@ -71,8 +71,7 @@ export default async function EditVacancyPage({
                 <Button asChild variant="default">
                   <a
                     href={`${apiPrefix}/api/vacancies/${vacancy.id}/form?regen=1`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    download
                   >
                     Gerar formulário GH
                   </a>

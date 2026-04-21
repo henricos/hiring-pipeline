@@ -39,8 +39,7 @@ const CELL_MAPPING: Record<string, string> = {
   educationLevel: "I31",
   educationCourse: "AB31",
   postGraduateLevel: "I33",
-  englishLevel: "U37",
-  spanishLevel: "U39",
+  // englishLevel e spanishLevel são 100% por checkboxes (CHECKBOX_GROUPS) — sem célula de texto
   responsibilities: "B44",
   qualifications: "B48",
   behaviors: "B52",
@@ -123,26 +122,28 @@ const CHECKBOX_GROUPS: Record<string, CheckboxGroup> = {
     allGroup: ["ctrlProp13", "ctrlProp14", "ctrlProp15", "ctrlProp16", "ctrlProp17"],
   },
   englishLevel: {
+    // Shapes inspecionados em 2026-04-21: row 31, cols 7/13/19
+    // Shapes 24-31 estavam ERRADOS — são da seção de sistemas (rows 37-41)
     options: {
-      "Não exigido":   "ctrlProp27",
-      "Básico":        "ctrlProp26",
-      "Intermediário": "ctrlProp25",
-      "Avançado":      "ctrlProp24",
-      "Fluente":       null,  // sem checkbox — registrar em célula de texto U37
+      "Básico":        "ctrlProp18",
+      "Intermediário": "ctrlProp42",
+      "Avançado":      "ctrlProp43",
+      "Não exigido":   null,  // sem checkbox no template
+      "Fluente":       null,  // sem checkbox no template
     },
-    allGroup: ["ctrlProp24", "ctrlProp25", "ctrlProp26", "ctrlProp27"],
+    allGroup: ["ctrlProp18", "ctrlProp42", "ctrlProp43"],
   },
   spanishLevel: {
+    // Shapes inspecionados em 2026-04-21: row 33, cols 7/13
+    // Template só tem Básico e Intermediário para Espanhol
     options: {
-      "Não exigido":   "ctrlProp31",
-      "Básico":        "ctrlProp30",
-      "Intermediário": "ctrlProp29",
-      "Avançado":      "ctrlProp28",
-      "Fluente":       null,  // sem checkbox — registrar em célula de texto U39
+      "Básico":        "ctrlProp20",
+      "Intermediário": "ctrlProp19",
+      "Avançado":      null,  // sem checkbox no template
+      "Não exigido":   null,  // sem checkbox no template
+      "Fluente":       null,  // sem checkbox no template
     },
-    // ctrlProp36,38,40 são shapes duplicados sobrepostos — sempre limpar
-    allGroup: ["ctrlProp28", "ctrlProp29", "ctrlProp30", "ctrlProp31",
-               "ctrlProp36", "ctrlProp38", "ctrlProp40"],
+    allGroup: ["ctrlProp19", "ctrlProp20"],
   },
 };
 
@@ -265,7 +266,6 @@ function applyCheckboxGroups(
       const target = group.options[settings.englishLevel];
       if (target) setCtrlPropChecked(zip, target, true);
     }
-    // Fluente não tem checkbox — o valor já foi escrito em U37 via CELL_MAPPING
   }
 
   // spanishLevel — lê de settings (migrado de profile — GAP-12)
@@ -276,7 +276,6 @@ function applyCheckboxGroups(
       const target = group.options[settings.spanishLevel];
       if (target) setCtrlPropChecked(zip, target, true);
     }
-    // Fluente não tem checkbox — o valor já foi escrito em U39 via CELL_MAPPING
   }
 
   // travelRequired — checkbox único (ctrlProp11 = shape 11, row 20)
@@ -345,8 +344,7 @@ export function generateVacancyForm(
     [CELL_MAPPING.mediateReport]: settings.mediateReport ?? "",
     [CELL_MAPPING.teamComposition]: settings.teamComposition ?? "",
     // Campos migrados de JobProfile → AreaSettings
-    [CELL_MAPPING.englishLevel]: settings.englishLevel ?? "",
-    [CELL_MAPPING.spanishLevel]: settings.spanishLevel ?? "",
+    // englishLevel/spanishLevel: somente checkboxes (CHECKBOX_GROUPS) — sem célula de texto
     [CELL_MAPPING.additionalInfo]: settings.additionalInfo ?? "",
     [CELL_MAPPING.systemsRequired]: settings.systemsRequired ?? "",
     [CELL_MAPPING.networkFolders]: settings.networkFolders ?? "",
