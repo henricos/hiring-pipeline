@@ -64,6 +64,7 @@ const CELL_MAPPING: Record<string, string> = {
   openedAt: "AH4", // Data de abertura da vaga (GAP-06)
 
   // Grupo 3: Dados Comuns da Área (AreaSettings)
+  otherLanguage: "D41",  // Nome do idioma adicional — campo de entrada D41:Q41 (após label B41="Outro:")
   managerName: "H10",
   godfather: "AD6",
   immediateReport: "G22",
@@ -79,9 +80,21 @@ const CELL_MAPPING: Record<string, string> = {
 // Fonte: inspeção via AdmZip do template em 2026-04-21.
 // ctrlPropN corresponde ao arquivo xl/ctrlProps/ctrlPropN.xml no ZIP.
 // Template tem vários checkboxes marcados por resíduo de uso anterior:
-//   ctrlProp69(Remoto), ctrlProp70(Híbrido), ctrlProp15(3-5 anos),
-//   ctrlProp16(5-10 anos), ctrlProp25(Inglês Inter), ctrlProp26(Inglês Básico),
-//   ctrlProp29(Espanhol Inter), ctrlProp30(Espanhol Básico)
+//   ctrlProp15(experiência 3-5 anos), ctrlProp16(5-10 anos),
+//   ctrlProp25/26 (Inglês Avançado/Intermediário — linha 37),
+//   ctrlProp29/30 (Espanhol Avançado/Intermediário — linha 39),
+//   ctrlProp33/34 (Outro idioma Avançado/Intermediário — linha 41),
+//   ctrlProp69(Remoto), ctrlProp70(Híbrido)
+//
+// ATENÇÃO: para ctrlProp 24-39, o índice VML (posição no split do VML) NÃO é igual a N.
+// A tabela CTRL_PROP_VML_INDEX corrige esse desvio causado por histórico de edição do template.
+const CTRL_PROP_VML_INDEX: Record<number, number> = {
+  24: 39, 25: 36, 26: 33, 27: 24,
+  28: 25, 29: 26, 30: 27, 31: 28,
+  32: 29, 33: 30, 34: 31, 35: 32,
+  36: 34, 37: 35, 38: 37, 39: 38,
+};
+
 interface CheckboxGroup {
   options: Record<string, string | null>;
   allGroup: string[];
@@ -122,34 +135,48 @@ const CHECKBOX_GROUPS: Record<string, CheckboxGroup> = {
     allGroup: ["ctrlProp13", "ctrlProp14", "ctrlProp15", "ctrlProp16", "ctrlProp17"],
   },
   englishLevel: {
-    // Shapes inspecionados em 2026-04-21: row 31, cols 7/13/19
-    // Shapes 24-31 estavam ERRADOS — são da seção de sistemas (rows 37-41)
+    // Linha 37 do template: A37="Inglês", C37="Básico", V37="Intermediário", Z37="Avançado", AF37="Fluente"
+    // Checkboxes (col→ctrlProp): T(19)→ctrlProp27, X(23)→ctrlProp26, AD(29)→ctrlProp25, AI(34)→ctrlProp24
     options: {
-      "Básico":        "ctrlProp18",
-      "Intermediário": "ctrlProp42",
-      "Avançado":      "ctrlProp43",
-      "Não exigido":   null,  // sem checkbox no template
-      "Fluente":       null,  // sem checkbox no template
+      "Não exigido":   null,
+      "Básico":        "ctrlProp27",
+      "Intermediário": "ctrlProp26",
+      "Avançado":      "ctrlProp25",
+      "Fluente":       "ctrlProp24",
     },
-    allGroup: ["ctrlProp18", "ctrlProp42", "ctrlProp43"],
+    allGroup: ["ctrlProp24", "ctrlProp25", "ctrlProp26", "ctrlProp27"],
   },
   spanishLevel: {
-    // Shapes inspecionados em 2026-04-21: row 33, cols 7/13
-    // Template só tem Básico e Intermediário para Espanhol
+    // Linha 39 do template: A39="Espanhol", mesmas colunas que Inglês
+    // Checkboxes primários: T→ctrlProp31, X→ctrlProp30, AD→ctrlProp29, AI→ctrlProp28
+    // Checkboxes secundários (sobrepostos — mesmo col, ctrlProp diferente): ctrlProp36/38/40
     options: {
-      "Básico":        "ctrlProp20",
-      "Intermediário": "ctrlProp19",
-      "Avançado":      null,  // sem checkbox no template
-      "Não exigido":   null,  // sem checkbox no template
-      "Fluente":       null,  // sem checkbox no template
+      "Não exigido":   null,
+      "Básico":        "ctrlProp31",
+      "Intermediário": "ctrlProp30",
+      "Avançado":      "ctrlProp29",
+      "Fluente":       "ctrlProp28",
     },
-    allGroup: ["ctrlProp19", "ctrlProp20"],
+    allGroup: ["ctrlProp28", "ctrlProp29", "ctrlProp30", "ctrlProp31", "ctrlProp36", "ctrlProp38", "ctrlProp40"],
+  },
+  otherLanguageLevel: {
+    // Linha 41 do template: A41="Outro:", mesmas colunas
+    // Checkboxes primários: T→ctrlProp35, X→ctrlProp34, AD→ctrlProp33, AI→ctrlProp32
+    // Checkboxes secundários: ctrlProp37/39/41
+    options: {
+      "Não exigido":   null,
+      "Básico":        "ctrlProp35",
+      "Intermediário": "ctrlProp34",
+      "Avançado":      "ctrlProp33",
+      "Fluente":       "ctrlProp32",
+    },
+    allGroup: ["ctrlProp32", "ctrlProp33", "ctrlProp34", "ctrlProp35", "ctrlProp37", "ctrlProp39", "ctrlProp41"],
   },
 };
 
 /**
- * Modifica o estado checked do shape N no vmlDrawing1.vml dentro do ZIP.
- * Shape N = ctrlPropN (mapeamento 1:1 confirmado via inspeção do template).
+ * Modifica o estado checked do shape shapeIndex (1-based no split do VML) dentro do ZIP.
+ * O índice é calculado pelo chamador via CTRL_PROP_VML_INDEX (não é sempre igual a N do ctrlPropN).
  *
  * - checked=true:  insere <x:Checked>1</x:Checked> antes de </x:ClientData>
  * - checked=false: remove <x:Checked>N</x:Checked> se presente
@@ -204,8 +231,9 @@ function setCtrlPropChecked(zip: AdmZip, ctrlPropName: string, checked: boolean)
 
   zip.updateFile(entryPath, Buffer.from(xml, "utf-8"));
 
-  // Sincronizar VML — shape N = ctrlPropN (Excel lê estado visual do VML)
-  const shapeIndex = parseInt(ctrlPropName.replace("ctrlProp", ""), 10);
+  // Sincronizar VML — para ctrlProp24-39 o índice VML não é igual a N (ver CTRL_PROP_VML_INDEX)
+  const ctrlNum = parseInt(ctrlPropName.replace("ctrlProp", ""), 10);
+  const shapeIndex = CTRL_PROP_VML_INDEX[ctrlNum] ?? ctrlNum;
   if (!isNaN(shapeIndex)) setVmlChecked(zip, shapeIndex, checked);
 }
 
@@ -278,6 +306,16 @@ function applyCheckboxGroups(
     }
   }
 
+  // otherLanguageLevel — lê de settings (linha 41 do template: "Outro:")
+  {
+    const group = CHECKBOX_GROUPS.otherLanguageLevel;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    if (settings.otherLanguageLevel) {
+      const target = group.options[settings.otherLanguageLevel];
+      if (target) setCtrlPropChecked(zip, target, true);
+    }
+  }
+
   // travelRequired — checkbox único (ctrlProp11 = shape 11, row 20)
   setCtrlPropChecked(zip, "ctrlProp11", settings.travelRequired ?? false);
 }
@@ -344,7 +382,8 @@ export function generateVacancyForm(
     [CELL_MAPPING.mediateReport]: settings.mediateReport ?? "",
     [CELL_MAPPING.teamComposition]: settings.teamComposition ?? "",
     // Campos migrados de JobProfile → AreaSettings
-    // englishLevel/spanishLevel: somente checkboxes (CHECKBOX_GROUPS) — sem célula de texto
+    // englishLevel/spanishLevel/otherLanguageLevel: somente checkboxes (CHECKBOX_GROUPS) — sem célula de texto
+    [CELL_MAPPING.otherLanguage]: settings.otherLanguage ?? "",
     [CELL_MAPPING.additionalInfo]: settings.additionalInfo ?? "",
     [CELL_MAPPING.systemsRequired]: settings.systemsRequired ?? "",
     [CELL_MAPPING.networkFolders]: settings.networkFolders ?? "",

@@ -69,7 +69,13 @@ export async function GET(
     }
 
     const buffer = fs.readFileSync(outputPath);
-    const filename = `requisicao-${vacancy.id}.xlsx`;
+    const titleSlug = (profile.title ?? vacancy.id)
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const filename = `requisicao-${titleSlug}.xlsx`;
 
     return new Response(buffer, {
       status: 200,
