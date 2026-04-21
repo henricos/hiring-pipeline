@@ -16,16 +16,16 @@ export interface Vacancy {
   // Campos específicos da vaga (grupo D-03)
   requestType: RequestType;
   quantity: number; // default 1
-  costCenter: string;
+  costCenter?: string; // opcional — migrado para AreaSettings (GAP-12)
   salaryRange: string;
   confidential: boolean; // default false
   budgeted: boolean; // default true
   headcountIncrease: boolean; // default false
   replacedPerson?: string; // undefined se headcountIncrease=true
-  workSchedule: WorkSchedule;
-  workScheduleOther?: string; // Texto livre quando workSchedule === "Outro"
-  travelRequired: boolean; // default false
-  workMode: WorkMode;
+  workSchedule?: WorkSchedule; // opcional — migrado para AreaSettings (GAP-12)
+  workScheduleOther?: string; // opcional — migrado para AreaSettings (GAP-12)
+  travelRequired?: boolean; // opcional — migrado para AreaSettings (GAP-12)
+  workMode?: WorkMode; // opcional — migrado para AreaSettings (GAP-12)
   expectedHireDate: string; // ISO 8601 (data)
   // Datas de ciclo de vida (D-13)
   openedAt: string; // ISO 8601, automático na criação
@@ -65,15 +65,12 @@ export function createDefaultVacancy(profileId: string): Vacancy {
     status: "Aberta",
     requestType: "Recrutamento externo",
     quantity: 1,
-    costCenter: "",
     salaryRange: "",
     confidential: false,
     budgeted: true,
     headcountIncrease: false,
-    workSchedule: "Das 08h às 17h",
-    travelRequired: false,
-    workMode: "Presencial",
     expectedHireDate: new Date().toISOString().split("T")[0],
     openedAt: new Date().toISOString(),
+    // costCenter, workSchedule, workScheduleOther, travelRequired, workMode removidos — estão em AreaSettings (GAP-12)
   };
 }

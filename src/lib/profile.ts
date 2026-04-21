@@ -36,19 +36,19 @@ export interface JobProfile {
   postGraduateCourse?: string; // quando postGraduateLevel === "Desejável" | "Necessário"
   certifications: CertificationLevel;
   certificationsWhich?: string; // quando certifications === "Desejável" | "Sim"
-  englishLevel: LanguageLevel;
-  spanishLevel: LanguageLevel;
-  otherLanguage?: string; // nome do idioma
-  otherLanguageLevel?: LanguageLevel;
+  englishLevel?: LanguageLevel; // opcional — migrado para AreaSettings (GAP-12)
+  spanishLevel?: LanguageLevel; // opcional — migrado para AreaSettings (GAP-12)
+  otherLanguage?: string; // opcional — migrado para AreaSettings (GAP-12)
+  otherLanguageLevel?: LanguageLevel; // opcional — migrado para AreaSettings (GAP-12)
   // Conteúdo descritivo (5 textareas — núcleo do perfil)
   responsibilities: string; // Responsabilidades e atribuições
   qualifications: string; // Requisitos e qualificações (obrigatórios + diferenciais)
   behaviors: string; // Características e competências comportamentais
   challenges: string; // Principais desafios
-  additionalInfo: string; // Informações complementares
+  additionalInfo?: string; // opcional — migrado para AreaSettings (GAP-12)
   // Infraestrutura (opcional)
-  systemsRequired?: string;
-  networkFolders?: string;
+  systemsRequired?: string; // opcional — migrado para AreaSettings (GAP-12)
+  networkFolders?: string; // opcional — migrado para AreaSettings (GAP-12)
   // Observações internas (não publicadas externamente)
   internalNotes?: string;
   // Metadados
