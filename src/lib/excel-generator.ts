@@ -72,6 +72,150 @@ const CELL_MAPPING: Record<string, string> = {
   teamComposition: "B27",
 };
 
+// ─── Mapeamento de grupos de checkbox VML ────────────────────────────────────
+// Cada grupo define:
+//   options: valor aplicação → ctrlProp a marcar (null = sem checkbox)
+//   allGroup: todos os ctrlProps do grupo — limpar TODOS antes de marcar qualquer um
+//
+// Fonte: inspeção via AdmZip do template em 2026-04-21.
+// ctrlPropN corresponde ao arquivo xl/ctrlProps/ctrlPropN.xml no ZIP.
+// Template tem vários checkboxes marcados por resíduo de uso anterior:
+//   ctrlProp69(Remoto), ctrlProp70(Híbrido), ctrlProp15(3-5 anos),
+//   ctrlProp16(5-10 anos), ctrlProp25(Inglês Inter), ctrlProp26(Inglês Básico),
+//   ctrlProp29(Espanhol Inter), ctrlProp30(Espanhol Básico)
+interface CheckboxGroup {
+  options: Record<string, string | null>;
+  allGroup: string[];
+}
+
+const CHECKBOX_GROUPS: Record<string, CheckboxGroup> = {
+  workMode: {
+    options: {
+      "Presencial": "ctrlProp68",
+      "Remoto":     "ctrlProp69",
+      "Híbrido":    "ctrlProp70",
+    },
+    allGroup: ["ctrlProp68", "ctrlProp69", "ctrlProp70"],
+  },
+  requestType: {
+    options: {
+      "Recrutamento interno": "ctrlProp5",
+      "Recrutamento externo": "ctrlProp6",
+    },
+    allGroup: ["ctrlProp5", "ctrlProp6"],
+  },
+  experienceLevel: {
+    options: {
+      "< 1 ano":   "ctrlProp13",
+      "1-3 anos":  "ctrlProp14",
+      "3-5 anos":  "ctrlProp15",
+      "5-10 anos": "ctrlProp16",
+      "> 10 anos": "ctrlProp17",
+    },
+    allGroup: ["ctrlProp13", "ctrlProp14", "ctrlProp15", "ctrlProp16", "ctrlProp17"],
+  },
+  englishLevel: {
+    options: {
+      "Não exigido":   "ctrlProp27",
+      "Básico":        "ctrlProp26",
+      "Intermediário": "ctrlProp25",
+      "Avançado":      "ctrlProp24",
+      "Fluente":       null,  // sem checkbox — registrar em célula de texto U37
+    },
+    allGroup: ["ctrlProp24", "ctrlProp25", "ctrlProp26", "ctrlProp27"],
+  },
+  spanishLevel: {
+    options: {
+      "Não exigido":   "ctrlProp31",
+      "Básico":        "ctrlProp30",
+      "Intermediário": "ctrlProp29",
+      "Avançado":      "ctrlProp28",
+      "Fluente":       null,  // sem checkbox — registrar em célula de texto U39
+    },
+    // ctrlProp36,38,40 são shapes duplicados sobrepostos — sempre limpar
+    allGroup: ["ctrlProp28", "ctrlProp29", "ctrlProp30", "ctrlProp31",
+               "ctrlProp36", "ctrlProp38", "ctrlProp40"],
+  },
+};
+
+/**
+ * Modifica o estado checked de um arquivo ctrlProp dentro do ZIP.
+ * - checked=true:  adiciona checked="Checked" antes de lockText="1"
+ * - checked=false: remove checked="Checked" se presente
+ * Preserva todos os outros atributos e o XML declaration.
+ */
+function setCtrlPropChecked(zip: AdmZip, ctrlPropName: string, checked: boolean): void {
+  const entryPath = `xl/ctrlProps/${ctrlPropName}.xml`;
+  const entry = zip.getEntry(entryPath);
+  if (!entry) return; // ctrlProp não encontrado — silenciosamente ignorar
+
+  let xml = entry.getData().toString("utf-8");
+
+  // Remover checked="Checked" se existir (normalize para estado desmarcado)
+  xml = xml.replace(/\s+checked="Checked"/, "");
+
+  if (checked) {
+    // Inserir checked="Checked" antes de lockText="1"
+    xml = xml.replace(/(\s+lockText=)/, ' checked="Checked"$1');
+  }
+
+  zip.updateFile(entryPath, Buffer.from(xml, "utf-8"));
+}
+
+/**
+ * Aplica o estado correto para todos os grupos de checkbox do template.
+ * Para cada grupo:
+ *   1. Desmarca todos os ctrlProps do allGroup
+ *   2. Marca apenas o ctrlProp correspondente ao valor escolhido (se não for null)
+ */
+function applyCheckboxGroups(
+  zip: AdmZip,
+  vacancy: Vacancy,
+  profile: JobProfile
+): void {
+  // workMode
+  {
+    const group = CHECKBOX_GROUPS.workMode;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[vacancy.workMode];
+    if (target) setCtrlPropChecked(zip, target, true);
+  }
+
+  // requestType
+  {
+    const group = CHECKBOX_GROUPS.requestType;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[vacancy.requestType];
+    if (target) setCtrlPropChecked(zip, target, true);
+  }
+
+  // experienceLevel
+  {
+    const group = CHECKBOX_GROUPS.experienceLevel;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[profile.experienceLevel];
+    if (target) setCtrlPropChecked(zip, target, true);
+  }
+
+  // englishLevel
+  {
+    const group = CHECKBOX_GROUPS.englishLevel;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[profile.englishLevel];
+    if (target) setCtrlPropChecked(zip, target, true);
+    // Fluente não tem checkbox — o valor já foi escrito em U37 via CELL_MAPPING
+  }
+
+  // spanishLevel
+  {
+    const group = CHECKBOX_GROUPS.spanishLevel;
+    group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
+    const target = group.options[profile.spanishLevel];
+    if (target) setCtrlPropChecked(zip, target, true);
+    // Fluente não tem checkbox — o valor já foi escrito em U39 via CELL_MAPPING
+  }
+}
+
 /**
  * Gera o formulário GH de requisição de pessoal em formato .xlsx.
  *
@@ -176,6 +320,9 @@ export function generateVacancyForm(
 
   // Atualizar sheet1.xml no ZIP (todos os outros membros permanecem intactos: VML, ctrlProps, etc.)
   zip.updateFile("xl/worksheets/sheet1.xml", Buffer.from(sheetXml, "utf-8"));
+
+  // Aplicar checkboxes VML (ctrlProps) — limpar resíduos e marcar opção correta
+  applyCheckboxGroups(zip, vacancy, profile);
 
   // Garantir que o diretório de saída existe
   const outputDir = path.dirname(outputPath);
