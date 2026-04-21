@@ -1,5 +1,5 @@
 ---
-status: diagnosed
+status: partial
 phase: 03-vacancy-gh-form
 source: [03-VERIFICATION.md]
 started: 2026-04-23T00:00:00Z
@@ -8,13 +8,13 @@ updated: 2026-04-21T00:00:00Z
 
 ## Current Test
 
-Segunda rodada de validação realizada pelo operador em 2026-04-21 após fechamento dos GAP-01..04.
+Terceira rodada de validação — após fechamento de GAP-05..12 (planos 03-08 a 03-12).
 
 ## Tests
 
 ### 1. Download do formulário Excel GH
-expected: GET /api/vacancies/[id]/form retorna arquivo .xlsx com dados da vaga preenchidos, checkboxes VML preservados e formatação original do template intacta
-result: partial — preenchimento de campos de texto melhorou bastante após correção do CELL_MAPPING; checkboxes e datas ainda com problemas (ver GAP-05..10)
+expected: Arquivo requisicao-{id}.xlsx baixado com: (a) todos os checkboxes com exatamente 1 opção marcada por grupo, (b) datas AH4 e K24 no formato DD/MM/YYYY, (c) campos migrados (inglês, modalidade, cc) preenchidos a partir de AreaSettings
+result: [pending]
 
 ### 2. Criação de vaga end-to-end no browser
 expected: Manager cria nova vaga em /vacancies/new, formulário salva com sucesso, redireciona para /vacancies, vaga aparece na lista com badge "Aberta"
@@ -32,12 +32,24 @@ result: passed — GAP-02 resolvido em 03-06
 expected: Página de edição exibe apenas um botão "Gerar formulário GH" usando ?regen=1
 result: passed — GAP-03 resolvido em 03-06
 
+### 6. Novas seções de Configurações
+expected: /settings exibe seções Idiomas, Infraestrutura e Dados Fixos da Vaga; salvar persiste os valores; Excel reflete os valores salvos
+result: [pending]
+
+### 7. Ausência de campos migrados nos formulários
+expected: Formulário de vaga (/vacancies/new, /vacancies/[id]/edit) NÃO exibe: centro de custo, modalidade, horário, disponibilidade para viagens; Formulário de perfil NÃO exibe: inglês, espanhol, outro idioma, infra, informações complementares
+result: [pending]
+
+### 8. Layout side by side das ações
+expected: Na página de edição, Status e Formulário GH aparecem lado a lado dentro de um container com fundo sutil; responsivo em mobile
+result: [pending]
+
 ## Summary
 
-total: 5
+total: 8
 passed: 4
-issues: 1
-pending: 0
+issues: 0
+pending: 4
 skipped: 0
 blocked: 0
 
@@ -62,63 +74,55 @@ description: Dois botões confusos → um único "Gerar formulário GH" com ?reg
 fix: Consolidado em 03-06.
 
 ### GAP-04 — Mapeamento de campos do Excel incorreto (crítico)
-status: partial
+status: resolved
 severity: critical
-description: Mapeamento CELL_MAPPING foi corrigido com endereços reais dos exemplos. Campos de texto melhoraram. Persistem problemas com checkboxes VML (não limpam seleções anteriores), datas em ISO e campos ausentes — ver GAP-05..10.
-fix: Endereços corrigidos em 03-07. Problemas residuais registrados em GAP-05..10.
+description: CELL_MAPPING corrigido com endereços reais inspecionados via AdmZip.
+fix: Endereços corrigidos em 03-07. Checkboxes e datas corrigidos em 03-08..10.
 
 ### GAP-05 — Horário de trabalho: estrutura de dados inadequada para checkboxes
-status: failed
+status: resolved
 severity: major
-description: O campo workSchedule armazena apenas texto livre (para a opção "Outros"), mas o template tem 2 checkboxes fixos ("08h-17h", "09h-18h") mais um campo de texto para "Outros". O JSON e a tela precisam representar os 3 estados: opção1, opção2 ou texto-livre. O gerador precisa saber qual checkbox marcar e qual célula de texto preencher.
-fix: Revisar tipo de workSchedule no JSON (enum + campo opcional); ajustar tela de criação/edição de vaga; atualizar excel-generator.ts para marcar o checkbox correto via VML e preencher célula de texto somente quando "Outros".
-area: json-schema + ui + excel-generator
+description: workSchedule precisa de enum + campo workScheduleOther para suportar checkboxes e texto livre.
+fix: Implementado em 03-10 — enum WorkSchedule, campo optional workScheduleOther, CHECKBOX_GROUPS.workSchedule.
 
 ### GAP-06 — Data de abertura da vaga não preenchida no Excel
-status: failed
+status: resolved
 severity: minor
-description: O template tem um campo "Data" (intervalo AH4:AK4) que representa a data de abertura da vaga. Esse campo não está sendo preenchido pelo gerador.
-fix: Identificar se a data de abertura está em `Vacancy` (ou criar campo `openedAt`); adicionar AH4 ao CELL_MAPPING; formatar como DD/MM/YYYY.
-area: excel-generator
+description: Campo AH4 não era preenchido com data de abertura.
+fix: CELL_MAPPING.openedAt = "AH4" + toExcelDate() implementados em 03-08.
 
 ### GAP-07 — Modalidade de trabalho: checkboxes invertidos no Excel
-status: failed
+status: resolved
 severity: major
-description: Ao escolher "Presencial", o checkbox de presencial ficou desmarcado e os outros 2 ficaram marcados. O gerador provavelmente está marcando células erradas ou usando lógica invertida para o VML dos checkboxes de modalidade.
-fix: Mapear células VML corretas para cada opção de modalidade (Presencial / Remoto / Híbrido); garantir que o gerador desmarca as outras opções antes de marcar a escolhida.
-area: excel-generator
+description: Checkboxes VML com estado residual do template causavam múltiplas marcações.
+fix: applyCheckboxGroups() com reset total do allGroup implementado em 03-09.
 
 ### GAP-08 — Datas em formato ISO em vez de DD/MM/YYYY
-status: failed
+status: resolved
 severity: minor
-description: Campos de data (data prevista de contratação, data de abertura) estão sendo escritos no formato ISO (YYYY-MM-DD). O template espera DD/MM/YYYY. Aplica-se a todas as datas do formulário.
-fix: Adicionar formatador de data em excel-generator.ts: `toExcelDate(isoStr: string): string` que converte para DD/MM/YYYY antes de inserir nas células.
-area: excel-generator
+description: Datas em ISO → Excel; esperado DD/MM/YYYY.
+fix: toExcelDate() implementada e usada em expectedHireDate e openedAt (03-08).
 
 ### GAP-09 — Tempo de experiência: múltiplos checkboxes marcados simultaneamente
-status: failed
+status: resolved
 severity: major
-description: Ao marcar "5-10 anos" no perfil, o gerador também marcou "3-5 anos". Indica que o gerador não limpa as seleções anteriores do checkbox group antes de marcar a opção correta. Problema de resíduo do template.
-fix: Investigar se os checkboxes VML têm estado inicial não-zero no template. O gerador precisa desmarcar todas as células do grupo antes de marcar a correta. Alternativa: garantir que o template original tem todos os checkboxes do grupo desmarcados.
-area: excel-generator
+description: Resíduos do template causavam múltiplas marcações em experienceLevel.
+fix: CHECKBOX_GROUPS.experienceLevel com allGroup completo + reset em 03-09.
 
 ### GAP-10 — Idiomas: múltiplos checkboxes marcados simultaneamente
-status: failed
+status: resolved
 severity: major
-description: Os campos de nível de idioma (inglês, espanhol) estão com mais de um checkbox marcado ao mesmo tempo. Mesmo problema do GAP-09 — o gerador não limpa o grupo antes de marcar a opção escolhida.
-fix: Mesmo padrão do GAP-09: desmarcar todas as opções do grupo de idioma antes de marcar o nível correto. Mapear todas as células de checkbox de cada grupo de idioma.
-area: excel-generator
+description: englishLevel/spanishLevel com múltiplos checkboxes marcados.
+fix: CHECKBOX_GROUPS.englishLevel/spanishLevel + reset em 03-09. Migração para settings em 03-12.
 
 ### GAP-11 — UI da página de vaga: alinhamento das seções Status e Formulário GH
-status: failed
+status: resolved
 severity: minor
-description: Na página de edição (e possivelmente criação), as seções "Status da vaga" e "Formulário GH" ficam desalinhadas à esquerda em relação ao formulário principal porque parecem estar fora do card invisível que contém os campos. O operador quer: (1) unir essas 2 seções lado a lado numa seção única; (2) avaliar se o card do formulário deveria ter alguma cor fraca de fundo para evidenciar o container.
-fix: Revisar layout de edit/page.tsx e new/page.tsx. Colocar as seções de Status e Formulário GH dentro do mesmo container visual do formulário. Criar seção "Ações" lado a lado (flex). Avaliar cor de fundo fraca para o card do formulário (ex: bg-surface-variant/10 ou similar).
-area: ui
+description: Status e Formulário GH desalinhados na página de edição.
+fix: Grid md:grid-cols-2 + bg-surface-container-low em 03-11.
 
 ### GAP-12 — Mover campos de perfil e vaga para configurações de área
-status: failed
+status: resolved
 severity: major
-description: Vários campos que sempre têm valor fixo por área devem sair do perfil/vaga e ir para Configurações da Área, porque o gestor preenche uma vez e reutiliza. Da parte de Perfil: campos de idioma (inglês, espanhol, outros), informações complementares, toda a seção de Infraestrutura (sistemas necessários, pastas de rede). Da parte de Vaga: centro de custo, horário de trabalho, modalidade de trabalho, disponibilidade para viagens. O impacto é amplo: schema JSON, telas de perfil, telas de vaga, tela de configurações e lógica de geração do Excel.
-fix: Planejamento dedicado: (1) mover campos para AreaSettings no schema; (2) remover dos formulários de perfil e vaga; (3) adicionar à tela de configurações; (4) ajustar geração do Excel para ler de settings em vez de profile/vacancy.
-area: json-schema + ui + excel-generator
+description: Campos fixos por área devem sair de Vacancy/JobProfile e ir para AreaSettings.
+fix: AreaSettings expandida, formulários atualizados, excel-generator lê de settings (03-12).
