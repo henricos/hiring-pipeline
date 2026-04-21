@@ -17,45 +17,45 @@ export function escapeXml(value: string): string {
 }
 
 // Mapeamento de campos → endereços de célula no template sheet1.xml
-// Fonte: RESEARCH.md § Mapeamento 1-a-1 (proposta; endereços exatos requerem confirmação via script de diagnóstico — A2)
+// Fonte: inspeção via AdmZip dos arquivos em data/examples/ (confirmado em 2026-04-21)
+// Todos os endereços validados contra exemplos preenchidos manualmente.
 const CELL_MAPPING: Record<string, string> = {
   // Grupo 1: Dados do Perfil (herdados de JobProfile)
   title: "D6",
-  suggestedTitle: "D8",
-  experienceLevel: "D10",
-  educationLevel: "D12",
-  educationCourse: "D13",
-  postGraduateLevel: "D15",
-  englishLevel: "D18",
-  spanishLevel: "D20",
-  responsibilities: "B43",
-  qualifications: "B47",
-  behaviors: "B50",
-  challenges: "B54",
-  additionalInfo: "B58",
-  systemsRequired: "D61",
-  networkFolders: "D68",
+  suggestedTitle: "K8",
+  educationLevel: "I31",
+  educationCourse: "AB31",
+  postGraduateLevel: "I33",
+  englishLevel: "U37",
+  spanishLevel: "U39",
+  responsibilities: "B44",
+  qualifications: "B48",
+  behaviors: "B52",
+  challenges: "B56",
+  additionalInfo: "B59",
+  systemsRequired: "G66",
+  networkFolders: "G68",
 
   // Grupo 2: Dados Específicos da Vaga
-  requestType: "D26",
-  quantity: "D27",
-  costCenter: "D28",
-  salaryRange: "D29",
-  confidential: "D30",
-  budgeted: "D31",
-  headcountIncrease: "D32",
-  replacedPerson: "D33",
-  workSchedule: "D34",
-  travelRequired: "D35",
-  workMode: "D36",
-  expectedHireDate: "D37",
+  // requestType e experienceLevel omitidos: são radio buttons visuais sem célula de input livre no template
+  quantity: "AD4",
+  costCenter: "T10",
+  salaryRange: "T12",
+  confidential: "J12",
+  budgeted: "J14",
+  headcountIncrease: "J16",
+  replacedPerson: "AE16",
+  workSchedule: "Z18",
+  travelRequired: "L20",
+  workMode: "P23",
+  expectedHireDate: "K24",
 
   // Grupo 3: Dados Comuns da Área (AreaSettings)
-  managerName: "D22",
-  godfather: "D23",
-  immediateReport: "D24",
-  mediateReport: "D25",
-  teamComposition: "B59",
+  managerName: "H10",
+  godfather: "AD6",
+  immediateReport: "G22",
+  mediateReport: "AE22",
+  teamComposition: "B27",
 };
 
 /**
@@ -95,7 +95,6 @@ export function generateVacancyForm(
     // Grupo 1: Perfil
     [CELL_MAPPING.title]: profile.title ?? "",
     [CELL_MAPPING.suggestedTitle]: profile.suggestedTitle ?? "",
-    [CELL_MAPPING.experienceLevel]: profile.experienceLevel ?? "",
     [CELL_MAPPING.educationLevel]: profile.educationLevel ?? "",
     [CELL_MAPPING.educationCourse]: profile.educationCourse ?? "",
     [CELL_MAPPING.postGraduateLevel]: profile.postGraduateLevel ?? "",
@@ -109,8 +108,7 @@ export function generateVacancyForm(
     [CELL_MAPPING.systemsRequired]: profile.systemsRequired ?? "",
     [CELL_MAPPING.networkFolders]: profile.networkFolders ?? "",
 
-    // Grupo 2: Vaga
-    [CELL_MAPPING.requestType]: vacancy.requestType,
+    // Grupo 2: Vaga (requestType e experienceLevel são radio buttons visuais — sem célula de input livre)
     [CELL_MAPPING.quantity]: vacancy.quantity.toString(),
     [CELL_MAPPING.costCenter]: vacancy.costCenter,
     [CELL_MAPPING.salaryRange]: vacancy.salaryRange,

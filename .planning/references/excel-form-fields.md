@@ -104,3 +104,43 @@ Vaga.tipo_requisicao             → GH "Tipo de requisição"
 Vaga.quantidade                  → GH "Quantidade de vagas"
 [... demais campos da vaga ...]
 ```
+
+---
+
+## Mapeamento Confirmado por Inspeção dos Exemplos
+
+> Extraído via AdmZip de `data/examples/` em 2026-04-21. Substituiu o mapeamento estimado do RESEARCH.md.
+> Nota: `requestType` e `experienceLevel` são radio buttons visuais no template — não há célula de input de texto livre para esses campos.
+
+| Campo | Endereço de Célula | Grupo |
+|---|---|---|
+| title | D6 | Perfil |
+| suggestedTitle | K8 | Perfil |
+| educationLevel | I31 | Perfil |
+| educationCourse | AB31 | Perfil |
+| postGraduateLevel | I33 | Perfil |
+| englishLevel | U37 | Perfil |
+| spanishLevel | U39 | Perfil |
+| responsibilities | B44 | Perfil |
+| qualifications | B48 | Perfil |
+| behaviors | B52 | Perfil |
+| challenges | B56 | Perfil |
+| additionalInfo | B59 | Perfil |
+| systemsRequired | G66 | Perfil |
+| networkFolders | G68 | Perfil |
+| quantity | AD4 | Vaga |
+| costCenter | T10 | Vaga |
+| salaryRange | T12 | Vaga |
+| confidential | J12 | Vaga |
+| budgeted | J14 | Vaga |
+| headcountIncrease | J16 | Vaga |
+| replacedPerson | AE16 | Vaga |
+| workSchedule | Z18 | Vaga |
+| travelRequired | L20 | Vaga |
+| workMode | P23 | Vaga |
+| expectedHireDate | K24 | Vaga |
+| managerName | H10 | Área |
+| godfather | AD6 | Área |
+| immediateReport | G22 | Área |
+| mediateReport | AE22 | Área |
+| teamComposition | B27 | Área |

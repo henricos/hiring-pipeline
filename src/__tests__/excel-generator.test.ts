@@ -144,3 +144,89 @@ describe("generateVacancyForm", () => {
     expect(stats.size).toBeGreaterThan(0);
   });
 });
+
+describe("validateCellMapping", () => {
+  async function findTemplatePath(): Promise<string | null> {
+    const dataPaths = [
+      process.env.DATA_PATH,
+      "/home/henrico/github/henricos/hiring-pipeline-data",
+      "/data",
+    ].filter(Boolean) as string[];
+    for (const base of dataPaths) {
+      const candidate = path.join(base, "templates", "requisicao-de-pessoal.xlsx");
+      if (fs.existsSync(candidate)) return candidate;
+    }
+    return null;
+  }
+
+  async function generateAndReadSheet(): Promise<string> {
+    const templatePath = await findTemplatePath();
+    if (!templatePath) return "";
+
+    const AdmZip = (await import("adm-zip")).default;
+    const outPath = path.join(os.tmpdir(), "test-excel-generator", "forms-test", `cell-test-${Date.now()}.xlsx`);
+    const vacancy = createDefaultVacancy("p1");
+    const profile = {
+      title: "TITULO_TESTE_UNICO",
+      suggestedTitle: "SUG_TITULO_UNICO",
+      educationLevel: "Superior completo",
+      educationCourse: "Engenharia",
+      postGraduateLevel: "Não",
+      englishLevel: "Avançado",
+      spanishLevel: "Não exigido",
+      responsibilities: "RESP_UNICA",
+      qualifications: "QUAL_UNICA",
+      behaviors: "COMP_UNICA",
+      challenges: "DESAFIO_UNICO",
+      additionalInfo: "",
+      systemsRequired: "",
+      networkFolders: "",
+    } as any;
+    const settings = {
+      managerName: "GESTOR_UNICO",
+      godfather: "PADRINHO_UNICO",
+      immediateReport: "IMEDIATO_UNICO",
+      mediateReport: "MEDIATO_UNICO",
+      teamComposition: "EQUIPE_UNICA",
+    } as any;
+
+    generateVacancyForm(templatePath, outPath, vacancy, profile, settings);
+    const outZip = new AdmZip(outPath);
+    const entry = outZip.getEntry("xl/worksheets/sheet1.xml");
+    return entry ? entry.getData().toString("utf-8") : "";
+  }
+
+  it("escreve title na célula D6", async () => {
+    const xml = await generateAndReadSheet();
+    if (!xml) return;
+    expect(xml).toContain('r="D6"');
+    expect(xml).toContain("TITULO_TESTE_UNICO");
+  });
+
+  it("escreve managerName na célula H10", async () => {
+    const xml = await generateAndReadSheet();
+    if (!xml) return;
+    expect(xml).toContain('r="H10"');
+    expect(xml).toContain("GESTOR_UNICO");
+  });
+
+  it("escreve quantity na célula AD4", async () => {
+    const xml = await generateAndReadSheet();
+    if (!xml) return;
+    expect(xml).toContain('r="AD4"');
+  });
+
+  it("escreve responsibilities na célula B44", async () => {
+    const xml = await generateAndReadSheet();
+    if (!xml) return;
+    expect(xml).toContain('r="B44"');
+    expect(xml).toContain("RESP_UNICA");
+  });
+
+  it("escreve teamComposition na célula B27", async () => {
+    const xml = await generateAndReadSheet();
+    if (!xml) return;
+    expect(xml).toContain('r="B27"');
+    expect(xml).toContain("EQUIPE_UNICA");
+  });
+});
