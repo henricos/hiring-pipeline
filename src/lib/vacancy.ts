@@ -23,6 +23,7 @@ export interface Vacancy {
   headcountIncrease: boolean; // default false
   replacedPerson?: string; // undefined se headcountIncrease=true
   workSchedule: WorkSchedule;
+  workScheduleOther?: string; // Texto livre quando workSchedule === "Outro"
   travelRequired: boolean; // default false
   workMode: WorkMode;
   expectedHireDate: string; // ISO 8601 (data)

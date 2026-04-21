@@ -46,6 +46,9 @@ export async function createVacancy(
       ? undefined
       : (formData.get("replacedPerson") as string | undefined) || undefined;
     const workSchedule = (formData.get("workSchedule") as string) || "Das 08h às 17h";
+    const workScheduleOther = workSchedule === "Outro"
+      ? (formData.get("workScheduleOther") as string | null) || undefined
+      : undefined;
     const travelRequired = formData.get("travelRequired") === "true";
     const workMode = (formData.get("workMode") as string) || "Presencial";
     const expectedHireDate = (formData.get("expectedHireDate") as string) || "";
@@ -68,6 +71,7 @@ export async function createVacancy(
       headcountIncrease,
       replacedPerson,
       workSchedule: workSchedule as Vacancy["workSchedule"],
+      workScheduleOther,
       travelRequired,
       workMode: workMode as Vacancy["workMode"],
       expectedHireDate,
@@ -105,6 +109,9 @@ export async function updateVacancy(
       ? undefined
       : (formData.get("replacedPerson") as string | undefined) || undefined;
     vacancy.workSchedule = (formData.get("workSchedule") as string) as Vacancy["workSchedule"];
+    vacancy.workScheduleOther = vacancy.workSchedule === "Outro"
+      ? (formData.get("workScheduleOther") as string | null) || undefined
+      : undefined;
     vacancy.travelRequired = formData.get("travelRequired") === "true";
     vacancy.workMode = (formData.get("workMode") as string) as Vacancy["workMode"];
     vacancy.expectedHireDate = (formData.get("expectedHireDate") as string) || "";
