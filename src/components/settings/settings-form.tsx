@@ -1,11 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { AreaSettings } from "@/lib/settings";
+import { LANGUAGE_LEVELS } from "@/lib/profile";
+import type { LanguageLevel } from "@/lib/profile";
+import { WORK_MODES, WORK_SCHEDULES } from "@/lib/vacancy";
+import type { WorkMode, WorkSchedule } from "@/lib/vacancy";
 
 type ActionState = { error?: string } | null;
 
@@ -32,6 +44,26 @@ export function SettingsForm({
     (prevState: ActionState | void, formData: FormData) =>
       onSubmitAction((prevState ?? null) as ActionState, formData),
     null
+  );
+
+  // Estados controlados para selects dos campos migrados (GAP-12)
+  const [englishLevel, setEnglishLevel] = useState<LanguageLevel>(
+    initialSettings.englishLevel ?? "Não exigido"
+  );
+  const [spanishLevel, setSpanishLevel] = useState<LanguageLevel>(
+    initialSettings.spanishLevel ?? "Não exigido"
+  );
+  const [otherLanguageLevel, setOtherLanguageLevel] = useState(
+    initialSettings.otherLanguageLevel ?? ""
+  );
+  const [workMode, setWorkMode] = useState<WorkMode>(
+    initialSettings.workMode ?? "Presencial"
+  );
+  const [workSchedule, setWorkSchedule] = useState<WorkSchedule>(
+    initialSettings.workSchedule ?? "Das 08h às 17h"
+  );
+  const [workScheduleOther, setWorkScheduleOther] = useState(
+    initialSettings.workScheduleOther ?? ""
   );
 
   return (
@@ -108,6 +140,225 @@ export function SettingsForm({
               className={`${INPUT_CLASS} min-h-[100px] resize-y`}
             />
           </div>
+        </div>
+
+        {/* ── Seção 2: Idiomas (migrado de JobProfile — GAP-12) ─── */}
+        <h2 className={SECTION_HEADING_CLASS}>Idiomas</h2>
+        <div className="space-y-4">
+          {/* Inglês */}
+          <div className="space-y-1.5">
+            <Label htmlFor="englishLevel" className={LABEL_CLASS}>
+              Inglês
+            </Label>
+            <input type="hidden" name="englishLevel" value={englishLevel} />
+            <Select value={englishLevel} onValueChange={(v) => setEnglishLevel(v as LanguageLevel)}>
+              <SelectTrigger id="englishLevel" className={`w-full ${INPUT_CLASS}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGE_LEVELS.map((level) => (
+                  <SelectItem key={level} value={level}>
+                    {level}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Espanhol */}
+          <div className="space-y-1.5">
+            <Label htmlFor="spanishLevel" className={LABEL_CLASS}>
+              Espanhol
+            </Label>
+            <input type="hidden" name="spanishLevel" value={spanishLevel} />
+            <Select value={spanishLevel} onValueChange={(v) => setSpanishLevel(v as LanguageLevel)}>
+              <SelectTrigger id="spanishLevel" className={`w-full ${INPUT_CLASS}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGE_LEVELS.map((level) => (
+                  <SelectItem key={level} value={level}>
+                    {level}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Outro idioma */}
+          <div className="flex gap-2 items-end">
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor="otherLanguage" className={LABEL_CLASS}>
+                Outro idioma
+              </Label>
+              <Input
+                id="otherLanguage"
+                name="otherLanguage"
+                placeholder="Nome do idioma"
+                defaultValue={initialSettings.otherLanguage ?? ""}
+                className={INPUT_CLASS}
+              />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor="otherLanguageLevel" className={LABEL_CLASS}>
+                Nível
+              </Label>
+              <input
+                type="hidden"
+                name="otherLanguageLevel"
+                value={otherLanguageLevel}
+              />
+              <Select
+                value={otherLanguageLevel}
+                onValueChange={setOtherLanguageLevel}
+              >
+                <SelectTrigger
+                  id="otherLanguageLevel"
+                  className={`w-full ${INPUT_CLASS}`}
+                >
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGE_LEVELS.map((level) => (
+                    <SelectItem key={level} value={level}>
+                      {level}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Seção 3: Infraestrutura (migrado de JobProfile — GAP-12) ── */}
+        <h2 className={SECTION_HEADING_CLASS}>Infraestrutura</h2>
+        <div className="space-y-4">
+          {/* Informações complementares */}
+          <div className="space-y-1.5">
+            <Label htmlFor="additionalInfo" className={LABEL_CLASS}>
+              Informações complementares
+            </Label>
+            <Textarea
+              id="additionalInfo"
+              name="additionalInfo"
+              defaultValue={initialSettings.additionalInfo ?? ""}
+              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
+            />
+          </div>
+
+          {/* Sistemas necessários */}
+          <div className="space-y-1.5">
+            <Label htmlFor="systemsRequired" className={LABEL_CLASS}>
+              Sistemas necessários
+            </Label>
+            <Textarea
+              id="systemsRequired"
+              name="systemsRequired"
+              defaultValue={initialSettings.systemsRequired ?? ""}
+              className={`${INPUT_CLASS} min-h-[80px] resize-y`}
+            />
+          </div>
+
+          {/* Pastas de rede */}
+          <div className="space-y-1.5">
+            <Label htmlFor="networkFolders" className={LABEL_CLASS}>
+              Pastas de rede
+            </Label>
+            <Textarea
+              id="networkFolders"
+              name="networkFolders"
+              defaultValue={initialSettings.networkFolders ?? ""}
+              className={`${INPUT_CLASS} min-h-[80px] resize-y`}
+            />
+          </div>
+        </div>
+
+        {/* ── Seção 4: Dados Fixos da Vaga (migrado de Vacancy — GAP-12) ── */}
+        <h2 className={SECTION_HEADING_CLASS}>Dados Fixos da Vaga</h2>
+        <div className="space-y-4">
+          {/* Centro de custo */}
+          <div className="space-y-1.5">
+            <Label htmlFor="costCenter" className={LABEL_CLASS}>
+              Centro de custo
+            </Label>
+            <Input
+              id="costCenter"
+              name="costCenter"
+              defaultValue={initialSettings.costCenter ?? ""}
+              className={INPUT_CLASS}
+            />
+          </div>
+
+          {/* Modalidade */}
+          <div className="space-y-1.5">
+            <Label htmlFor="workMode" className={LABEL_CLASS}>
+              Modalidade
+            </Label>
+            <input type="hidden" name="workMode" value={workMode} />
+            <Select value={workMode} onValueChange={(v) => setWorkMode(v as WorkMode)}>
+              <SelectTrigger id="workMode" className={`w-full ${INPUT_CLASS}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {WORK_MODES.map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {mode}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Horário de trabalho */}
+          <div className="space-y-1.5">
+            <Label htmlFor="workSchedule" className={LABEL_CLASS}>
+              Horário de trabalho
+            </Label>
+            <input type="hidden" name="workSchedule" value={workSchedule} />
+            <Select value={workSchedule} onValueChange={(v) => setWorkSchedule(v as WorkSchedule)}>
+              <SelectTrigger id="workSchedule" className={`w-full ${INPUT_CLASS}`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {WORK_SCHEDULES.map((schedule) => (
+                  <SelectItem key={schedule} value={schedule}>
+                    {schedule}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Campo condicional: texto livre quando workSchedule === "Outro" */}
+          {workSchedule === "Outro" && (
+            <div className="space-y-1.5 ml-6 transition-all duration-150">
+              <Label htmlFor="workScheduleOther" className={LABEL_CLASS}>
+                Descrever horário de trabalho
+              </Label>
+              <Input
+                id="workScheduleOther"
+                name="workScheduleOther"
+                value={workScheduleOther}
+                onChange={(e) => setWorkScheduleOther(e.target.value)}
+                placeholder="Ex: Das 07h30 às 16h30"
+                className={INPUT_CLASS}
+              />
+            </div>
+          )}
+
+          {/* Disponibilidade para viagens */}
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="travelRequired"
+              value="true"
+              defaultChecked={initialSettings.travelRequired ?? false}
+              className="w-4 h-4 rounded-sm accent-tertiary"
+            />
+            <span className="text-[0.875rem] text-on-surface">
+              Disponibilidade para viagens
+            </span>
+          </label>
         </div>
 
         {/* ── Erro de server action ──────────────────────────────── */}

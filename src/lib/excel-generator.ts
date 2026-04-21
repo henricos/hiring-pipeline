@@ -179,26 +179,31 @@ function setCtrlPropChecked(zip: AdmZip, ctrlPropName: string, checked: boolean)
 function applyCheckboxGroups(
   zip: AdmZip,
   vacancy: Vacancy,
-  profile: JobProfile
+  profile: JobProfile,
+  settings: AreaSettings
 ): void {
-  // workSchedule
+  // workSchedule — lê de settings (migrado de vacancy — GAP-12)
   {
     const group = CHECKBOX_GROUPS.workSchedule;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
-    const target = group.options[vacancy.workSchedule];
-    if (target) setCtrlPropChecked(zip, target, true);
+    if (settings.workSchedule) {
+      const target = group.options[settings.workSchedule];
+      if (target) setCtrlPropChecked(zip, target, true);
+    }
     // "Outro" → target é null → nenhum checkbox marcado; texto vai para Z18 via cellValues
   }
 
-  // workMode
+  // workMode — lê de settings (migrado de vacancy — GAP-12)
   {
     const group = CHECKBOX_GROUPS.workMode;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
-    const target = group.options[vacancy.workMode];
-    if (target) setCtrlPropChecked(zip, target, true);
+    if (settings.workMode) {
+      const target = group.options[settings.workMode];
+      if (target) setCtrlPropChecked(zip, target, true);
+    }
   }
 
-  // requestType
+  // requestType — NÃO MIGROU para settings — continua lendo de vacancy.requestType
   {
     const group = CHECKBOX_GROUPS.requestType;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
@@ -206,29 +211,33 @@ function applyCheckboxGroups(
     if (target) setCtrlPropChecked(zip, target, true);
   }
 
-  // experienceLevel
+  // experienceLevel — NÃO MIGROU para settings — continua lendo de profile.experienceLevel
   {
     const group = CHECKBOX_GROUPS.experienceLevel;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
-    const target = group.options[profile.experienceLevel];
+    const target = group.options[profile.experienceLevel ?? ""];
     if (target) setCtrlPropChecked(zip, target, true);
   }
 
-  // englishLevel
+  // englishLevel — lê de settings (migrado de profile — GAP-12)
   {
     const group = CHECKBOX_GROUPS.englishLevel;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
-    const target = group.options[profile.englishLevel];
-    if (target) setCtrlPropChecked(zip, target, true);
+    if (settings.englishLevel) {
+      const target = group.options[settings.englishLevel];
+      if (target) setCtrlPropChecked(zip, target, true);
+    }
     // Fluente não tem checkbox — o valor já foi escrito em U37 via CELL_MAPPING
   }
 
-  // spanishLevel
+  // spanishLevel — lê de settings (migrado de profile — GAP-12)
   {
     const group = CHECKBOX_GROUPS.spanishLevel;
     group.allGroup.forEach(cp => setCtrlPropChecked(zip, cp, false));
-    const target = group.options[profile.spanishLevel];
-    if (target) setCtrlPropChecked(zip, target, true);
+    if (settings.spanishLevel) {
+      const target = group.options[settings.spanishLevel];
+      if (target) setCtrlPropChecked(zip, target, true);
+    }
     // Fluente não tem checkbox — o valor já foi escrito em U39 via CELL_MAPPING
   }
 }
@@ -267,44 +276,46 @@ export function generateVacancyForm(
 
   // Montar mapa de valores por célula (todos os 3 grupos)
   const cellValues: Record<string, string> = {
-    // Grupo 1: Perfil
+    // Grupo 1: Perfil (campos que permanecem em JobProfile)
     [CELL_MAPPING.title]: profile.title ?? "",
     [CELL_MAPPING.suggestedTitle]: profile.suggestedTitle ?? "",
     [CELL_MAPPING.educationLevel]: profile.educationLevel ?? "",
     [CELL_MAPPING.educationCourse]: profile.educationCourse ?? "",
     [CELL_MAPPING.postGraduateLevel]: profile.postGraduateLevel ?? "",
-    [CELL_MAPPING.englishLevel]: profile.englishLevel ?? "",
-    [CELL_MAPPING.spanishLevel]: profile.spanishLevel ?? "",
     [CELL_MAPPING.responsibilities]: profile.responsibilities ?? "",
     [CELL_MAPPING.qualifications]: profile.qualifications ?? "",
     [CELL_MAPPING.behaviors]: profile.behaviors ?? "",
     [CELL_MAPPING.challenges]: profile.challenges ?? "",
-    [CELL_MAPPING.additionalInfo]: profile.additionalInfo ?? "",
-    [CELL_MAPPING.systemsRequired]: profile.systemsRequired ?? "",
-    [CELL_MAPPING.networkFolders]: profile.networkFolders ?? "",
 
     // Grupo 2: Vaga (requestType e experienceLevel são radio buttons visuais — sem célula de input livre)
     [CELL_MAPPING.quantity]: vacancy.quantity.toString(),
-    [CELL_MAPPING.costCenter]: vacancy.costCenter,
     [CELL_MAPPING.salaryRange]: vacancy.salaryRange,
     [CELL_MAPPING.confidential]: vacancy.confidential ? "Sim" : "Não",
     [CELL_MAPPING.budgeted]: vacancy.budgeted ? "Sim" : "Não",
     [CELL_MAPPING.headcountIncrease]: vacancy.headcountIncrease ? "Sim" : "Não",
     [CELL_MAPPING.replacedPerson]: vacancy.replacedPerson ?? "",
-    [CELL_MAPPING.workScheduleOther]: vacancy.workSchedule === "Outro"
-      ? (vacancy.workScheduleOther ?? "")
-      : "",
-    [CELL_MAPPING.travelRequired]: vacancy.travelRequired ? "Sim" : "Não",
-    [CELL_MAPPING.workMode]: vacancy.workMode,
     [CELL_MAPPING.expectedHireDate]: toExcelDate(vacancy.expectedHireDate),
     [CELL_MAPPING.openedAt]: toExcelDate(vacancy.openedAt),
 
-    // Grupo 3: Configurações da área
+    // Grupo 3: Configurações da área (campos existentes + migrados de profile/vacancy — GAP-12)
     [CELL_MAPPING.managerName]: settings.managerName ?? "",
     [CELL_MAPPING.godfather]: settings.godfather ?? "",
     [CELL_MAPPING.immediateReport]: settings.immediateReport ?? "",
     [CELL_MAPPING.mediateReport]: settings.mediateReport ?? "",
     [CELL_MAPPING.teamComposition]: settings.teamComposition ?? "",
+    // Campos migrados de JobProfile → AreaSettings
+    [CELL_MAPPING.englishLevel]: settings.englishLevel ?? "",
+    [CELL_MAPPING.spanishLevel]: settings.spanishLevel ?? "",
+    [CELL_MAPPING.additionalInfo]: settings.additionalInfo ?? "",
+    [CELL_MAPPING.systemsRequired]: settings.systemsRequired ?? "",
+    [CELL_MAPPING.networkFolders]: settings.networkFolders ?? "",
+    // Campos migrados de Vacancy → AreaSettings
+    [CELL_MAPPING.costCenter]: settings.costCenter ?? "",
+    [CELL_MAPPING.travelRequired]: (settings.travelRequired ?? false) ? "Sim" : "Não",
+    [CELL_MAPPING.workMode]: settings.workMode ?? "",
+    [CELL_MAPPING.workScheduleOther]: settings.workSchedule === "Outro"
+      ? (settings.workScheduleOther ?? "")
+      : "",
   };
 
   // Edição cirúrgica: substituir cada célula no XML do sheet
@@ -341,7 +352,7 @@ export function generateVacancyForm(
   zip.updateFile("xl/worksheets/sheet1.xml", Buffer.from(sheetXml, "utf-8"));
 
   // Aplicar checkboxes VML (ctrlProps) — limpar resíduos e marcar opção correta
-  applyCheckboxGroups(zip, vacancy, profile);
+  applyCheckboxGroups(zip, vacancy, profile, settings);
 
   // Garantir que o diretório de saída existe
   const outputDir = path.dirname(outputPath);

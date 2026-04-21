@@ -31,25 +31,14 @@ function extractProfileData(
     certifications: formData.get("certifications") as JobProfile["certifications"],
     certificationsWhich:
       (formData.get("certificationsWhich") as string | null)?.trim() || undefined,
-    englishLevel: formData.get("englishLevel") as JobProfile["englishLevel"],
-    spanishLevel: formData.get("spanishLevel") as JobProfile["spanishLevel"],
-    otherLanguage:
-      (formData.get("otherLanguage") as string | null)?.trim() || undefined,
-    otherLanguageLevel:
-      ((formData.get("otherLanguageLevel") as string | null) as JobProfile["otherLanguageLevel"]) ||
-      undefined,
+    // englishLevel, spanishLevel, otherLanguage, otherLanguageLevel migrados para AreaSettings (GAP-12)
+    // additionalInfo, systemsRequired, networkFolders migrados para AreaSettings (GAP-12)
     responsibilities:
       (formData.get("responsibilities") as string | null)?.trim() ?? "",
     qualifications:
       (formData.get("qualifications") as string | null)?.trim() ?? "",
     behaviors: (formData.get("behaviors") as string | null)?.trim() ?? "",
     challenges: (formData.get("challenges") as string | null)?.trim() ?? "",
-    additionalInfo:
-      (formData.get("additionalInfo") as string | null)?.trim() ?? "",
-    systemsRequired:
-      (formData.get("systemsRequired") as string | null)?.trim() || undefined,
-    networkFolders:
-      (formData.get("networkFolders") as string | null)?.trim() || undefined,
     internalNotes:
       (formData.get("internalNotes") as string | null)?.trim() || undefined,
   };

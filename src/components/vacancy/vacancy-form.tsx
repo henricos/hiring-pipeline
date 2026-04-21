@@ -13,8 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Vacancy, RequestType, WorkSchedule, WorkMode } from "@/lib/vacancy";
-import { REQUEST_TYPES, WORK_SCHEDULES, WORK_MODES } from "@/lib/vacancy";
+import type { Vacancy, RequestType } from "@/lib/vacancy";
+import { REQUEST_TYPES } from "@/lib/vacancy";
 import type { JobProfile } from "@/lib/profile";
 
 type ActionState = { error?: string } | null;
@@ -54,15 +54,6 @@ export function VacancyForm({
   );
   const [requestType, setRequestType] = useState<RequestType>(
     vacancy?.requestType ?? "Recrutamento externo"
-  );
-  const [workSchedule, setWorkSchedule] = useState<WorkSchedule>(
-    vacancy?.workSchedule ?? "Das 08h às 17h"
-  );
-  const [workMode, setWorkMode] = useState<WorkMode>(
-    vacancy?.workMode ?? "Presencial"
-  );
-  const [workScheduleOther, setWorkScheduleOther] = useState(
-    vacancy?.workScheduleOther ?? ""
   );
 
   // Campo condicional: nome do substituído aparece quando headcountIncrease=false
@@ -143,31 +134,17 @@ export function VacancyForm({
             />
           </div>
 
-          {/* Centro de custo + Faixa salarial */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="costCenter" className={LABEL_CLASS}>
-                Centro de custo
-              </Label>
-              <Input
-                id="costCenter"
-                name="costCenter"
-                defaultValue={vacancy?.costCenter ?? ""}
-                className={INPUT_CLASS}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="salaryRange" className={LABEL_CLASS}>
-                Faixa salarial
-              </Label>
-              <Input
-                id="salaryRange"
-                name="salaryRange"
-                defaultValue={vacancy?.salaryRange ?? ""}
-                className={INPUT_CLASS}
-              />
-            </div>
+          {/* Faixa salarial — costCenter migrado para Configurações da Área (GAP-12) */}
+          <div className="space-y-1.5">
+            <Label htmlFor="salaryRange" className={LABEL_CLASS}>
+              Faixa salarial
+            </Label>
+            <Input
+              id="salaryRange"
+              name="salaryRange"
+              defaultValue={vacancy?.salaryRange ?? ""}
+              className={INPUT_CLASS}
+            />
           </div>
 
           {/* Checkboxes: Confidencial, Orçada */}
@@ -229,81 +206,7 @@ export function VacancyForm({
             </div>
           )}
 
-          {/* Horário de trabalho */}
-          <div className="space-y-1.5">
-            <Label htmlFor="workSchedule" className={LABEL_CLASS}>
-              Horário de trabalho
-            </Label>
-            <input type="hidden" name="workSchedule" value={workSchedule} />
-            <Select value={workSchedule} onValueChange={(v) => setWorkSchedule(v as WorkSchedule)}>
-              <SelectTrigger
-                id="workSchedule"
-                className={`w-full ${INPUT_CLASS}`}
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {WORK_SCHEDULES.map((schedule) => (
-                  <SelectItem key={schedule} value={schedule}>
-                    {schedule}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Campo condicional: texto livre quando workSchedule === "Outro" */}
-          {workSchedule === "Outro" && (
-            <div className="space-y-1.5 ml-6 transition-all duration-150">
-              <Label htmlFor="workScheduleOther" className={LABEL_CLASS}>
-                Descrever horário de trabalho
-              </Label>
-              <Input
-                id="workScheduleOther"
-                name="workScheduleOther"
-                value={workScheduleOther}
-                onChange={(e) => setWorkScheduleOther(e.target.value)}
-                placeholder="Ex: Das 07h30 às 16h30"
-                className={INPUT_CLASS}
-              />
-            </div>
-          )}
-
-          {/* Modalidade */}
-          <div className="space-y-1.5">
-            <Label htmlFor="workMode" className={LABEL_CLASS}>
-              Modalidade
-            </Label>
-            <input type="hidden" name="workMode" value={workMode} />
-            <Select value={workMode} onValueChange={(v) => setWorkMode(v as WorkMode)}>
-              <SelectTrigger id="workMode" className={`w-full ${INPUT_CLASS}`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {WORK_MODES.map((mode) => (
-                  <SelectItem key={mode} value={mode}>
-                    {mode}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Disponibilidade para viagens */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              name="travelRequired"
-              value="true"
-              defaultChecked={vacancy?.travelRequired ?? false}
-              className="w-4 h-4 rounded-sm accent-tertiary"
-            />
-            <span className="text-[0.875rem] text-on-surface">
-              Disponibilidade para viagens
-            </span>
-          </label>
-
-          {/* Data prevista de contratação */}
+          {/* Data prevista de contratação — workSchedule, workMode, travelRequired migrados para Configurações da Área (GAP-12) */}
           <div className="space-y-1.5">
             <Label htmlFor="expectedHireDate" className={LABEL_CLASS}>
               Data prevista de contratação

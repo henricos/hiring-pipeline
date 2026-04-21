@@ -35,9 +35,9 @@ export async function createVacancy(
     }
 
     // Extrai campos do Grupo 2 (D-03): dados específicos da vaga
+    // costCenter, workSchedule, workMode, travelRequired migrados para AreaSettings (GAP-12)
     const requestType = (formData.get("requestType") as string) || "Recrutamento externo";
     const quantity = parseInt((formData.get("quantity") as string) || "1", 10);
-    const costCenter = (formData.get("costCenter") as string) || "";
     const salaryRange = (formData.get("salaryRange") as string) || "";
     const confidential = formData.get("confidential") === "true";
     const budgeted = formData.get("budgeted") === "true";
@@ -45,16 +45,10 @@ export async function createVacancy(
     const replacedPerson = headcountIncrease
       ? undefined
       : (formData.get("replacedPerson") as string | undefined) || undefined;
-    const workSchedule = (formData.get("workSchedule") as string) || "Das 08h às 17h";
-    const workScheduleOther = workSchedule === "Outro"
-      ? (formData.get("workScheduleOther") as string | null) || undefined
-      : undefined;
-    const travelRequired = formData.get("travelRequired") === "true";
-    const workMode = (formData.get("workMode") as string) || "Presencial";
     const expectedHireDate = (formData.get("expectedHireDate") as string) || "";
 
     // Validação de campos obrigatórios (T-03-02)
-    if (!requestType || quantity < 1 || !workMode || !workSchedule) {
+    if (!requestType || quantity < 1) {
       return { error: "Preencha todos os campos obrigatórios" };
     }
 
@@ -64,16 +58,11 @@ export async function createVacancy(
       status: "Aberta",
       requestType: requestType as Vacancy["requestType"],
       quantity,
-      costCenter,
       salaryRange,
       confidential,
       budgeted,
       headcountIncrease,
       replacedPerson,
-      workSchedule: workSchedule as Vacancy["workSchedule"],
-      workScheduleOther,
-      travelRequired,
-      workMode: workMode as Vacancy["workMode"],
       expectedHireDate,
       openedAt: new Date().toISOString(),
     };
@@ -98,9 +87,9 @@ export async function updateVacancy(
     }
 
     // Atualiza somente os campos editáveis do Grupo 2 (D-03)
+    // costCenter, workSchedule, workMode, travelRequired migrados para AreaSettings (GAP-12)
     vacancy.requestType = (formData.get("requestType") as string) as Vacancy["requestType"];
     vacancy.quantity = parseInt((formData.get("quantity") as string) || "1", 10);
-    vacancy.costCenter = (formData.get("costCenter") as string) || "";
     vacancy.salaryRange = (formData.get("salaryRange") as string) || "";
     vacancy.confidential = formData.get("confidential") === "true";
     vacancy.budgeted = formData.get("budgeted") === "true";
@@ -108,12 +97,6 @@ export async function updateVacancy(
     vacancy.replacedPerson = vacancy.headcountIncrease
       ? undefined
       : (formData.get("replacedPerson") as string | undefined) || undefined;
-    vacancy.workSchedule = (formData.get("workSchedule") as string) as Vacancy["workSchedule"];
-    vacancy.workScheduleOther = vacancy.workSchedule === "Outro"
-      ? (formData.get("workScheduleOther") as string | null) || undefined
-      : undefined;
-    vacancy.travelRequired = formData.get("travelRequired") === "true";
-    vacancy.workMode = (formData.get("workMode") as string) as Vacancy["workMode"];
     vacancy.expectedHireDate = (formData.get("expectedHireDate") as string) || "";
 
     if (!vacancy.requestType || vacancy.quantity < 1) {

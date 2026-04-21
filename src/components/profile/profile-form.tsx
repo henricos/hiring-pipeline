@@ -19,7 +19,6 @@ import {
   EDUCATION_LEVELS,
   POST_GRADUATE_LEVELS,
   CERTIFICATION_LEVELS,
-  LANGUAGE_LEVELS,
 } from "@/lib/profile";
 
 type ActionState = { error?: string } | null;
@@ -70,15 +69,7 @@ export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
   const [experienceLevel, setExperienceLevel] = useState(
     profile?.experienceLevel ?? ""
   );
-  const [englishLevel, setEnglishLevel] = useState(
-    profile?.englishLevel ?? ""
-  );
-  const [spanishLevel, setSpanishLevel] = useState(
-    profile?.spanishLevel ?? ""
-  );
-  const [otherLanguageLevel, setOtherLanguageLevel] = useState(
-    profile?.otherLanguageLevel ?? ""
-  );
+  // englishLevel, spanishLevel, otherLanguageLevel migrados para Configurações da Área (GAP-12)
 
   return (
     <div className="bg-white rounded-md px-8 py-8 max-w-3xl">
@@ -264,95 +255,7 @@ export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
             </div>
           )}
 
-          {/* Inglês */}
-          <div className="space-y-1.5">
-            <Label htmlFor="englishLevel" className={LABEL_CLASS}>
-              Inglês
-            </Label>
-            <input type="hidden" name="englishLevel" value={englishLevel} />
-            <Select value={englishLevel} onValueChange={setEnglishLevel}>
-              <SelectTrigger
-                id="englishLevel"
-                className={`w-full ${INPUT_CLASS}`}
-              >
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGE_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Espanhol */}
-          <div className="space-y-1.5">
-            <Label htmlFor="spanishLevel" className={LABEL_CLASS}>
-              Espanhol
-            </Label>
-            <input type="hidden" name="spanishLevel" value={spanishLevel} />
-            <Select value={spanishLevel} onValueChange={setSpanishLevel}>
-              <SelectTrigger
-                id="spanishLevel"
-                className={`w-full ${INPUT_CLASS}`}
-              >
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGE_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Outro idioma (sempre visível — campos opcionais) */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1 space-y-1.5">
-              <Label htmlFor="otherLanguage" className={LABEL_CLASS}>
-                Outro idioma
-              </Label>
-              <Input
-                id="otherLanguage"
-                name="otherLanguage"
-                placeholder="Nome do idioma"
-                defaultValue={profile?.otherLanguage ?? ""}
-                className={INPUT_CLASS}
-              />
-            </div>
-            <div className="flex-1 space-y-1.5">
-              <Label htmlFor="otherLanguageLevel" className={LABEL_CLASS}>
-                Nível
-              </Label>
-              <input
-                type="hidden"
-                name="otherLanguageLevel"
-                value={otherLanguageLevel}
-              />
-              <Select
-                value={otherLanguageLevel}
-                onValueChange={setOtherLanguageLevel}
-              >
-                <SelectTrigger
-                  id="otherLanguageLevel"
-                  className={`w-full ${INPUT_CLASS}`}
-                >
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGE_LEVELS.map((level) => (
-                    <SelectItem key={level} value={level}>
-                      {level}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          {/* Inglês, espanhol e outro idioma migrados para Configurações da Área (GAP-12) */}
         </div>
 
         {/* ── Seção 3: Conteúdo Descritivo ──────────────────────── */}
@@ -410,49 +313,10 @@ export function ProfileForm({ profile, onSubmitAction }: ProfileFormProps) {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="additionalInfo" className={LABEL_CLASS}>
-              Informações complementares
-            </Label>
-            <Textarea
-              id="additionalInfo"
-              name="additionalInfo"
-              required
-              defaultValue={profile?.additionalInfo ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
+          {/* additionalInfo, systemsRequired, networkFolders migrados para Configurações da Área (GAP-12) */}
         </div>
 
-        {/* ── Seção 4: Infraestrutura ────────────────────────────── */}
-        <h2 className={SECTION_HEADING_CLASS}>Infraestrutura</h2>
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="systemsRequired" className={LABEL_CLASS}>
-              Sistemas necessários
-            </Label>
-            <Textarea
-              id="systemsRequired"
-              name="systemsRequired"
-              defaultValue={profile?.systemsRequired ?? ""}
-              className={`${INPUT_CLASS} min-h-[80px] resize-y`}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="networkFolders" className={LABEL_CLASS}>
-              Pastas de rede
-            </Label>
-            <Textarea
-              id="networkFolders"
-              name="networkFolders"
-              defaultValue={profile?.networkFolders ?? ""}
-              className={`${INPUT_CLASS} min-h-[80px] resize-y`}
-            />
-          </div>
-        </div>
-
-        {/* ── Seção 5: Observações Internas ─────────────────────── */}
+        {/* ── Seção 4: Observações Internas (era Seção 5 antes de GAP-12) ── */}
         <h2 className={SECTION_HEADING_CLASS}>Observações Internas</h2>
         <div className="space-y-4">
           <div className="space-y-1.5">
