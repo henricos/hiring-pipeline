@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 04 Planned — Ready to Execute
-last_updated: "2026-04-21T00:00:00Z"
+status: Ready to execute
+last_updated: "2026-04-21T20:12:02.424Z"
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 12
-  completed_plans: 15
+  completed_phases: 1
+  total_plans: 17
+  completed_plans: 24
   percent: 100
 ---
 
@@ -34,7 +34,7 @@ progress:
 ## Current Position
 
 Phase: 04 (ai-assisted-profile-refinement) — IN PROGRESS
-Plan: 1 of 5 complete
+Plan: 2 of 5 complete
 **Milestone:** v1 Hiring Pipeline  
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 em execução  
 **Overall Progress:** [######----] 60%
@@ -90,11 +90,20 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Phase 4 em execução — plano 04-01 (Wave 0 RED) concluído
-2. Próximo: 04-02 (Wave 1 — schema + serializeStringArray + DynamicListField)
-3. Wave 1 restante: 04-03 (settings + ProfileForm + actions)
-4. Wave 1 dados: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
-5. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+1. Phase 4 em execução — planos 04-01 e 04-02 concluídos
+2. Próximo: 04-03 (AreaSettings + campo aiProfileInstructions + ProfileForm com DynamicListField)
+3. Wave 1 dados: 04-04 (zeragem base dev + recriação perfis reais — checkpoint operador)
+4. Wave 2: 04-05 (skills /refinar-perfil + revisão /abrir-vaga)
+
+### Sessão de Execução Phase 04 — Plano 04-02 (2026-04-21)
+
+- Plano 04-02 concluído: Wave 1a — schema + serializeStringArray + DynamicListField
+- profile.ts: 4 campos migrados de string para string[] (D-01) — 23 testes GREEN
+- excel-generator.ts: serializeStringArray exportada e usada nos 4 campos — 18 testes GREEN
+- src/app/actions/profile.ts: formData.getAll() nos 4 campos (Regra 1)
+- DynamicListField criado em src/components/ui/dynamic-list-field.tsx
+- Commits: 06b723a (profile.ts + actions), 6524108 (excel-generator + fixtures), fb5f89b (DynamicListField)
+- Parado em: 04-02 completo — próximo é 04-03 (AreaSettings + ProfileForm)
 
 ### Sessão de Execução Phase 04 — Plano 04-01 (2026-04-21)
 

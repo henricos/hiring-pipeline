@@ -119,11 +119,11 @@ Plans:
 3. AI suggestions contextualize to P&D/Lyceum business area norms and language
 4. Manager can accept, reject, or refine AI suggestions before saving to profile
 
-**Plans:** 5 plans
+**Plans:** 2/5 plans executed
 
 Plans:
 - [x] 04-01-PLAN.md — Wave 0: Testes RED (atualizar profile.test.ts, excel-generator.test.ts, settings.test.ts para string[] e aiProfileInstructions) ✓ 2026-04-21
-- [ ] 04-02-PLAN.md — Wave 1: Schema + ExcelGenerator + DynamicListField (profile.ts migrado, serializeStringArray, componente de lista dinâmica)
+- [x] 04-02-PLAN.md — Wave 1: Schema + ExcelGenerator + DynamicListField (profile.ts migrado, serializeStringArray, componente de lista dinâmica)
 - [ ] 04-03-PLAN.md — Wave 1: Settings + ProfileForm + Actions (aiProfileInstructions, DynamicListField no formulário, getAll() na action)
 - [ ] 04-04-PLAN.md — Wave 1: Zeragem da base dev + recriação de perfis reais (D-02 — checkpoint operador)
 - [ ] 04-05-PLAN.md — Wave 2: Skills CLI — criar /refinar-perfil + revisar /abrir-vaga (IA-01, IA-02, IA-03, D-18)
@@ -137,7 +137,7 @@ Plans:
 | 1. Foundation & Auth | 6/6 | Complete | 2026-04-19 |
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
-| 4. AI-Assisted Profiles | 1/5 | In progress | — |
+| 4. AI-Assisted Profiles | 2/5 | In Progress|  |
 
 ---
 
