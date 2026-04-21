@@ -147,7 +147,41 @@ const CHECKBOX_GROUPS: Record<string, CheckboxGroup> = {
 };
 
 /**
- * Modifica o estado checked de um arquivo ctrlProp dentro do ZIP.
+ * Modifica o estado checked do shape N no vmlDrawing1.vml dentro do ZIP.
+ * Shape N = ctrlPropN (mapeamento 1:1 confirmado via inspeção do template).
+ *
+ * - checked=true:  insere <x:Checked>1</x:Checked> antes de </x:ClientData>
+ * - checked=false: remove <x:Checked>N</x:Checked> se presente
+ *
+ * Excel lê estado visual dos checkboxes do VML — sem esta atualização os
+ * checkboxes aparecem errados mesmo com ctrlProp correto.
+ */
+function setVmlChecked(zip: AdmZip, shapeIndex: number, checked: boolean): void {
+  const entryPath = "xl/drawings/vmlDrawing1.vml";
+  const entry = zip.getEntry(entryPath);
+  if (!entry) return;
+
+  let vml = entry.getData().toString("utf-8");
+  const shapes = vml.split("<v:shape ");
+
+  if (shapeIndex < 1 || shapeIndex >= shapes.length) return;
+
+  let shape = shapes[shapeIndex];
+
+  // Remover <x:Checked> existente (qualquer valor numérico)
+  shape = shape.replace(/[ \t]*<x:Checked>\d+<\/x:Checked>\n?/, "");
+
+  if (checked) {
+    // Inserir antes do fechamento </x:ClientData>
+    shape = shape.replace("</x:ClientData>", "   <x:Checked>1</x:Checked>\n  </x:ClientData>");
+  }
+
+  shapes[shapeIndex] = shape;
+  zip.updateFile(entryPath, Buffer.from(shapes.join("<v:shape "), "utf-8"));
+}
+
+/**
+ * Modifica o estado checked de um arquivo ctrlProp dentro do ZIP e sincroniza o VML.
  * - checked=true:  adiciona checked="Checked" antes de lockText="1"
  * - checked=false: remove checked="Checked" se presente
  * Preserva todos os outros atributos e o XML declaration.
@@ -168,6 +202,10 @@ function setCtrlPropChecked(zip: AdmZip, ctrlPropName: string, checked: boolean)
   }
 
   zip.updateFile(entryPath, Buffer.from(xml, "utf-8"));
+
+  // Sincronizar VML — shape N = ctrlPropN (Excel lê estado visual do VML)
+  const shapeIndex = parseInt(ctrlPropName.replace("ctrlProp", ""), 10);
+  if (!isNaN(shapeIndex)) setVmlChecked(zip, shapeIndex, checked);
 }
 
 /**
@@ -240,6 +278,9 @@ function applyCheckboxGroups(
     }
     // Fluente não tem checkbox — o valor já foi escrito em U39 via CELL_MAPPING
   }
+
+  // travelRequired — checkbox único (ctrlProp11 = shape 11, row 20)
+  setCtrlPropChecked(zip, "ctrlProp11", settings.travelRequired ?? false);
 }
 
 /**

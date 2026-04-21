@@ -8,13 +8,13 @@ updated: 2026-04-21T00:00:00Z
 
 ## Current Test
 
-Terceira rodada de validação — após fechamento de GAP-05..12 (planos 03-08 a 03-12).
+Quarta rodada de validação — após fechamento de GAP-13..17.
 
 ## Tests
 
 ### 1. Download do formulário Excel GH
 expected: Arquivo requisicao-{id}.xlsx baixado com: (a) todos os checkboxes com exatamente 1 opção marcada por grupo, (b) datas AH4 e K24 no formato DD/MM/YYYY, (c) campos migrados (inglês, modalidade, cc) preenchidos a partir de AreaSettings
-result: failed — checkboxes todos errados: workSchedule trocado (08h→09h), workMode invertido (Presencial→Remoto+Híbrido), travelRequired invertido, englishLevel/spanishLevel com múltiplos marcados. Ver GAP-13..17.
+result: [pending] — GAP-14..17 corrigidos (VML sync + travelRequired como checkbox)
 
 ### 2. Criação de vaga end-to-end no browser
 expected: Manager cria nova vaga em /vacancies/new, formulário salva com sucesso, redireciona para /vacancies, vaga aparece na lista com badge "Aberta"
@@ -34,7 +34,7 @@ result: passed — GAP-03 resolvido em 03-06
 
 ### 6. Novas seções de Configurações
 expected: /settings exibe seções Idiomas, Infraestrutura e Dados Fixos da Vaga; salvar persiste os valores; Excel reflete os valores salvos
-result: failed — layout das seções incorreto: additionalInfo está em Infraestrutura (deve ir para fim de Dados Fixos da Vaga); costCenter está em Dados Fixos da Vaga (deve ir para Dados da Área). Ver GAP-13.
+result: [pending] — GAP-13 corrigido (costCenter → Dados da Área; additionalInfo → fim de Dados Fixos da Vaga)
 
 ### 7. Ausência de campos migrados nos formulários
 expected: Formulário de vaga (/vacancies/new, /vacancies/[id]/edit) NÃO exibe: centro de custo, modalidade, horário, disponibilidade para viagens; Formulário de perfil NÃO exibe: inglês, espanhol, outro idioma, infra, informações complementares
@@ -48,8 +48,8 @@ result: [pending]
 
 total: 8
 passed: 4
-issues: 2
-pending: 2
+issues: 0
+pending: 4
 skipped: 0
 blocked: 0
 
@@ -128,31 +128,31 @@ description: Campos fixos por área devem sair de Vacancy/JobProfile e ir para A
 fix: AreaSettings expandida, formulários atualizados, excel-generator lê de settings (03-12).
 
 ### GAP-13 — Layout das seções de configurações incorreto
-status: failed
+status: resolved
 severity: minor
-description: additionalInfo (informações complementares) está na seção Infraestrutura mas deve ficar no final da seção Dados Fixos da Vaga. costCenter (centro de custo) está em Dados Fixos da Vaga mas deve ir para Dados da Área.
-area: ui — settings-form.tsx
+description: additionalInfo (informações complementares) estava na seção Infraestrutura; costCenter (centro de custo) estava em Dados Fixos da Vaga.
+fix: costCenter movido para Dados da Área; additionalInfo movido para o final de Dados Fixos da Vaga em settings-form.tsx.
 
 ### GAP-14 — workSchedule: ctrlProps trocados no mapeamento de checkboxes
-status: failed
+status: resolved
 severity: major
-description: Escolher "Das 08h às 17h" marca o checkbox "09h às 18h" no Excel. ctrlProp3 e ctrlProp4 estão mapeados na ordem inversa em CHECKBOX_GROUPS.workSchedule.
-area: excel-generator.ts
+description: Escolher "Das 08h às 17h" marcava o checkbox "09h às 18h" no Excel.
+fix: Causa raiz era o VML não ser atualizado. setCtrlPropChecked agora chama setVmlChecked sincronizando xl/drawings/vmlDrawing1.vml (shape N = ctrlPropN).
 
 ### GAP-15 — workMode: ctrlProps errados — Presencial marca Remoto+Híbrido
-status: failed
+status: resolved
 severity: major
-description: Escolher "Presencial" resulta em Remoto e Híbrido marcados no Excel. O mapeamento ctrlProp68/69/70 está incorreto — os números reais diferem da inspeção de 2026-04-21.
-area: excel-generator.ts
+description: Escolher "Presencial" resultava em Remoto e Híbrido marcados no Excel.
+fix: Mesma causa raiz do GAP-14 — VML não era atualizado. Corrigido via setVmlChecked.
 
 ### GAP-16 — travelRequired: lógica de preenchimento invertida
-status: failed
+status: resolved
 severity: minor
-description: Campo não selecionado gera checkbox marcado no Excel; o comportamento esperado é o oposto. A lógica booleana ou o ctrlProp de travelRequired está invertido.
-area: excel-generator.ts
+description: Campo não selecionado gerava checkbox marcado no Excel.
+fix: travelRequired adicionado a applyCheckboxGroups como checkbox único (ctrlProp11 = shape 11, row 20). VML e ctrlProp agora sincronizados.
 
 ### GAP-17 — englishLevel e spanishLevel: múltiplos checkboxes marcados (residuais persistem)
-status: failed
+status: resolved
 severity: major
-description: Após migração para AreaSettings (GAP-12), os grupos de idioma continuam marcando múltiplos checkboxes simultaneamente. O reset via allGroup não está funcionando — provável combinação de ctrlProps errados e/ou applyCheckboxGroups não recebendo settings corretamente.
-area: excel-generator.ts
+description: Após migração para AreaSettings, grupos de idioma continuavam marcando múltiplos checkboxes.
+fix: Causa raiz era o VML não ser atualizado. setVmlChecked limpa/seta <x:Checked> em cada shape do allGroup antes de marcar o alvo.

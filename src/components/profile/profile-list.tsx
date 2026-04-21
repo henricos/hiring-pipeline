@@ -27,7 +27,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
   const [deleteTarget, setDeleteTarget] = useState<JobProfile | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const sorted = [...profiles].sort((a, b) => b.updatedAt - a.updatedAt);
+  const sorted = [...profiles].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
   function handleConfirmDelete() {
     if (!deleteTarget) return;

@@ -140,6 +140,19 @@ export function SettingsForm({
               className={`${INPUT_CLASS} min-h-[100px] resize-y`}
             />
           </div>
+
+          {/* Centro de custo */}
+          <div className="space-y-1.5">
+            <Label htmlFor="costCenter" className={LABEL_CLASS}>
+              Centro de custo
+            </Label>
+            <Input
+              id="costCenter"
+              name="costCenter"
+              defaultValue={initialSettings.costCenter ?? ""}
+              className={INPUT_CLASS}
+            />
+          </div>
         </div>
 
         {/* ── Seção 2: Idiomas (migrado de JobProfile — GAP-12) ─── */}
@@ -233,19 +246,6 @@ export function SettingsForm({
         {/* ── Seção 3: Infraestrutura (migrado de JobProfile — GAP-12) ── */}
         <h2 className={SECTION_HEADING_CLASS}>Infraestrutura</h2>
         <div className="space-y-4">
-          {/* Informações complementares */}
-          <div className="space-y-1.5">
-            <Label htmlFor="additionalInfo" className={LABEL_CLASS}>
-              Informações complementares
-            </Label>
-            <Textarea
-              id="additionalInfo"
-              name="additionalInfo"
-              defaultValue={initialSettings.additionalInfo ?? ""}
-              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
-            />
-          </div>
-
           {/* Sistemas necessários */}
           <div className="space-y-1.5">
             <Label htmlFor="systemsRequired" className={LABEL_CLASS}>
@@ -276,19 +276,6 @@ export function SettingsForm({
         {/* ── Seção 4: Dados Fixos da Vaga (migrado de Vacancy — GAP-12) ── */}
         <h2 className={SECTION_HEADING_CLASS}>Dados Fixos da Vaga</h2>
         <div className="space-y-4">
-          {/* Centro de custo */}
-          <div className="space-y-1.5">
-            <Label htmlFor="costCenter" className={LABEL_CLASS}>
-              Centro de custo
-            </Label>
-            <Input
-              id="costCenter"
-              name="costCenter"
-              defaultValue={initialSettings.costCenter ?? ""}
-              className={INPUT_CLASS}
-            />
-          </div>
-
           {/* Modalidade */}
           <div className="space-y-1.5">
             <Label htmlFor="workMode" className={LABEL_CLASS}>
@@ -359,6 +346,19 @@ export function SettingsForm({
               Disponibilidade para viagens
             </span>
           </label>
+
+          {/* Informações complementares */}
+          <div className="space-y-1.5">
+            <Label htmlFor="additionalInfo" className={LABEL_CLASS}>
+              Informações complementares
+            </Label>
+            <Textarea
+              id="additionalInfo"
+              name="additionalInfo"
+              defaultValue={initialSettings.additionalInfo ?? ""}
+              className={`${INPUT_CLASS} min-h-[120px] resize-y`}
+            />
+          </div>
         </div>
 
         {/* ── Erro de server action ──────────────────────────────── */}
