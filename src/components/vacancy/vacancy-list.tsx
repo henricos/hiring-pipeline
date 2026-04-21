@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Pencil, Trash2, ChevronRight } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteVacancy, advanceVacancyStatus } from "@/app/actions/vacancy";
+import { deleteVacancy } from "@/app/actions/vacancy";
 import type { Vacancy, VacancyStatus } from "@/lib/vacancy";
 import type { JobProfile } from "@/lib/profile";
 
@@ -50,13 +50,6 @@ export function VacancyList({ vacancies, profiles }: VacancyListProps) {
       router.refresh();
     });
     setDeleteTarget(null);
-  }
-
-  function handleAdvanceStatus(vacancyId: string) {
-    startTransition(async () => {
-      await advanceVacancyStatus(vacancyId);
-      router.refresh();
-    });
   }
 
   if (sorted.length === 0) {
@@ -118,21 +111,6 @@ export function VacancyList({ vacancies, profiles }: VacancyListProps) {
                 className="flex gap-1 shrink-0"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Avançar status (oculto quando Encerrada) */}
-                {vacancy.status !== "Encerrada" && (
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="min-h-[40px] min-w-[40px] text-on-surface/50 hover:text-on-surface"
-                    aria-label={`Avançar status da vaga ${vacancyTitle}`}
-                    onClick={() => handleAdvanceStatus(vacancy.id)}
-                    disabled={isPending}
-                    title="Avançar status"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                )}
-
                 {/* Editar */}
                 <Button
                   size="icon"
