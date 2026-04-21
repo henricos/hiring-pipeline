@@ -162,10 +162,10 @@ describe("Interface JobProfile", () => {
       certifications: "Não",
       englishLevel: "Intermediário",
       spanishLevel: "Não exigido",
-      responsibilities: "Desenvolver APIs REST",
-      qualifications: "Experiência com Node.js",
-      behaviors: "Trabalho em equipe",
-      challenges: "Crescer o time",
+      responsibilities: ["Desenvolver APIs REST", "Revisar código"],
+      qualifications: ["TypeScript avançado", "Node.js (desejável)"],
+      behaviors: ["Proatividade", "Trabalho em equipe"],
+      challenges: ["Escalar o sistema legado"],
       additionalInfo: "Nenhuma",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -192,10 +192,10 @@ describe("Interface JobProfile", () => {
       spanishLevel: "Não exigido",
       otherLanguage: "Francês",
       otherLanguageLevel: "Básico",
-      responsibilities: "Construir pipelines de dados",
-      qualifications: "Python, SQL",
-      behaviors: "Curiosidade analítica",
-      challenges: "Escalar infraestrutura",
+      responsibilities: ["Construir pipelines de dados"],
+      qualifications: ["Python, SQL"],
+      behaviors: ["Curiosidade analítica"],
+      challenges: ["Escalar infraestrutura"],
       additionalInfo: "Ambiente remoto",
       systemsRequired: "AWS, Databricks",
       networkFolders: "\\\\servidor\\dados",
@@ -210,5 +210,36 @@ describe("Interface JobProfile", () => {
     expect(profile.otherLanguage).toBe("Francês");
     expect(profile.systemsRequired).toBe("AWS, Databricks");
     expect(profile.internalNotes).toBe("Candidato preferencial interno");
+  });
+});
+
+describe("Campos descritivos são string[] (D-01 — Phase 4)", () => {
+  const profile: JobProfile = {
+    id: "test-id",
+    title: "Dev Backend",
+    suggestedTitle: "Desenvolvedor Back-End",
+    experienceLevel: "3-5 anos",
+    educationLevel: "Superior completo",
+    postGraduateLevel: "Não exigido",
+    certifications: "Não",
+    responsibilities: ["Desenvolver APIs REST"],
+    qualifications: ["TypeScript avançado"],
+    behaviors: ["Proatividade"],
+    challenges: ["Escalar sistema legado"],
+    createdAt: "2026-04-21T00:00:00.000Z",
+    updatedAt: "2026-04-21T00:00:00.000Z",
+  };
+
+  it("responsibilities é string[]", () => {
+    expect(Array.isArray(profile.responsibilities)).toBe(true);
+  });
+  it("qualifications é string[]", () => {
+    expect(Array.isArray(profile.qualifications)).toBe(true);
+  });
+  it("behaviors é string[]", () => {
+    expect(Array.isArray(profile.behaviors)).toBe(true);
+  });
+  it("challenges é string[]", () => {
+    expect(Array.isArray(profile.challenges)).toBe(true);
   });
 });
