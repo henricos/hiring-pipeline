@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 03 Complete — Ready for Phase 04
+status: Phase 04 Planned — Ready to Execute
 last_updated: "2026-04-21T00:00:00Z"
 progress:
   total_phases: 4
@@ -26,7 +26,8 @@ progress:
 **Core Value:** Transform fragmented hiring process from email/spreadsheets into an assisted, reusable, auditable flow — opening vacancies faster and screening candidates with consistency.
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
-**Current Focus:** Phase 04 — AI-Assisted Profile Refinement
+**Phase 4 Status:** Planejada ✓ 2026-04-21 (5 planos, 3 waves)
+**Current Focus:** Phase 04 — AI-Assisted Profile Refinement (execução)
 
 ---
 
@@ -89,10 +90,13 @@ Phase 3: Vacancy Opening & GH Form Generation
 
 ### What Needs to Happen Next
 
-1. Fase 03 completa — iniciar planejamento da Fase 04 (AI-Assisted Profile Refinement)
-2. Validação visual opcional: /settings com seções Idiomas, Infraestrutura e Dados Fixos da Vaga; /vacancies/new sem campos migrados; /profiles/new sem seções de idioma e infra
+1. Phase 4 planejada — 5 planos em 3 waves prontos para execução
+2. Wave 0: atualizar testes para string[] (RED intencional)
+3. Wave 1: migração schema + DynamicListField + aiProfileInstructions + zeragem base dev
+4. Wave 2: criar /refinar-perfil + revisar /abrir-vaga + validação manual
+5. Próximo: `/gsd-execute-phase 4`
 
-### Última Sessão (2026-04-21)
+### Sessão de Discuss Phase 04 (2026-04-21)
 
 - Plano 03-12 concluído: 10 campos fixos por área migrados de JobProfile/Vacancy para AreaSettings (GAP-12)
 - Commits: 3ae3e42 (schema — settings/vacancy/profile), bec532a (actions + forms + excel-generator)
