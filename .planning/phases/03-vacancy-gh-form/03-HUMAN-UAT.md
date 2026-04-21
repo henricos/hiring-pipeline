@@ -1,5 +1,5 @@
 ---
-status: partial
+status: complete
 phase: 03-vacancy-gh-form
 source: [03-VERIFICATION.md]
 started: 2026-04-23T00:00:00Z
@@ -8,13 +8,13 @@ updated: 2026-04-21T00:00:00Z
 
 ## Current Test
 
-Quarta rodada de validação — após fechamento de GAP-13..17.
+Quinta rodada de validação — após fechamento de GAP-18..21 (mapeamento correto de ctrlProps de idiomas).
 
 ## Tests
 
 ### 1. Download do formulário Excel GH
-expected: Arquivo requisicao-{id}.xlsx baixado com: (a) todos os checkboxes com exatamente 1 opção marcada por grupo, (b) datas AH4 e K24 no formato DD/MM/YYYY, (c) campos migrados (inglês, modalidade, cc) preenchidos a partir de AreaSettings
-result: [pending] — GAP-14..17 corrigidos (VML sync + travelRequired como checkbox)
+expected: Arquivo requisicao-{slug}.xlsx baixado com: (a) todos os checkboxes com exatamente 1 opção marcada por grupo incluindo inglês/espanhol/outro idioma, (b) datas AH4 e K24 no formato DD/MM/YYYY, (c) campos migrados (inglês, modalidade, cc) preenchidos a partir de AreaSettings, (d) nome do arquivo usa slug do título do perfil
+result: passed — GAP-18..21 corrigidos (ctrlProp mapping idiomas + CTRL_PROP_VML_INDEX + otherLanguage D41 + slug download)
 
 ### 2. Criação de vaga end-to-end no browser
 expected: Manager cria nova vaga em /vacancies/new, formulário salva com sucesso, redireciona para /vacancies, vaga aparece na lista com badge "Aberta"
@@ -34,22 +34,22 @@ result: passed — GAP-03 resolvido em 03-06
 
 ### 6. Novas seções de Configurações
 expected: /settings exibe seções Idiomas, Infraestrutura e Dados Fixos da Vaga; salvar persiste os valores; Excel reflete os valores salvos
-result: [pending] — GAP-13 corrigido (costCenter → Dados da Área; additionalInfo → fim de Dados Fixos da Vaga)
+result: passed — validado pelo operador em 2026-04-21
 
 ### 7. Ausência de campos migrados nos formulários
 expected: Formulário de vaga (/vacancies/new, /vacancies/[id]/edit) NÃO exibe: centro de custo, modalidade, horário, disponibilidade para viagens; Formulário de perfil NÃO exibe: inglês, espanhol, outro idioma, infra, informações complementares
-result: [pending]
+result: passed — validado pelo operador em 2026-04-21
 
 ### 8. Layout side by side das ações
 expected: Na página de edição, Status e Formulário GH aparecem lado a lado dentro de um container com fundo sutil; responsivo em mobile
-result: [pending]
+result: passed — validado pelo operador em 2026-04-21
 
 ## Summary
 
 total: 8
-passed: 4
+passed: 8
 issues: 0
-pending: 4
+pending: 0
 skipped: 0
 blocked: 0
 
@@ -156,3 +156,27 @@ status: resolved
 severity: major
 description: Após migração para AreaSettings, grupos de idioma continuavam marcando múltiplos checkboxes.
 fix: Causa raiz era o VML não ser atualizado. setVmlChecked limpa/seta <x:Checked> em cada shape do allGroup antes de marcar o alvo.
+
+### GAP-18 — englishLevel/spanishLevel: ctrlProps apontavam para linhas erradas do template
+status: resolved
+severity: critical
+description: ctrlProp18/42/43 (englishLevel) eram checkboxes da linha 31 (escolaridade), não da linha 37 (Inglês). ctrlProp19/20 (spanishLevel) eram da linha 33 (pós-graduação), não da linha 39 (Espanhol). Resultado: nenhum checkbox de idioma era marcado corretamente e checkboxes de escolaridade eram zerados indevidamente.
+fix: Remapeamento completo via inspeção do template com AdmZip: englishLevel → ctrlProp24-27 (linha 37), spanishLevel → ctrlProp28-31+36/38/40 (linha 39), otherLanguageLevel → ctrlProp32-35+37/39/41 (linha 41). Todos os 4 níveis (Básico/Inter/Avançado/Fluente) agora mapeados.
+
+### GAP-19 — VML shape index ≠ ctrlPropN para índices 24-39
+status: resolved
+severity: major
+description: O código assumia shape N = ctrlPropN para sincronizar o VML, mas para ctrlProp 24-39 o índice real no split do VML difere devido ao histórico de edição do template (16 divergências).
+fix: Adicionada tabela CTRL_PROP_VML_INDEX com os 16 mapeamentos corretos. setCtrlPropChecked usa o lookup em vez de assumir N=N.
+
+### GAP-20 — otherLanguage (nome do idioma adicional) não era preenchido no Excel
+status: resolved
+severity: minor
+description: O campo "Outro:" na linha 41 do template tem uma célula de entrada (D41) para o nome do idioma, que não estava mapeada nem preenchida.
+fix: CELL_MAPPING.otherLanguage = "D41" adicionado; cellValues inclui settings.otherLanguage.
+
+### GAP-21 — Nome do arquivo de download usava UUID da vaga
+status: resolved
+severity: minor
+description: O arquivo gerado tinha nome requisicao-{uuid}.xlsx, pouco legível para o usuário.
+fix: route.ts gera slug do profile.title (ex: requisicao-porteiro-master-blaster.xlsx) para o Content-Disposition. O arquivo em cache mantém o UUID internamente.
