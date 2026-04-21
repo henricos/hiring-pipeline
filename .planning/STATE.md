@@ -14,7 +14,7 @@ progress:
 
 # State: Hiring Pipeline v1
 
-**Last updated:** 2026-04-20  
+**Last updated:** 2026-04-21  
 **Mode:** YOLO (iterate on feedback, validate with users)
 **Phase 1 Status:** Complete ✓ 2026-04-19
 **Phase 2 Status:** Complete ✓ 2026-04-20
@@ -33,7 +33,7 @@ progress:
 ## Current Position
 
 Phase: 03 (vacancy-gh-form) — EXECUTING
-Plan: 1 of 7
+Plan: 9 of 12
 **Milestone:** v1 Hiring Pipeline  
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 (Vacancy & GH Form) a planejar  
 **Overall Progress:** [######----] 50%
