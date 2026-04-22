@@ -42,10 +42,12 @@ Erro: DATA_PATH não encontrado em .env.local nem no ambiente.
 Configure a variável e tente novamente.
 ```
 
+> **Nota de ambiente:** A ferramenta Bash não persiste estado de shell entre chamadas — cada invocação é um processo novo. Por isso, **todo comando Bash nesta skill deve começar com `source .env.local &&`** para que `DATA_PATH` esteja disponível. O Step 0 valida a existência da variável, mas não elimina a necessidade do re-source nas chamadas seguintes.
+
 ### Step 1: Listar Perfis Disponíveis
 
 ```bash
-ls $DATA_PATH/profiles/
+source .env.local && ls "$DATA_PATH/profiles/"
 ```
 
 Ler cada arquivo .json e extrair o campo `title`. Exibir lista numerada:
@@ -65,8 +67,8 @@ Aguardar a seleção do gestor. Registrar o ID do perfil selecionado a partir da
 ### Step 2: Carregar Perfil, Contexto de Área e Pesquisa de Mercado
 
 ```bash
-cat $DATA_PATH/profiles/{profile-id}.json
-cat $DATA_PATH/settings.json
+source .env.local && cat "$DATA_PATH/profiles/{profile-id}.json"
+source .env.local && cat "$DATA_PATH/settings.json"
 ```
 
 Extrair do perfil:
@@ -154,9 +156,26 @@ Se não houver arquivos `-resumo.json`:
 - `marketResearch = null`
 - Fluxo continua normalmente
 
+**Confirmar nível alvo:**
+
+Inferir o nível a partir do campo `experienceLevel` do perfil:
+- `"0-2 anos"` → **Junior**
+- `"3-5 anos"` → **Pleno**
+- `"5-10 anos"` → **Sênior**
+- `"10+ anos"` ou valor ausente → **Especialista / Sênior+**
+
+Exibir ao gestor:
+```
+Nível alvo inferido: {Pleno} (baseado em experienceLevel: "{3-5 anos}")
+Confirmar? (Enter para aceitar / digitar outro nível)
+```
+
+Registrar a resposta como `targetLevel` em memória. Este valor é a lente de calibração usada em todo o fluxo — Steps 4 (linguagem das sugestões) e Step 5 (holística de nível).
+
 Exibir resumo ao final do Step 2:
 ```
 Perfil carregado: {title}
+Nível alvo: {targetLevel}
 Responsabilidades: {N} itens
 Qualificações: {N} itens
 Competências: {N} itens
@@ -220,13 +239,14 @@ ANTES (conteúdo atual):
 Os prompts dos Steps 3-4 recebem três contextos empilhados quando `marketResearch` está carregado:
 
 **Quando `marketResearch` não é null (pesquisa carregada):**
-- System prompt 1 (fixo): `"Você é um especialista em recrutamento para {title}. {aiProfileInstructions}"`
+- System prompt 1 (fixo): `"Você é um especialista em recrutamento para {title} de nível {targetLevel}. {aiProfileInstructions}"`
 - System prompt 2 (variável): `"Pesquisa de mercado atual para este cargo:\n{JSON.stringify(marketResearch.profileHints, null, 2)}\n\nTendências observadas: {marketResearch.summary.trends.join('; ')}"`
 - System prompt 3: o perfil atual sendo refinado (campo por campo)
-- Instrução de priorização: `"Priorize os dados da pesquisa de mercado ao sugerir melhorias. Quando a pesquisa indicar tendências de stack ou arquétipo, expresse essa riqueza dentro dos 4 campos descritivos do perfil (responsibilities, qualifications, behaviors, challenges) — NÃO invente novos campos."`
+- Instrução de priorização: `"Priorize os dados da pesquisa de mercado ao sugerir melhorias. Calibre a linguagem, a autonomia esperada e a profundidade técnica para o nível {targetLevel}: Junior usa 'executa/aprende', Pleno usa 'aplica/contribui/participa', Sênior usa 'implanta/estabelece/lidera/referência'. Expresse a riqueza do mercado dentro dos 4 campos descritivos — NÃO invente novos campos."`
 
 **Quando `marketResearch` é null (sem pesquisa — comportamento original):**
-- Usar apenas System prompt 1 (comportamento retrocompatível)
+- System prompt 1 (fixo): `"Você é um especialista em recrutamento para {title} de nível {targetLevel}. {aiProfileInstructions}"`
+- Instrução de calibração: `"Calibre a linguagem para o nível {targetLevel}: Junior usa 'executa/aprende', Pleno usa 'aplica/contribui/participa', Sênior usa 'implanta/estabelece/lidera/referência'."`
 
 Para `responsibilities`, `behaviors`, `challenges`:
 - System: conforme modelo acima (1 contexto ou três contextos empilhados)
@@ -263,15 +283,23 @@ Responsabilidade cita habilidade/área (ex: "arquitetar soluções de IA generat
 **Tipo 2 — Redundâncias entre campos:**
 Mesmo ponto dito de formas ligeiramente diferentes em responsibilities E qualifications, ou em behaviors E challenges.
 
-**Tipo 3 — Descalibração título × conteúdo:**
-O `title` diz "Sênior" mas as responsabilidades parecem de Pleno, ou o `experienceLevel` está desalinhado com o nível de complexidade das responsabilidades.
+**Tipo 3 — Descalibração de nível (`targetLevel` × linguagem do conteúdo):**
+Responsabilidades, qualificações obrigatórias ou desafios usam linguagem de nível superior ao `targetLevel` confirmado pelo gestor. Usar a matriz abaixo como referência:
+
+| Nível | Verbos e traços típicos | Sinais de nível superior |
+|---|---|---|
+| **Junior** | executa, aprende, implementa sob orientação, autonomia limitada | ownership de projeto, definir padrões, referenciar outros times |
+| **Pleno** | aplica, contribui, participa do ciclo, resolve com apoio eventual | implantar práticas do zero, ser referência cross-team, ownership end-to-end |
+| **Sênior** | implanta, estabelece, lidera, define arquitetura, referência cross-team | gestão de pessoas, P&L, decisões estratégicas de produto |
+
+Identificar itens que usam linguagem de nível superior ao `targetLevel` e sugerir reformulação calibrada.
 
 **Tipo 4 — Lacunas comportamentais:**
 As responsabilidades exigem liderança, mentoria ou comunicação com stakeholders, mas nenhum `behavior` correspondente existe no perfil.
 
 **Prompt para a IA (executar com perfil completo como contexto):**
-- System: "Você é um especialista em coerência de perfis de vaga. Analise o perfil abaixo e identifique inconsistências internas nos seguintes tipos: (1) responsabilidades sem qualificação correspondente, (2) redundâncias entre campos, (3) desalinhamento título/experiência vs. conteúdo, (4) responsabilidades de liderança sem competência comportamental correspondente."
-- Pedido: "Retorne cada finding numerado, descrevendo o problema e sugerindo uma correção específica. Sem limite de findings — liste todas as incoerências encontradas."
+- System: "Você é um especialista em coerência de perfis de vaga. O nível alvo deste perfil é {targetLevel}. Analise o perfil abaixo e identifique inconsistências internas nos seguintes tipos: (1) responsabilidades sem qualificação correspondente, (2) redundâncias entre campos, (3) linguagem de nível superior ao targetLevel — use a matriz: Junior=executa/aprende, Pleno=aplica/contribui/participa, Sênior=implanta/estabelece/lidera/referência cross-team, (4) responsabilidades de liderança sem competência comportamental correspondente."
+- Pedido: "Retorne cada finding numerado, descrevendo o problema e sugerindo uma correção específica calibrada para o nível {targetLevel}. Sem limite de findings — liste todas as incoerências encontradas."
 
 **Exibição dos findings:**
 
@@ -362,6 +390,68 @@ Para converter a resposta da IA (formato `[Obrigatório] texto` / `[Diferencial]
 - Linha começa com `[Diferencial]` → `{ text: "...", required: false }`
 - Linha sem prefixo → `{ text: "...", required: true }` (padrão conservador)
 
+### Step 6.5: Confronto com Pesquisa de Mercado (opcional)
+
+Executar somente se `marketResearch != null`. Ocorre após a gravação confirmada no Step 6.
+
+Comparar o perfil final (estado em memória) com `marketResearch.summary` e `marketResearch.profileHints`:
+
+**6.5.1 — Stack do mercado × qualificações do perfil:**
+
+Para cada tecnologia no top 5 de `marketResearch.summary.stackFrequency`, verificar cobertura nas qualificações:
+- `✓ coberto (Obrigatório)` — item está em qualifications com required: true
+- `~ coberto (Diferencial)` — item está em qualifications com required: false
+- `✗ ausente` — nenhuma qualificação menciona a tecnologia
+
+**6.5.2 — Responsabilidades do mercado não cobertas:**
+
+Comparar `marketResearch.profileHints.responsibilities` com as responsabilidades finais. Listar as do mercado sem cobertura equivalente no perfil.
+
+**6.5.3 — Avaliação geral:**
+- **Alinhado:** cobertura ≥ 80% do top 5 de stack + responsabilidades essenciais presentes
+- **Parcialmente alinhado:** cobertura 50–79%
+- **Divergente:** cobertura < 50%
+
+**Exibição:**
+```
+── Confronto com Pesquisa de Mercado ──────────────────
+Stack do mercado (top 5) × qualificações do perfil:
+  ✓ Python           — coberto (Obrigatório)
+  ✓ SQL              — coberto (Obrigatório)
+  ✓ Machine Learning — coberto (Obrigatório)
+  ~ Cloud            — coberto (Obrigatório)
+  ~ LLM/IA Generativa — coberto (Diferencial) — mercado: 47% das vagas
+
+Responsabilidades do mercado não cobertas:
+  (nenhuma lacuna identificada)
+
+Avaliação geral: alinhado com o mercado para nível {targetLevel}.
+
+Ver amostra de 3 vagas de referência da pesquisa? (S/N)
+```
+
+Se o gestor responder S:
+- Carregar o arquivo `-vagas.json` referenciado em `marketResearch.vagasFile` (apenas para leitura):
+```bash
+source .env.local && DATA_PATH="$DATA_PATH" node -e "
+const fs = require('fs'), path = require('path');
+const vagasPath = path.join(process.env.DATA_PATH, 'research', '{vagasFile}');
+const vagas = JSON.parse(fs.readFileSync(vagasPath, 'utf8'));
+const sample = vagas.sort(() => Math.random() - 0.5).slice(0, 3);
+sample.forEach((v, i) => {
+  console.log((i+1) + '. ' + v.title + ' — ' + (v.company || 'empresa não informada'));
+  const reqs = (v.requirements || []).slice(0, 3);
+  reqs.forEach(r => console.log('   · ' + r));
+  console.log('');
+});
+"
+```
+- Exibir título, empresa e os 3 primeiros requisitos de cada vaga amostrada
+- Não abre novo ciclo A/R/J — é apenas referência visual para o gestor
+
+Se o gestor responder N ou se `vagasFile` não existir:
+- Prosseguir para Step 7
+
 ### Step 7: Confirmar Conclusão
 
 ```
@@ -376,6 +466,8 @@ Próximas ações:
 
 ## Notes for Agent
 
+- **Bash não persiste estado entre chamadas:** Cada invocação da ferramenta Bash é um processo novo. Incluir `source .env.local &&` no início de TODO comando que use `DATA_PATH`. O Step 0 valida a variável, mas não elimina a necessidade do re-source nas chamadas subsequentes.
+- **targetLevel é confirmado no Step 2, usado em todo o fluxo:** Inferir do `experienceLevel` do perfil e confirmar com o gestor antes do menu. Injetar no system prompt do Step 4 e no prompt da holística do Step 5. Nunca usar `experienceLevel` bruto como targetLevel sem confirmação — o gestor pode corrigir o nível.
 - **aiProfileInstructions é o contexto principal:** Ler settings.json ANTES de gerar qualquer sugestão. Injetar o campo como contexto do sistema ("Você é um especialista em {aiProfileInstructions}..."). Se settings.json não existir ou o campo estiver vazio, avisar o gestor e prosseguir com contexto genérico.
 - **IDs são da lista, nunca do gestor:** Sempre usar o ID obtido do `ls` na Step 1. Nunca aceitar um UUID digitado livremente pelo gestor — isso previne path traversal e sobrescrita de arquivo errado.
 - **Tipos dos campos:** `responsibilities`, `behaviors`, `challenges` são `string[]`. `qualifications` é `ProfileItem[]` — array de `{ text: string, required: boolean }`. Ao exibir qualifications, mostrar `[Obrigatório]`/`[Diferencial]` por item. Ao gravar qualifications, usar o formato de objeto (ver Step 6). Os outros 3 campos gravam como string[] simples.
@@ -424,4 +516,5 @@ export DATA_PATH=/caminho/para/repo-de-dados
 
 **Skill created:** 2026-04-21
 **Updated:** 2026-04-22 — Step 2 evoluído com pesquisa de mercado opcional; Steps 3-4 com três contextos empilhados; Step 5 holístico inserido (4 tipos de incoerência, padrão [A/I/J]); Steps 5→6, 6→7 renumerados
+**Updated:** 2026-04-22 (v2) — 4 melhorias pós-primeira-execução: (1) nota de Bash state persistence + `source .env.local` em todos os templates de comando; (2) confirmação de `targetLevel` no Step 2 antes do menu, injetado no system prompt dos Steps 4 e 5; (3) Tipo 3 da holística expandido com matriz de verbos por nível (Junior/Pleno/Sênior); (4) Step 6.5 — confronto pós-gravação do perfil final com pesquisa de mercado (top 5 stack, cobertura de responsabilidades, avaliação geral, amostra opcional de vagas)
 **Status:** Ready for Claude Code integration
