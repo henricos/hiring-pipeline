@@ -27,15 +27,15 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** In Progress — 3/6 planos executados (05-03 concluído — skill /pesquisar-mercado criada)
-**Current Focus:** Phase 5 — Próximo: 05-04 (evolução /refinar-perfil com contexto de pesquisa + Step holístico)
+**Phase 5 Status:** In Progress — 4/6 planos executados (05-04 concluído — /refinar-perfil evoluída com pesquisa + Step 5 holístico)
+**Current Focus:** Phase 5 — Próximo: 05-05 (discussão socrática aiProfileInstructions P&D/Lyceum)
 
 ---
 
 ## Current Position
 
 Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
-Plan: 3 of 6 executed (05-03 concluído — skill /pesquisar-mercado com 7 steps criada)
+Plan: 4 of 6 executed (05-04 concluído — /refinar-perfil com Step 2 de pesquisa + Step 5 holístico)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
 **Overall Progress:** [########--] 80%
@@ -45,6 +45,15 @@ Plan: 3 of 6 executed (05-03 concluído — skill /pesquisar-mercado com 7 steps
 ---
 
 ## Decision Log
+
+### Phase 5 Decisions (05-04)
+
+| Date | Decision | Rationale | Status |
+|------|----------|-----------|--------|
+| 2026-04-22 | Carregar apenas o -resumo.json no Step 2 (não o -vagas.json) | vagas.json é arquivo de auditoria/histórico; resumo.json contém profileHints estruturados prontos para injeção no prompt — D-11 | Active |
+| 2026-04-22 | marketResearch=null mantém fluxo original sem degradação | Retrocompatibilidade garantida — pular pesquisa funciona exatamente como antes (apenas System prompt 1) | Active |
+| 2026-04-22 | Step 5 holístico opera sobre perfil pós-A/R/J em memória | Gravação real só no Step 6 após confirmação explícita do gestor — mesma proteção já existente no fluxo | Active |
+| 2026-04-22 | IA usa apenas os 4 campos do JobProfile ao aplicar sugestões do holístico | D-01 imutável — nunca inventar campos novos; riqueza do mercado expressada dentro dos campos existentes | Active |
 
 ### Phase 5 Decisions (05-03)
 
@@ -129,6 +138,23 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-04 (2026-04-22)
+
+- Plano 05-04 concluído: skill /refinar-perfil evoluída com pesquisa de mercado + Step 5 holístico
+- Step 2 renomeado para "Carregar Perfil, Contexto de Área e Pesquisa de Mercado"
+- Listagem de *-resumo.json ordenados por data desc com data legível (hoje/ontem/N dias atrás)
+- Carregamento exclusivo do -resumo.json (não o -vagas.json — arquivo de auditoria/histórico)
+- marketResearch registrado em memória para uso nos Steps 3-4 e Step 5 holístico
+- Três contextos empilhados: aiProfileInstructions + pesquisa + perfil (quando marketResearch não é null)
+- Instrução de priorização com guardrail D-01: expressar riqueza do mercado dentro dos 4 campos existentes
+- Retrocompatível: marketResearch=null usa apenas System prompt 1 (fluxo original preservado)
+- Novo Step 5: Revisão Holística com 4 tipos de incoerência (Lacuna R×Q, Redundância, Descalibração, Lacuna comportamental)
+- Padrão [A]plicar/[I]gnorar/[J]ustar por finding — sem limite de findings — resumo ao final
+- Steps antigos 5→6 (Confirmar e Gravar) e 6→7 (Confirmar Conclusão) renumerados — conteúdo preservado
+- Apontamentos .claude/skills e .cursor/skills não modificados (mesmo inode — hard links confirmados)
+- Commit: 5bd2658 (.agents/skills/refinar-perfil/SKILL.md)
+- Concluído sem checkpoints — plano totalmente autônomo (2 tasks, ~4 minutos)
 
 ### Sessão de Execução Phase 05 — Plano 05-03 (2026-04-22)
 
