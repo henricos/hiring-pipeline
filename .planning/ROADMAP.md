@@ -146,16 +146,17 @@ Plans:
 4. The P&D/Lyceum area has a well-articulated `aiProfileInstructions` value persisted via `/settings`
 5. Piloto executado: perfil Senior P&D (Java + Python + TS) gerado end-to-end pelo fluxo completo, respeitando o schema imutável do JobProfile
 
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Wave 1 (checkpoint): Research e decisão de portais BR + queries default — investiga cobertura real e produz 05-01-PORTALS.md (bloqueia 05-02)
-- [ ] 05-02-PLAN.md — Wave 2: Skill `/pesquisar-mercado` — 3 arquivos (.agents/ + .claude/ + .cursor/), 6 steps, schema D-07, guardrails D-08
-- [ ] 05-03-PLAN.md — Wave 3: Evolução `/refinar-perfil` — Step 2 com pesquisa opcional + Step 5 holístico + renumeração Step 5→6
-- [ ] 05-04-PLAN.md — Wave 3 (checkpoint): Discussão socrática aiProfileInstructions P&D/Lyceum + persistência via /settings + template de reuso
-- [ ] 05-05-PLAN.md — Wave 4 (checkpoint): Piloto end-to-end — /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel
+- [ ] 05-01-PLAN.md — Wave 1 (checkpoint): Research portais BR + queries default + instruções sessão autenticada — produz 05-01-PORTALS.md (bloqueia 05-03)
+- [ ] 05-02-PLAN.md — Wave 2 (checkpoint): Mapa global de cargos/funções — data/research/roles-map.json com títulos + faixas salariais BR (independente)
+- [ ] 05-03-PLAN.md — Wave 3: Skill `/pesquisar-mercado` — 3 arquivos (.agents/ + .claude/ + .cursor/), 7 steps, dual-file output, filtro porte, sessões autenticadas
+- [ ] 05-04-PLAN.md — Wave 4: Evolução `/refinar-perfil` — Step 2 com pesquisa opcional + prompts 3 contextos + Step 5 holístico (renumera Steps 5→6, 6→7)
+- [ ] 05-05-PLAN.md — Wave 4 (checkpoint): Discussão socrática aiProfileInstructions P&D/Lyceum + persistência via /settings + template de reuso
+- [ ] 05-06-PLAN.md — Wave 5 (checkpoint): Piloto end-to-end — /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel
 
-**Context:** `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (brief completo com decisões D-01 a D-23, canonical refs, sub-plans e verification)
+**Context:** `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (brief completo com decisões D-01 a D-26, canonical refs, sub-plans e verification)
 
 ---
 
@@ -167,7 +168,7 @@ Plans:
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
-| 5. Market Research & Holistic Refinement | 0/5 | Planned | — |
+| 5. Market Research & Holistic Refinement | 0/6 | Planned | — |
 
 ---
 
@@ -179,3 +180,4 @@ Plans:
 *Phase 4 planned: 2026-04-21*
 *Phase 5 added: 2026-04-21*
 *Phase 5 planned: 2026-04-21*
+*Phase 5 replanned: 2026-04-22 (6 planos — expandido de 5 para 6 com roles-map como plano dedicado 05-02)*

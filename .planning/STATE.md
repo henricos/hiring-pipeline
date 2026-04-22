@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: In Progress
-last_updated: "2026-04-21T23:00:00.000Z"
+last_updated: "2026-04-22T00:00:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 29
+  total_plans: 30
   completed_plans: 29
   percent: 80
 ---
@@ -27,15 +27,15 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** Ready to execute — 5/5 planos planejados 2026-04-21 (Market Research & Holistic Profile Refinement)
-**Current Focus:** Phase 5 — 5 planos prontos para execução. Próximo: /gsd-execute-phase 5
+**Phase 5 Status:** Ready to execute — 6/6 planos planejados 2026-04-22 (replanejado com estrutura de pesquisa revisada: roles-map + dual-file output + sessões autenticadas + filtro de porte)
+**Current Focus:** Phase 5 — 6 planos prontos para execução. Próximo: /gsd-execute-phase 5
 
 ---
 
 ## Current Position
 
 Phase: 05 (market-research-holistic-refinement) — READY TO EXECUTE
-Plan: 0 of 5 executed (5/5 planned)
+Plan: 0 of 6 executed (6/6 planned)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
 **Overall Progress:** [########--] 80%
