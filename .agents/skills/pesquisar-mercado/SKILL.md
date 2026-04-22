@@ -50,8 +50,6 @@ Perguntar ao gestor em conversa natural (não formulário rígido):
 - **Cargo/função** a pesquisar (ex: "Engenheiro Sênior de Software", "Staff Engineer")
 - **Localização** (default: pesquisa nacional — sem restrição geográfica nas queries; mencionar que âncora salarial é Sudeste/Sul via `data/research/roles-map.json`)
 - **Senioridade** (Pleno / Sênior / Staff / Principal / Arquiteto)
-- **Stacks-chave** de interesse (ex: Java + Python + TypeScript)
-- **Indústria/setor** (default: Tecnologia)
 - **Profundidade da pesquisa** (apresentar as 3 opções):
   - `enxuta` — 5-10 vagas, ~5 min
   - `média` — 15-25 vagas, ~15 min (padrão recomendado)
@@ -67,13 +65,15 @@ Perguntar ao gestor em conversa natural (não formulário rígido):
 - REJEITAR slugs com `..`, `/`, `\`, espaços ou caracteres especiais — gerar slug automaticamente
 - Exemplos válidos: `senior-pd-java-python-ts-sp`, `staff-engineer-sp`, `arquiteto-solucoes-java`
 
+**Nota sobre stacks:** NÃO perguntar stacks como input. As stacks são o *output* da pesquisa — o objetivo é descobrir o que o mercado exige. Se o gestor mencionar stacks espontaneamente como contexto adicional, registrar em `scope.stack[]`; caso contrário, deixar o array vazio.
+
 Após coletar, exibir resumo e aguardar confirmação:
 
 ```
 Escopo definido:
   Cargo: {role} ({seniority})
   Local: {location ou "Nacional"}
-  Stacks: {stack[].join(', ')}
+  Stacks: a descobrir (output da pesquisa)
   Profundidade: {depth}
   Porte: {companySize}
   Slug: {slug}-{YYYY-MM-DD}
@@ -97,33 +97,93 @@ Exibir:
 Sessões autenticadas detectadas: {lista de portais com sessão} (ou "nenhuma")
 ```
 
-**2.2 — Executar queries WebSearch nos portais aprovados:**
+**2.2 — Estratégia por portal (dois passos: listar → descrever)**
 
-Portais aprovados (em ordem de prioridade — conforme `05-01-PORTALS.md`):
+Cada portal tem dois momentos distintos: (1) descobrir a lista de vagas e (2) buscar a descrição individual. A estratégia de cada passo varia por portal.
 
-| # | Portal | Mecanismo | User-Agent |
-|---|--------|-----------|-----------|
-| 1 | Gupy (`portal.gupy.io`) | Playwright MCP | N/A (headless) |
-| 2 | LinkedIn (`linkedin.com/jobs`) | WebFetch | Googlebot UA |
-| 3 | vagas.com.br | WebFetch | Chrome UA |
-| 4 | InfoJobs BR (`infojobs.com.br`) | WebFetch | Chrome UA |
-| 5 | Catho (`catho.com.br`) | Playwright MCP | N/A (headless) |
-
-**Queries default por senioridade** (PT-BR preferencial, EN como complemento):
+**Queries base por senioridade** (usar apenas cargo — sem stack):
 
 | Senioridade | Query PT | Query EN |
 |-------------|---------|---------|
-| Pleno | `"desenvolvedor pleno {stack-principal}"` | `"mid-level {stack-principal} developer brazil"` |
-| Sênior | `"engenheiro sênior {stack-principal}"` | `"senior {stack-principal} engineer brazil"` |
-| Staff/Principal | `"staff engineer brazil"` | `"principal engineer brasil"` |
-| Arquiteto | `"arquiteto de soluções {stack-principal}"` | `"solutions architect {stack-principal} brazil"` |
+| Pleno | `"{cargo} pleno"` | `"mid-level {cargo-en} brazil"` |
+| Sênior | `"{cargo} sênior"` | `"senior {cargo-en} brazil"` |
+| Staff/Principal | `"staff {cargo-en} brazil"` | `"principal {cargo-en} brasil"` |
+| Arquiteto | `"arquiteto de soluções"` | `"solutions architect brazil"` |
 
-**Notas de acesso:**
-- **Gupy via Playwright MCP:** URL nacional sem restrição de estado: `https://portal.gupy.io/job-search/term={cargo-generico}`. Usar termo genérico (ex: "engenheiro senior") — termos compostos com stack retornam 0 resultados. Para SP: adicionar `&state=S%C3%A3o%20Paulo`.
-- **LinkedIn via WebFetch Googlebot:** usar `User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)`. URL: `https://www.linkedin.com/jobs/search/?keywords={query}&location=Brazil`.
-- **vagas.com.br via WebFetch:** usar `User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36`. URL semântica: `https://www.vagas.com.br/vagas-de-{cargo-slug}`.
-- **InfoJobs via WebFetch:** mesmo Chrome UA acima. URL: `https://www.infojobs.com.br/empregos-en-{cargo-slug},{estado}.aspx`.
-- **Catho via Playwright MCP:** curl retorna 404 do Akamai CDN (falso negativo de bloqueio de bot). Usar Playwright headless.
+Se o gestor informou stacks como contexto adicional (opcional), adicionar como segundo termo na query EN: `"senior data scientist python brazil"`. Nunca usar stack como qualificador exclusivo.
+
+---
+
+**Portal 1 — Gupy** (prioridade alta)
+
+*Listar:*
+- Playwright MCP: `browser_navigate → https://portal.gupy.io/job-search/term={cargo-generico}`
+  - Usar apenas o cargo genérico (ex: `"cientista de dados"`) — termos compostos com stack retornam 0 resultados
+  - Para SP: adicionar `&state=S%C3%A3o%20Paulo`
+  - `browser_snapshot` retorna lista estruturada com título, empresa, localização e URL
+- Complemento WebSearch: `"{cargo} site:gupy.io"` — captura vagas indexadas pelo Google que podem não aparecer na busca interna
+
+*Descrever:*
+- WebFetch na URL individual `{empresa}.gupy.io/job/{base64_id}` — HTML estático completo, sem bloqueio
+
+---
+
+**Portal 2 — LinkedIn** (prioridade alta)
+
+*Listar:*
+- WebFetch com Googlebot UA: `https://www.linkedin.com/jobs/search/?keywords={cargo}&location=Brazil&f_E={nivel}`
+  - `f_E=3` = Pleno/Associado | `f_E=4` = Sênior | `f_E=5` = Diretor
+  - Sem `f_E` retorna mix de todos os níveis — sempre usar o filtro
+  - User-Agent: `Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)`
+- Complemento WebSearch: `"{cargo} pleno site:linkedin.com/jobs brasil"` — cobre vagas não retornadas pelo WebFetch
+
+*Descrever:*
+- WebFetch com Googlebot UA na URL individual `https://www.linkedin.com/jobs/view/{id}`
+
+---
+
+**Portal 3 — InfoJobs BR** (prioridade média)
+
+*Listar:*
+- WebFetch com Chrome UA: `https://www.infojobs.com.br/vagas-de-emprego-{cargo-slug}.aspx`
+  - **Não usar** o padrão `/empregos-en-{cargo-slug},{estado}.aspx` — retorna resultados completamente irrelevantes
+  - User-Agent: `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36`
+
+*Descrever:*
+- WebFetch com Chrome UA na URL individual `https://www.infojobs.com.br/vaga-de-{slug}.aspx`
+
+---
+
+**Portal 4 — Glassdoor BR** (opcional — bom complemento)
+
+*Listar:*
+- WebSearch (WebFetch retorna 403 — nunca tentar WebFetch direto): `"site:glassdoor.com.br vagas {cargo} brasil"`
+- Playwright como fallback quando snippets insuficientes: `browser_navigate → https://www.glassdoor.com.br/Vagas/{cargo-slug}-vagas-SRCH_KO0,{n}.htm` + `browser_snapshot`
+  - Reutilizar o mesmo browser context da sessão — não abrir nova aba
+
+*Descrever:*
+- Playwright `browser_navigate` + `browser_snapshot` na URL individual (WebFetch bloqueado com 403)
+
+---
+
+**Portal 5 — vagas.com.br** (fallback — baixa cobertura tech)
+
+*Listar:*
+- WebFetch com Chrome UA: `https://www.vagas.com.br/vagas-de-{cargo-slug}`
+  - Retorna ~3-9 vagas para cargos tech — usar apenas se os portais prioritários ficaram abaixo da profundidade alvo
+
+*Descrever:*
+- WebFetch na URL individual — HTML estático completo
+
+---
+
+**Portal 6 — Catho** (requer sessão)
+
+*Listar:*
+- Playwright MCP: `browser_navigate → https://www.catho.com.br/vagas/{cargo-slug}/` + `browser_snapshot`
+
+*Descrever:*
+- Requer sessão autenticada para acessar URL individual; sem sessão, registrar `fetchedFull: false` e não tentar clicar nas vagas — o portal bloqueia a navegação sem login
 
 **Sessão autenticada (quando disponível):**
 - Se `$DATA_PATH/sessions/{portal}-session.json` existir → passar como `storageState` para o Playwright MCP daquele portal.
@@ -146,11 +206,13 @@ Registrar cada query em `sources[]`:
 - Priorizar vagas com snippets mais ricos (mais texto sobre requisitos e stack)
 - Quando filtro é `médias+` ou `grandes+`: priorizar vagas de empresas que parecem médias/grandes pelo nome ou contexto
 
-**3.3 — Executar WebFetch:**
-- LinkedIn: extrair títulos e empresas de `<h3 class="base-search-card__title">` na SERP; fazer WebFetch de vagas individuais para descrição completa.
-- Gupy: snapshot do Playwright retorna lista estruturada (título, empresa, localização, URL da vaga). URLs individuais no formato `{empresa}.gupy.io/job/{base64_id}` — acessar via WebFetch ou Playwright para descrição.
-- vagas.com.br: listagem retorna ~9 links no HTML inicial; vagas individuais têm HTML estático completo.
-- InfoJobs: listagem retorna ~5 `data-href` visíveis; vagas individuais (~100KB) acessíveis via WebFetch.
+**3.3 — Executar fetch das descrições individuais (conforme estratégia do portal):**
+- **Gupy:** URLs no formato `{empresa}.gupy.io/job/{base64_id}` — WebFetch direto, HTML estático completo.
+- **LinkedIn:** WebFetch com Googlebot UA em `linkedin.com/jobs/view/{id}`. Extrair títulos/empresas da SERP do Step 2.
+- **InfoJobs:** vagas individuais em `infojobs.com.br/vaga-de-{slug}.aspx` — WebFetch com Chrome UA (~100KB por vaga).
+- **Glassdoor:** WebFetch retorna 403 — usar Playwright `browser_navigate` + `browser_snapshot` na URL individual. Reutilizar o mesmo browser context.
+- **vagas.com.br:** listagem retorna ~3-9 links; vagas individuais acessíveis via WebFetch com HTML estático.
+- **Catho:** sem sessão autenticada, não tentar descrição individual — registrar `fetchedFull: false`.
 
 **3.4 — Tratar falhas:**
 - WebFetch que retorna 403, 404 ou timeout → registrar como `status: "unavailable"` em `sources[]` e prosseguir.
@@ -239,8 +301,7 @@ console.log("Vagas salvas em:", filePath);
     "role": "Engenheiro Sênior de Software",
     "location": "Nacional",
     "seniority": "Sênior",
-    "stack": ["Java", "Python", "TypeScript"],
-    "industry": "Tecnologia",
+    "stack": [],
     "companySize": "médias+"
   },
   "sessions": [
@@ -378,6 +439,8 @@ Próxima ação sugerida:
 - **profileHints usa apenas os campos do JobProfile (D-01):** `responsibilities[]`, `qualifications[]` (com `required:boolean`), `behaviors[]`, `challenges[]`, `suggestedTitle`, `suggestedExperienceLevel`. Não inventar campos novos. `qualifications` é `ProfileItem[]` com `{ text: string, required: boolean }` — não `string[]`.
 - **Colisão de nome no mesmo dia:** sufixo `-2`, `-3` inserido ANTES de `-vagas` e `-resumo`. Exemplo: `...sp-2026-04-22-2-vagas.json` e `...sp-2026-04-22-2-resumo.json`.
 - **node -e para salvar JSON:** não usar heredoc — evita problemas com aspas e newlines no conteúdo das vagas. Usar sempre **aspas simples** no shell (`node -e '...'`): aspas duplas fazem o bash interpretar `$` seguido de dígitos como variável de ambiente vazia — `R$7k` vira `R.7k` silenciosamente.
+- **Playwright MCP — nunca chamar `browser_close`:** chamar `browser_close` encerra o browser permanentemente para toda a sessão — sem possibilidade de reabrir automaticamente. Deixar o browser aberto entre todas as navegações. O contexto é compartilhado: usar o mesmo browser para Gupy e depois Catho, sem fechar entre portais.
+- **Playwright MCP — verificar disponibilidade antes de usar:** tentar `browser_navigate` como primeiro passo; se retornar "Tool not found" ou "browser closed", prosseguir somente com WebFetch/WebSearch para os portais Playwright e registrar como `"unavailable"` em `sources[]`.
 - **Playwright MCP — configuração headless:** o plugin `playwright@claude-plugins-official` abre janela de browser visível por padrão. Para rodar headless, editar `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`:
   ```json
   {"playwright": {"command": "npx", "args": ["@playwright/mcp@latest", "--headless"]}}
@@ -419,6 +482,9 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 **"Browser abriu uma janela de browser visível / foi fechado acidentalmente"**
 → O plugin `@playwright/mcp` roda em modo headed por padrão — abre uma janela real do Chromium. Fechar essa janela destrói o contexto permanentemente para a sessão (sem reabertura automática). Para evitar: configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json` e adicionar `"--headless"` nos args (ver Notes). Reiniciar o Claude Code após salvar. Se a janela já foi fechada, reiniciar o Claude Code para recuperar o MCP.
 
+**"Playwright retorna 'Target page, context or browser has been closed' na primeira chamada"**
+→ O browser foi fechado em uma sessão anterior (por `browser_close` ou pelo usuário fechando a janela). O playwright-mcp não relança o browser automaticamente. Único caminho: reiniciar o Claude Code — isso relança o processo MCP com browser limpo. Enquanto isso, prosseguir só com WebFetch/WebSearch para todos os portais e registrar Gupy e Catho como `"unavailable"` em `sources[]`.
+
 **"Erro de path traversal detectado"**
 → O slug gerado contém caracteres inválidos. A skill sanitiza automaticamente — se ocorreu mesmo assim, reportar o cargo/escopo fornecido ao gestor para diagnóstico.
 
@@ -431,5 +497,5 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 ---
 
 **Skill created:** 2026-04-22
-**Updated:** —
+**Updated:** 2026-04-22 — ajustes pós-primeira execução: stacks removidas do input (são output), indústria default Livre, queries sem stack-principal, URL InfoJobs corrigida, LinkedIn com filtro f_E por nível, Catho documentada como unavailable sem sessão, vagas.com.br rebaixada para fallback
 **Status:** Ready for Claude Code integration
