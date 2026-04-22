@@ -20,6 +20,7 @@ salariais públicos de múltiplas fontes, consolida os dados no schema D-24 e at
 
 - Acesso a WebSearch e WebFetch (obrigatórios)
 - Playwright MCP `playwright@claude-plugins-official` disponível (opcional — fallback quando snippets insuficientes; ver Notes sobre uso correto)
+  - **Configuração necessária para headless:** o plugin abre janela de browser visível por padrão. Para evitar que o usuário feche acidentalmente a janela e destrua o contexto, configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`: adicionar `"--headless"` nos args e reiniciar o Claude Code (configuração única por máquina — ver Notes)
 - `data/research/roles-map.json` pode ou não existir (a skill cria se não existir)
 
 ## Execution Flow
@@ -360,6 +361,15 @@ Adicionados: {M} | Atualizados: {P}
   - **Nunca chamar `browser_close`** durante a execução da skill — fecha o browser permanentemente para a sessão sem possibilidade de reabertura automática
   - O browser fica aberto entre navegações: usar o mesmo contexto para todas as fontes que precisarem de Playwright (RH calculadora → Glassdoor gaps)
   - Se o erro "Target page, context or browser has been closed" aparecer logo na primeira chamada, o browser foi fechado em uma sessão anterior — ver Troubleshooting
+  - **Configuração headless (recomendada):** o plugin abre janela de browser visível por padrão. Configurar headless editando o arquivo abaixo e reiniciando o Claude Code:
+    ```
+    ~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json
+    ```
+    Conteúdo correto com headless:
+    ```json
+    {"playwright": {"command": "npx", "args": ["@playwright/mcp@latest", "--headless"]}}
+    ```
+    Esta é uma configuração única por máquina. Sem ela, fechar a janela do browser durante a execução destrói o contexto permanentemente.
 
 - **Mapeamento de títulos Robert Half para cargos de dados:**
   - "Analista de Dados" → RH categoriza como **"Analista de BI"** (Júnior/Pleno/Sênior)
@@ -402,7 +412,14 @@ Adicionados: {M} | Atualizados: {P}
 → Verificar mapeamento de títulos em Notes. RH usa "Analista de BI" (não "Analista de Dados") e não lista "Engenheiro de Dados". Para Eng Dados, usar Glassdoor SP como âncora primária.
 
 **"Playwright retorna 'Target page, context or browser has been closed' na primeira chamada"**
-→ O browser foi fechado em uma sessão anterior (tipicamente por um `browser_close` explícito). O playwright-mcp não relança o browser automaticamente. Único caminho: reiniciar o Claude Code — isso relança o processo MCP com browser limpo. Enquanto isso, prosseguir com a cadeia de fallback: cobertura jornalística (1c) para RH e snippets de WebSearch para Glassdoor. A skill produz resultados de qualidade mesmo sem Playwright.
+→ O browser foi fechado em uma sessão anterior (tipicamente por um `browser_close` explícito ou pelo usuário fechando a janela). O playwright-mcp não relança o browser automaticamente. Único caminho: reiniciar o Claude Code — isso relança o processo MCP com browser limpo. Enquanto isso, prosseguir com a cadeia de fallback: cobertura jornalística (1c) para RH e snippets de WebSearch para Glassdoor. A skill produz resultados de qualidade mesmo sem Playwright.
+
+**"Browser abriu uma janela de browser visível durante a execução"**
+→ O plugin `@playwright/mcp` roda em modo headed por padrão — abre uma janela real do Chromium. Para rodar headless e evitar esse problema permanentemente, editar `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json` e adicionar `"--headless"` nos args:
+```json
+{"playwright": {"command": "npx", "args": ["@playwright/mcp@latest", "--headless"]}}
+```
+Reiniciar o Claude Code após salvar. Enquanto não configurado, **não fechar** a janela — fechar destrói o contexto permanentemente para a sessão.
 
 **"Ferramentas mcp__plugin_playwright_playwright__* não aparecem no contexto"**
 → O plugin `playwright@claude-plugins-official` não está habilitado ou o processo MCP morreu. Verificar `enabledPlugins` no `settings.json`. Se o processo foi morto manualmente (kill), as ferramentas ficam indisponíveis até reiniciar o Claude Code — reiniciar resolve.

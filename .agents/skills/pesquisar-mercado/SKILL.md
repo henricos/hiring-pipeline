@@ -21,6 +21,7 @@ por execução: vagas brutas e resumo executivo com profileHints prontos para o 
 - DATA_PATH environment variable set e apontando para o repositório de dados
 - Acesso a WebSearch e WebFetch (para LinkedIn, vagas.com.br, InfoJobs)
 - Playwright MCP disponível (`mcp__plugin_playwright_playwright__*`) para Gupy e Catho
+  - **Configuração necessária para headless:** o plugin abre janela de browser visível por padrão. Para evitar que o usuário feche acidentalmente a janela e destrua o contexto, configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`: adicionar `"--headless"` nos args e reiniciar o Claude Code (configuração única por máquina — ver Notes)
 - (Opcional) Sessão autenticada disponível em `$DATA_PATH/sessions/{portal}-session.json`
 
 ## Execution Flow
@@ -192,22 +193,22 @@ node -e "require('fs').mkdirSync(require('path').join(process.env.DATA_PATH || '
 **5.3 — Salvar vagas brutas via node -e (NÃO heredoc — evita problemas com aspas e newlines):**
 
 ```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const dataPath = process.env.DATA_PATH || './data';
-const fileName = '{slug}-{date}-vagas.json';
-const filePath = path.resolve(dataPath, 'research', fileName);
+node -e '
+const fs = require("fs");
+const path = require("path");
+const dataPath = process.env.DATA_PATH || "./data";
+const fileName = "{slug}-{date}-vagas.json";
+const filePath = path.resolve(dataPath, "research", fileName);
 // Validar path traversal antes de escrever
-const researchDir = path.resolve(dataPath, 'research');
+const researchDir = path.resolve(dataPath, "research");
 if (!filePath.startsWith(researchDir)) {
-  console.error('Path traversal detectado — abortando');
+  console.error("Path traversal detectado — abortando");
   process.exit(1);
 }
 const vagasData = {/* objeto completo conforme schema abaixo */};
 fs.writeFileSync(filePath, JSON.stringify(vagasData, null, 2));
-console.log('Vagas salvas em:', filePath);
-"
+console.log("Vagas salvas em:", filePath);
+'
 ```
 
 **Schema completo de {slug}-{date}-vagas.json:**
@@ -359,7 +360,12 @@ Próxima ação sugerida:
 - **salaryRange nulo é correto:** quando nenhuma vaga coletada exibiu faixa salarial, `salaryRange: null` é o valor correto em `summary`. NÃO inventar valores ou usar ranges do `roles-map.json` como substituto para dados ausentes nas vagas coletadas.
 - **profileHints usa apenas os campos do JobProfile (D-01):** `responsibilities[]`, `qualifications[]` (com `required:boolean`), `behaviors[]`, `challenges[]`, `suggestedTitle`, `suggestedExperienceLevel`. Não inventar campos novos. `qualifications` é `ProfileItem[]` com `{ text: string, required: boolean }` — não `string[]`.
 - **Colisão de nome no mesmo dia:** sufixo `-2`, `-3` inserido ANTES de `-vagas` e `-resumo`. Exemplo: `...sp-2026-04-22-2-vagas.json` e `...sp-2026-04-22-2-resumo.json`.
-- **node -e para salvar JSON:** não usar heredoc — evita problemas com aspas e newlines no conteúdo das vagas.
+- **node -e para salvar JSON:** não usar heredoc — evita problemas com aspas e newlines no conteúdo das vagas. Usar sempre **aspas simples** no shell (`node -e '...'`): aspas duplas fazem o bash interpretar `$` seguido de dígitos como variável de ambiente vazia — `R$7k` vira `R.7k` silenciosamente.
+- **Playwright MCP — configuração headless:** o plugin `playwright@claude-plugins-official` abre janela de browser visível por padrão. Para rodar headless, editar `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`:
+  ```json
+  {"playwright": {"command": "npx", "args": ["@playwright/mcp@latest", "--headless"]}}
+  ```
+  Reiniciar o Claude Code após a mudança (configuração única por máquina). Sem isso, fechar a janela durante a execução destrói o contexto permanentemente para a sessão.
 - **WebFetch que falha:** registrar como `"unavailable"` em `sources[]` e continuar. Sem retry agressivo.
 - **Filtro de porte é heurística best-effort:** a classificação de porte por nome da empresa pode errar. Vagas com `companySize: "desconhecido"` são incluídas mesmo em filtros restritivos. Documentar no output quantas vagas tiveram porte estimado vs. desconhecido.
 - **Gupy sem sessão é funcional:** 23+ vagas retornadas via Playwright MCP sem autenticação. Não classificar Gupy como "unavailable" por ausência de sessão.
@@ -392,6 +398,9 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 
 **"Arquivo já existe com o mesmo nome"**
 → Comportamento esperado ao rodar duas pesquisas com mesmo escopo no mesmo dia. O Step 5 detecta colisão automaticamente e usa sufixo `-2`, `-3`, etc.
+
+**"Browser abriu uma janela de browser visível / foi fechado acidentalmente"**
+→ O plugin `@playwright/mcp` roda em modo headed por padrão — abre uma janela real do Chromium. Fechar essa janela destrói o contexto permanentemente para a sessão (sem reabertura automática). Para evitar: configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json` e adicionar `"--headless"` nos args (ver Notes). Reiniciar o Claude Code após salvar. Se a janela já foi fechada, reiniciar o Claude Code para recuperar o MCP.
 
 **"Erro de path traversal detectado"**
 → O slug gerado contém caracteres inválidos. A skill sanitiza automaticamente — se ocorreu mesmo assim, reportar o cargo/escopo fornecido ao gestor para diagnóstico.
