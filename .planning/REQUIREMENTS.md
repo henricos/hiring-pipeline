@@ -17,7 +17,7 @@
 
 - [x] **IA-01**: Agente de IA pode sugerir requisitos e habilidades com base no título e contexto da vaga
 - [x] **IA-02**: Agente de IA pode melhorar a redação da descrição da vaga
-- [ ] **IA-03**: Agente de IA adapta textos para o contexto da área de P&D/Lyceum
+- [x] **IA-03**: Agente de IA adapta textos para o contexto da área de P&D/Lyceum
 
 ### Abertura de Vagas
 
@@ -72,7 +72,7 @@
 | PROF-05 | Phase 2 | Complete ✓ 2026-04-20 |
 | IA-01 | Phase 3 | Complete |
 | IA-02 | Phase 3 | Complete |
-| IA-03 | Phase 3 | Pending |
+| IA-03 | Phase 3 | Complete |
 | VAG-01 | Phase 4 | Pending |
 | VAG-02 | Phase 4 | Pending |
 | VAG-03 | Phase 4 | Pending |

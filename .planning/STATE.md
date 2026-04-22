@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: In Progress
-last_updated: "2026-04-22T00:00:00.000Z"
+status: Ready to execute
+last_updated: "2026-04-22T12:29:17.775Z"
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 30
-  completed_plans: 29
-  percent: 80
+  completed_phases: 2
+  total_plans: 23
+  completed_plans: 30
+  percent: 100
 ---
 
 # State: Hiring Pipeline v1
@@ -27,15 +27,15 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** In Progress — 2/6 planos executados (05-02 checkpoint:human-verify — aguardando aprovação do gestor para roles-map.json)
-**Current Focus:** Phase 5 — Checkpoint em 05-02: gestor deve validar qualidade e cobertura do roles-map.json
+**Phase 5 Status:** In Progress — 3/6 planos executados (05-03 concluído — skill /pesquisar-mercado criada)
+**Current Focus:** Phase 5 — Próximo: 05-04 (evolução /refinar-perfil com contexto de pesquisa + Step holístico)
 
 ---
 
 ## Current Position
 
 Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
-Plan: 2 of 6 executed (05-02 checkpoint:human-verify — aguardando aprovação do gestor para roles-map.json)
+Plan: 3 of 6 executed (05-03 concluído — skill /pesquisar-mercado com 7 steps criada)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
 **Overall Progress:** [########--] 80%
@@ -45,6 +45,15 @@ Plan: 2 of 6 executed (05-02 checkpoint:human-verify — aguardando aprovação 
 ---
 
 ## Decision Log
+
+### Phase 5 Decisions (05-03)
+
+| Date | Decision | Rationale | Status |
+|------|----------|-----------|--------|
+| 2026-04-22 | Skill /pesquisar-mercado com output dual vagas.json + resumo.json | Separar evidências brutas (auditoria/histórico) de resumo executivo (consumido por /refinar-perfil) — D-05 | Active |
+| 2026-04-22 | .claude/skills e .cursor/skills são symlinks para .agents/skills — arquivo único | Não há "apontamentos" separados: qualquer arquivo criado em .agents/skills/ já é acessível nos três paths automaticamente | Active |
+| 2026-04-22 | companySize "desconhecido" sempre incluído mesmo em filtros restritivos | Heurística de porte pode errar; benefício da dúvida evita perder vagas relevantes de empresas não identificadas — D-26 | Active |
+| 2026-04-22 | qualifications em profileHints como ProfileItem[] ({ text, required }) | Compatibilidade obrigatória com schema imutável do JobProfile (D-01); não quebrar downstream do /refinar-perfil | Active |
 
 ### Phase 5 Decisions (05-02)
 
@@ -120,6 +129,18 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-03 (2026-04-22)
+
+- Plano 05-03 concluído: skill /pesquisar-mercado criada como fonte de verdade em .agents/skills/
+- 7 steps completos: escopo conversacional, detecção de sessões autenticadas, WebSearch+Playwright, WebFetch, extração+filtro de porte, salvar vagas.json, gerar resumo.json+profileHints, exibir resultado
+- Portais aprovados incorporados: Gupy (Playwright MCP), LinkedIn (Googlebot UA), vagas.com.br, InfoJobs, Catho (Playwright)
+- Output dual documentado com schemas completos: {slug}-{date}-vagas.json + {slug}-{date}-resumo.json
+- Filtro de porte (D-26) implementado com heurística best-effort documentada
+- Guardrails de privacidade: sanitização de slug [a-z0-9-], path traversal via path.resolve(), privacidade de sessões
+- Descoberta: .claude/skills e .cursor/skills são symlinks para .agents/skills — arquivo físico único, não duplicação
+- Commit: ecce4f3 (.agents/skills/pesquisar-mercado/SKILL.md)
+- Concluído sem checkpoints — plano totalmente autônomo
 
 ### Sessão de Execução Phase 05 — Plano 05-02 (2026-04-22)
 
