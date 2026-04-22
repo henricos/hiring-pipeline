@@ -14,7 +14,7 @@ progress:
 
 # State: Hiring Pipeline v1
 
-**Last updated:** 2026-04-21  
+**Last updated:** 2026-04-22  
 **Mode:** YOLO (iterate on feedback, validate with users)
 **Phase 1 Status:** Complete ✓ 2026-04-19
 **Phase 2 Status:** Complete ✓ 2026-04-20
@@ -27,15 +27,15 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** In Progress — 1/6 planos executados (05-01 aguardando aprovação humana do documento de portais)
-**Current Focus:** Phase 5 — Checkpoint em 05-01: gestor deve aprovar 05-01-PORTALS.md antes de prosseguir para 05-03
+**Phase 5 Status:** In Progress — 2/6 planos executados (05-02 checkpoint:human-verify — aguardando aprovação do gestor para roles-map.json)
+**Current Focus:** Phase 5 — Checkpoint em 05-02: gestor deve validar qualidade e cobertura do roles-map.json
 
 ---
 
 ## Current Position
 
 Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
-Plan: 1 of 6 executed (05-01 checkpoint_pending — aguardando aprovação humana)
+Plan: 2 of 6 executed (05-02 checkpoint:human-verify — aguardando aprovação do gestor para roles-map.json)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
 **Overall Progress:** [########--] 80%
@@ -45,6 +45,15 @@ Plan: 1 of 6 executed (05-01 checkpoint_pending — aguardando aprovação human
 ---
 
 ## Decision Log
+
+### Phase 5 Decisions (05-02)
+
+| Date | Decision | Rationale | Status |
+|------|----------|-----------|--------|
+| 2026-04-22 | roles-map.json com 12 cargos (acima do mínimo de 10) | Cobertura completa do espectro Júnior→Principal + roles emergentes (AI Engineer, Platform Engineer) | Active |
+| 2026-04-22 | Todos os 12 cargos com salaryRange não-null | Fontes públicas (Robert Half, Glassdoor BR, Catho, Revelo) disponíveis para todos os níveis | Active |
+| 2026-04-22 | Campo `methodology` adicionado ao JSON raiz | Transparência sobre cálculo das faixas (percentil 25-75 CLT mensal bruta) — não viola schema D-24 | Active |
+| 2026-04-22 | Glassdoor BR bloqueado (WebFetch) — dados via guias salariais públicos | Conforme documentado em 05-01-PORTALS.md; dados salariais obtidos via consolidação de fontes públicas | Active |
 
 ### Phase 5 Decisions (05-01)
 
@@ -111,6 +120,16 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-02 (2026-04-22)
+
+- Plano 05-02 concluído (Task 1): mapa global de cargos/funções BR para engenharia de software
+- 12 cargos mapeados: Júnior, Pleno, Sênior, Tech Lead, Staff Engineer, Principal Engineer, Arquiteto, Especialista, AI Engineer, ML Engineer, Data Engineer, Platform Engineer
+- Todos os 12 cargos com salaryRange não-null — faixas salariais SP 2026 baseadas em Robert Half, Glassdoor BR, Catho, Revelo
+- Aliases em PT-BR e EN documentados por cargo; notas de tendência de mercado incluídas
+- Títulos emergentes incluídos: Staff Engineer, Principal Engineer, AI Engineer, Platform Engineer
+- Commit no repositório de dados: 64451b2 (data/research/roles-map.json)
+- Parado em: Task 2 é checkpoint:human-verify — aguardando aprovação do gestor da qualidade do roles-map.json
 
 ### Sessão de Execução Phase 05 — Plano 05-01 (2026-04-22)
 
