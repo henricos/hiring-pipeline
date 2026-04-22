@@ -2,6 +2,7 @@
 phase: 05-market-research-holistic-refinement
 plan: "02"
 subsystem: research
+status: complete
 tags: [roles-map, salary-research, market-research, json, data-layer]
 
 # Dependency graph
@@ -59,7 +60,7 @@ completed: "2026-04-22"
 - **Duration:** 3 min
 - **Started:** 2026-04-22T11:21:53Z
 - **Completed:** 2026-04-22T11:24:39Z
-- **Tasks:** 1 de 2 executada (Task 2 é checkpoint:human-verify — aguardando aprovação do gestor)
+- **Tasks:** 2/2 (Task 2 aprovada pelo gestor em 2026-04-22)
 - **Files modified:** 1 (data/research/roles-map.json — no repositório de dados)
 
 ## Accomplishments
