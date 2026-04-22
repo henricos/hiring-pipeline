@@ -146,16 +146,16 @@ Plans:
 4. The P&D/Lyceum area has a well-articulated `aiProfileInstructions` value persisted via `/settings`
 5. Piloto executado: perfil Senior P&D (Java + Python + TS) gerado end-to-end pelo fluxo completo, respeitando o schema imutável do JobProfile
 
-**Plans:** 5 plans (not planned yet)
+**Plans:** 5 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Research e decisão de portais BR + queries default (bloqueia 05-02)
-- [ ] 05-02-PLAN.md — Skill `/pesquisar-mercado` + pasta `data/research/` + convenção slug-data
-- [ ] 05-03-PLAN.md — Evolução `/refinar-perfil`: contexto de pesquisa no Step 2 + novo Step 5 holístico
-- [ ] 05-04-PLAN.md — Definir `aiProfileInstructions` da área P&D/Lyceum (discussão socrática + persistência via /settings)
-- [ ] 05-05-PLAN.md — Execução piloto: perfil Senior P&D Java+Python+TS via fluxo completo
+- [ ] 05-01-PLAN.md — Wave 1 (checkpoint): Research e decisão de portais BR + queries default — investiga cobertura real e produz 05-01-PORTALS.md (bloqueia 05-02)
+- [ ] 05-02-PLAN.md — Wave 2: Skill `/pesquisar-mercado` — 3 arquivos (.agents/ + .claude/ + .cursor/), 6 steps, schema D-07, guardrails D-08
+- [ ] 05-03-PLAN.md — Wave 3: Evolução `/refinar-perfil` — Step 2 com pesquisa opcional + Step 5 holístico + renumeração Step 5→6
+- [ ] 05-04-PLAN.md — Wave 3 (checkpoint): Discussão socrática aiProfileInstructions P&D/Lyceum + persistência via /settings + template de reuso
+- [ ] 05-05-PLAN.md — Wave 4 (checkpoint): Piloto end-to-end — /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel
 
-**Context:** `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (brief completo com decisões D-01 a D-21, canonical refs, sub-plans e verification)
+**Context:** `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (brief completo com decisões D-01 a D-23, canonical refs, sub-plans e verification)
 
 ---
 
@@ -167,7 +167,7 @@ Plans:
 | 2. Job Profile Library | 4/4 | Complete | 2026-04-20 |
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
-| 5. Market Research & Holistic Refinement | 0/5 | Not planned | — |
+| 5. Market Research & Holistic Refinement | 0/5 | Planned | — |
 
 ---
 
@@ -178,3 +178,4 @@ Plans:
 *Phase 3 gap closure planned: 2026-04-20*
 *Phase 4 planned: 2026-04-21*
 *Phase 5 added: 2026-04-21*
+*Phase 5 planned: 2026-04-21*
