@@ -27,15 +27,15 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** Ready to execute — 6/6 planos planejados 2026-04-22 (replanejado com estrutura de pesquisa revisada: roles-map + dual-file output + sessões autenticadas + filtro de porte)
-**Current Focus:** Phase 5 — 6 planos prontos para execução. Próximo: /gsd-execute-phase 5
+**Phase 5 Status:** In Progress — 1/6 planos executados (05-01 aguardando aprovação humana do documento de portais)
+**Current Focus:** Phase 5 — Checkpoint em 05-01: gestor deve aprovar 05-01-PORTALS.md antes de prosseguir para 05-03
 
 ---
 
 ## Current Position
 
-Phase: 05 (market-research-holistic-refinement) — READY TO EXECUTE
-Plan: 0 of 6 executed (6/6 planned)
+Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
+Plan: 1 of 6 executed (05-01 checkpoint_pending — aguardando aprovação humana)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
 **Overall Progress:** [########--] 80%
@@ -45,6 +45,16 @@ Plan: 0 of 6 executed (6/6 planned)
 ---
 
 ## Decision Log
+
+### Phase 5 Decisions (05-01)
+
+| Date | Decision | Rationale | Status |
+|------|----------|-----------|--------|
+| 2026-04-22 | LinkedIn aprovado via User-Agent Googlebot | Retorna 22-25 vagas na SERP e descrições completas sem autenticação; Chrome UA causa redirect para login | Active |
+| 2026-04-22 | Gupy requer Playwright/sessão autenticada | Lista de vagas 100% client-side JS + JWT; sem endpoint público anônimo | Active |
+| 2026-04-22 | Glassdoor descartado — 403 consistente | Bloqueado em todas as variações testadas (4 URLs, 3 User-Agents) | Active |
+| 2026-04-22 | Catho descartado — fora do ar | Domínio retorna 404 em qualquer URL em abril/2026 | Active |
+| 2026-04-22 | Query PT preferencial para LinkedIn | +2-3 vagas vs EN; Staff Engineer como exceção (quase exclusivamente EN no mercado BR) | Active |
 
 ### Foundational Decisions
 
@@ -101,6 +111,17 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-01 (2026-04-22)
+
+- Plano 05-01 concluído (Task 1): pesquisa real de portais BR para /pesquisar-mercado
+- 7 portais testados via WebFetch real (curl, múltiplos User-Agents)
+- 4 portais aprovados: LinkedIn (OK via Googlebot UA), vagas.com.br (OK parcial), InfoJobs BR (OK parcial), Gupy (requer Playwright)
+- 3 portais descartados: Glassdoor (403 consistente), Catho (404 — fora do ar), Remotar (remoto-only)
+- Queries PT e EN testadas — PT preferencial (+2-3 vagas no LinkedIn); EN recomendado para Staff Engineer
+- Instruções de sessão autenticada via Playwright documentadas para LinkedIn e Gupy
+- Commit: 56860ac (05-01-PORTALS.md)
+- Parado em: Task 2 é checkpoint:human-verify — aguardando aprovação do gestor do documento 05-01-PORTALS.md
 
 ### Sessão de Execução Phase 04 — Plano 04-05 (2026-04-21)
 
