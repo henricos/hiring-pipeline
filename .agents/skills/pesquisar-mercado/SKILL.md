@@ -18,13 +18,30 @@ por execução: vagas brutas e resumo executivo com profileHints prontos para o 
 
 ## Pre-Conditions
 
-- DATA_PATH environment variable set e apontando para o repositório de dados
+- DATA_PATH disponível no ambiente ou em `.env.local` na raiz do projeto (carregado automaticamente no Step 0)
 - Acesso a WebSearch e WebFetch (para LinkedIn, vagas.com.br, InfoJobs)
 - Playwright MCP disponível (`mcp__plugin_playwright_playwright__*`) para Gupy e Catho
   - **Configuração necessária para headless:** o plugin abre janela de browser visível por padrão. Para evitar que o usuário feche acidentalmente a janela e destrua o contexto, configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`: adicionar `"--headless"` nos args e reiniciar o Claude Code (configuração única por máquina — ver Notes)
 - (Opcional) Sessão autenticada disponível em `$DATA_PATH/sessions/{portal}-session.json`
 
 ## Execution Flow
+
+### Step 0: Carregar Variáveis de Ambiente
+
+Se `DATA_PATH` não estiver definido no ambiente, carregar do `.env.local` na raiz do projeto:
+
+```bash
+if [ -z "$DATA_PATH" ]; then
+  set -a && source .env.local && set +a
+fi
+```
+
+Se `DATA_PATH` ainda não estiver definido após o carregamento, exibir erro e encerrar:
+
+```
+Erro: DATA_PATH não encontrado em .env.local nem no ambiente.
+Configure a variável e tente novamente.
+```
 
 ### Step 1: Coletar Escopo Conversacional
 

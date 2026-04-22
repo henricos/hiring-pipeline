@@ -15,11 +15,28 @@ agent collects structured data and persists JSON.
 
 ## Pre-Conditions
 
-- DATA_PATH environment variable set and pointing to the data repository directory
+- DATA_PATH disponível no ambiente ou em `.env.local` na raiz do projeto (carregado automaticamente no Step 0)
 - At least one job profile exists in DATA_PATH/profiles/*.json
 - Node.js available to run scripts for listing profiles and generating UUIDs
 
 ## Execution Flow
+
+### Step 0: Carregar Variáveis de Ambiente
+
+Se `DATA_PATH` não estiver definido no ambiente, carregar do `.env.local` na raiz do projeto:
+
+```bash
+if [ -z "$DATA_PATH" ]; then
+  set -a && source .env.local && set +a
+fi
+```
+
+Se `DATA_PATH` ainda não estiver definido após o carregamento, exibir erro e encerrar:
+
+```
+Erro: DATA_PATH não encontrado em .env.local nem no ambiente.
+Configure a variável e tente novamente.
+```
 
 ### Step 1: List Available Profiles
 
