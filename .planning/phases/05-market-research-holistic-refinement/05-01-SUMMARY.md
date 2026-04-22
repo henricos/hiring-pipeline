@@ -3,7 +3,7 @@ phase: 05-market-research-holistic-refinement
 plan: 01
 subsystem: research
 tags: [portais-br, job-boards, linkedin, gupy, vagas-com-br, infojobs, playwright, websearch, webfetch]
-status: checkpoint_pending
+status: complete
 
 # Dependency graph
 requires:
@@ -51,19 +51,18 @@ completed: 2026-04-22
 
 **Discovery de portais BR com WebFetch real: LinkedIn (OK via Googlebot), vagas.com.br (OK parcial), InfoJobs BR (OK parcial), Gupy (requer Playwright), Glassdoor (403), Catho (404)**
 
-## Status: CHECKPOINT PENDING
+## Status: COMPLETE
 
-- **Checkpoint type:** human-verify
-- **Checkpoint task:** Task 2: Validar qualidade e completude do 05-01-PORTALS.md
-- **Awaiting:** Gestor confirma lista de portais, queries por senioridade e instruções de sessão autenticada
-- **Resume signal:** "aprovado" (ou descreva ajustes necessários no documento)
+- **Task 2 (checkpoint:human-verify):** Gestor aprovou 05-01-PORTALS.md em 2026-04-22
+- **Portais aprovados:** Gupy, LinkedIn, vagas.com.br, InfoJobs, Catho (pendente Playwright)
+- **Portais descartados:** Glassdoor (403), Remotar (só remoto)
 
 ## Performance
 
 - **Duration:** 11 min
 - **Started:** 2026-04-22T10:38:04Z
 - **Completed:** 2026-04-22T10:49:45Z
-- **Tasks:** 1 de 2 (Task 2 é checkpoint:human-verify, aguardando aprovação)
+- **Tasks:** 2/2 (Task 2 aprovada pelo gestor em 2026-04-22)
 - **Files modified:** 1
 
 ## Accomplishments
