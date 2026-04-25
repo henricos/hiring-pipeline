@@ -6,7 +6,7 @@ status: Ready to execute
 last_updated: "2026-04-25T00:00:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 5
   total_plans: 23
   completed_plans: 30
   percent: 100
@@ -27,18 +27,18 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** In Progress — 5/6 planos executados (05-05 concluído — aiProfileInstructions P&D/Lyceum persistido)
-**Current Focus:** Phase 5 — Próximo: 05-06 (piloto end-to-end: /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel)
+**Phase 5 Status:** Complete ✓ 2026-04-25 (6/6 planos executados — piloto end-to-end validado)
+**Current Focus:** Milestone v1.0 completo — próximo: bump SemVer via `/fechar-versao`
 
 ---
 
 ## Current Position
 
-Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
-Plan: 5 of 6 executed (05-05 concluído — aiProfileInstructions P&D/Lyceum persistido em settings.json)
-**Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
-**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
-**Overall Progress:** [#########-] 90%
+Phase: 05 (market-research-holistic-refinement) — COMPLETE ✓
+Plan: 6 of 6 executed (05-06 concluído — piloto end-to-end /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel validado)
+**Milestone:** v1 Hiring Pipeline — TODAS AS PHASES CONCLUÍDAS — pronto para bump SemVer via `/fechar-versao`
+**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ✓
+**Overall Progress:** [##########] 100%
 
 **At risk:** None
 
@@ -138,6 +138,17 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-06 (2026-04-25)
+
+- Plano 05-06 concluído: piloto end-to-end /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel
+- Escopo piloto: Desenvolvedor Frontend Sênior | SP | médias+ | profundidade média
+- Pesquisa gerada: dev-frontend-senior-2026-04-25-vagas.json (15 jobs) + resumo.json (4 campos profileHints)
+- Filtro médias+ ativo: 0 vagas de pequenas empresas
+- Perfil refinado: Desenvolvedor Frontend Sênior (f12a81a0) — schema D-01 respeitado (string[], ProfileItem[])
+- Vaga criada: df1e8fb7 às 22:32:13 UTC; Excel gerado sem erro pela web app
+- Checklist CONTEXT.md: 9/10 PASS (item 10 — sufixo -2 — não testado explicitamente no piloto)
+- Phase 5 completa: 6/6 planos executados — milestone v1.0 pronto para bump SemVer via /fechar-versao
 
 ### Sessão de Execução Phase 05 — Plano 05-05 (2026-04-25)
 
