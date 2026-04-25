@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to execute
-last_updated: "2026-04-22T12:29:17.775Z"
+last_updated: "2026-04-25T00:00:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 2
@@ -14,7 +14,7 @@ progress:
 
 # State: Hiring Pipeline v1
 
-**Last updated:** 2026-04-22  
+**Last updated:** 2026-04-25  
 **Mode:** YOLO (iterate on feedback, validate with users)
 **Phase 1 Status:** Complete ✓ 2026-04-19
 **Phase 2 Status:** Complete ✓ 2026-04-20
@@ -27,18 +27,18 @@ progress:
 
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
-**Phase 5 Status:** In Progress — 4/6 planos executados (05-04 concluído — /refinar-perfil evoluída com pesquisa + Step 5 holístico)
-**Current Focus:** Phase 5 — Próximo: 05-05 (discussão socrática aiProfileInstructions P&D/Lyceum)
+**Phase 5 Status:** In Progress — 5/6 planos executados (05-05 concluído — aiProfileInstructions P&D/Lyceum persistido)
+**Current Focus:** Phase 5 — Próximo: 05-06 (piloto end-to-end: /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel)
 
 ---
 
 ## Current Position
 
 Phase: 05 (market-research-holistic-refinement) — IN PROGRESS
-Plan: 4 of 6 executed (05-04 concluído — /refinar-perfil com Step 2 de pesquisa + Step 5 holístico)
+Plan: 5 of 6 executed (05-05 concluído — aiProfileInstructions P&D/Lyceum persistido em settings.json)
 **Milestone:** v1 Hiring Pipeline — Phase 5 adicionada (sobra antes do bump SemVer)
 **Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ⏳
-**Overall Progress:** [########--] 80%
+**Overall Progress:** [#########-] 90%
 
 **At risk:** None
 
@@ -138,6 +138,14 @@ Phase 5: Market Research & Holistic Profile Refinement
 4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
 5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
 6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+
+### Sessão de Execução Phase 05 — Plano 05-05 (2026-04-25)
+
+- Plano 05-05 concluído: aiProfileInstructions da área P&D/Lyceum persistido em settings.json
+- Valor validado pelo gestor diretamente via /settings na web app (campo "Instruções para IA montar perfil")
+- Conteúdo cobre todos os vetores D-23: stack tri-linguagem (Java mandatório, Python funcional, TS diferencial), cultura POC/experimentação (~50% POCs), IA generativa aplicada (praticamente eliminatório para Sênior+ sem exposição), arquétipo misto (problem-solver autônomo + multiplicador + conector técnico-negócio), 9 red flags documentados
+- SUMMARY 05-05 já existia com registro completo da discussão socrática e template reutilizável para outras áreas
+- Concluído sem nova discussão socrática — gestor havia refinado e validado o texto anteriormente
 
 ### Sessão de Execução Phase 05 — Plano 05-04 (2026-04-22)
 
