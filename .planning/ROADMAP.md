@@ -12,7 +12,15 @@
 - [x] **Phase 2: Job Profile Library** - Create, maintain, and search reusable job templates ✓ 2026-04-20
 - [x] **Phase 3: Vacancy Opening & GH Form Generation** - Open vacancies from profiles and auto-generate Excel form ✓ 2026-04-21
 - [x] **Phase 4: AI-Assisted Profile Refinement** - AI suggestions for skills, requirements, and descriptions (via CLI/skills) ✓ 2026-04-21
-- [ ] **Phase 5: Market Research & Holistic Profile Refinement** - Skill /pesquisar-mercado, pasta data/research/, evolução do /refinar-perfil com contexto de mercado + revisão holística, e definição do aiProfileInstructions de P&D/Lyceum
+- [x] **Phase 5: Market Research & Holistic Profile Refinement** - Skill /pesquisar-mercado, pasta data/research/, evolução do /refinar-perfil com contexto de mercado + revisão holística, e definição do aiProfileInstructions de P&D/Lyceum ✓ 2026-04-25
+
+---
+
+### Milestone v1.1 — Profile-Anchored Market Research
+
+- [ ] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base
+- [ ] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data
+- [ ] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil
 
 ---
 
@@ -67,7 +75,7 @@ Plans:
 - [x] 02-PLAN-C.md — Wave 3: Componentes UI (ProfileList com empty state + delete dialog, ProfileForm com 5 seções e campos condicionais) ✓ 2026-04-20
 - [x] 02-PLAN-D.md — Wave 4: Rotas de páginas (/profiles, /profiles/new, /profiles/[id]/edit) + left rail habilitado + checkpoint visual ✓ 2026-04-20
 
-**UI hint:** yes
+**UI hint**: yes
 
 ---
 
@@ -160,6 +168,61 @@ Plans:
 
 ---
 
+### Phase 6: Guided Profile Creation Skill
+
+**Goal:** Manager can create a market-validated minimal profile from just a job title, with AI-powered market strength analysis, via skill `/criar-perfil`
+
+**Depends on:** Phase 5
+
+**Requirements:** CRIA-01, CRIA-02, CRIA-03
+
+**Success Criteria** (what must be TRUE):
+1. Manager can invoke `/criar-perfil` with only a job title and receive a market strength analysis before confirming creation
+2. Manager can confirm or abort profile creation after reviewing the market analysis
+3. Confirmed profile is persisted in `data/profiles/` with all fields pre-populated with market reference values (not empty)
+4. Created profile is immediately ready for further refinement via `/refinar-perfil` without requiring manual field population
+
+**Plans:** TBD
+
+---
+
+### Phase 7: Profile-Anchored Market Research
+
+**Goal:** Market research files are anchored to the profile ID, accumulate across dates without overwriting, and include salary ranges — making `/atualizar-roles-map` obsolete
+
+**Depends on:** Phase 6
+
+**Requirements:** PESQ-01, PESQ-02, PESQ-03, PESQ-04
+
+**Success Criteria** (what must be TRUE):
+1. Running `/pesquisar-mercado` for a profile generates files named with the profile ID (e.g., `{profileId}-{date}-vagas.json`) in a profile-specific folder or with explicit `profileId` field
+2. The `-resumo.json` output includes salary ranges and market data for the specific role (previously only in roles-map)
+3. Running `/pesquisar-mercado` twice for the same profile produces two dated files — no previous research is overwritten
+4. `/atualizar-roles-map` skill is documented as legacy/deprecated with migration note pointing to `/pesquisar-mercado`
+
+**Plans:** TBD
+
+---
+
+### Phase 8: Market Research Frontend
+
+**Goal:** Profile detail screen exposes market research data through tabs, allowing the manager to browse current and historical research results without leaving the profile view
+
+**Depends on:** Phase 7
+
+**Requirements:** VIZ-01, VIZ-02, VIZ-03
+
+**Success Criteria** (what must be TRUE):
+1. Profile detail page renders three tabs: "Perfil", "Vagas", and "Resumo de Mercado"
+2. "Vagas" tab lists all research runs anchored to the profile (date, role, job count) in reverse-chronological order
+3. "Resumo de Mercado" tab displays the most recent `-resumo.json` content: salary ranges, analysis, and profileHints
+4. Manager can select a past research entry in the "Vagas" tab and view its full data
+
+**Plans:** TBD
+**UI hint**: yes
+
+---
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -169,6 +232,9 @@ Plans:
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
+| 6. Guided Profile Creation Skill | 0/? | Not started | - |
+| 7. Profile-Anchored Market Research | 0/? | Not started | - |
+| 8. Market Research Frontend | 0/? | Not started | - |
 
 ---
 
@@ -181,3 +247,4 @@ Plans:
 *Phase 5 added: 2026-04-21*
 *Phase 5 planned: 2026-04-21*
 *Phase 5 replanned: 2026-04-22 (6 planos — expandido de 5 para 6 com roles-map como plano dedicado 05-02)*
+*v1.1 phases (6-8) added: 2026-04-25*

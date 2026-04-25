@@ -1,23 +1,22 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: Ready to execute
+milestone: v1.1
+milestone_name: Profile-Anchored Market Research
+status: Roadmap defined
 last_updated: "2026-04-25T00:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 23
-  completed_plans: 30
-  percent: 100
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
-# State: Hiring Pipeline v1
+# State: Hiring Pipeline v1.1
 
 **Last updated:** 2026-04-25  
 **Mode:** YOLO (iterate on feedback, validate with users)
-**Phase 1 Status:** Complete ✓ 2026-04-19
-**Phase 2 Status:** Complete ✓ 2026-04-20
+**v1.0 Status:** Complete ✓ 2026-04-25 (5 phases, 100%)
 
 ---
 
@@ -28,19 +27,30 @@ progress:
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
 **Phase 5 Status:** Complete ✓ 2026-04-25 (6/6 planos executados — piloto end-to-end validado)
-**Current Focus:** Milestone v1.0 completo — próximo: bump SemVer via `/fechar-versao`
+**Current Focus:** Milestone v1.1 — Phase 6: Guided Profile Creation Skill (`/criar-perfil`)
 
 ---
 
 ## Current Position
 
-Phase: 05 (market-research-holistic-refinement) — COMPLETE ✓
-Plan: 6 of 6 executed (05-06 concluído — piloto end-to-end /pesquisar-mercado → /refinar-perfil → /abrir-vaga → Excel validado)
-**Milestone:** v1 Hiring Pipeline — TODAS AS PHASES CONCLUÍDAS — pronto para bump SemVer via `/fechar-versao`
-**Roadmap Progress:** Phase 1 ✓ — Phase 2 ✓ — Phase 3 ✓ — Phase 4 ✓ — Phase 5 ✓
-**Overall Progress:** [##########] 100%
+Phase: Phase 6 — Guided Profile Creation Skill
+Plan: —
+Status: Not started
+Last activity: 2026-04-25 — v1.1 roadmap defined (Phases 6-8)
+
+**Progress bar:** `[ ] [ ] [ ]` (0/3 phases)
 
 **At risk:** None
+
+---
+
+## v1.1 Roadmap
+
+| Phase | Goal | Requirements | Status |
+|-------|------|--------------|--------|
+| 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Not started |
+| 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Not started |
+| 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Not started |
 
 ---
 
@@ -102,7 +112,7 @@ Plan: 6 of 6 executed (05-06 concluído — piloto end-to-end /pesquisar-mercado
 
 ### Blocking Issues
 
-None yet.
+None.
 
 ### Tech Notes
 
@@ -110,6 +120,13 @@ None yet.
 - Data lives in `/data` mounted volume; no relational DB in v1
 - Base path configurable via `APP_BASE_PATH` env var
 - Deployment: Docker multi-stage (node:22-alpine) + Compose
+- `.claude/skills` and `.cursor/skills` are symlinks to `.agents/skills` — single source of truth
+
+### v1.1 Context
+
+- Phase 6 (`/criar-perfil`): nova skill — fluxo nome → análise de força no mercado → geração de perfil mínimo com campos preenchidos com valores-base. Perfil gerado fica pronto para refinamento via `/refinar-perfil`.
+- Phase 7 (ancoragem `/pesquisar-mercado`): arquivos passam a incluir `profileId` no path ou no conteúdo; `-resumo.json` absorve faixas salariais do roles-map; pesquisas acumulam por data; `/atualizar-roles-map` descontinuada.
+- Phase 8 (frontend): tela `/profiles/[id]` ganha abas — "Perfil" (conteúdo atual), "Vagas" (lista de pesquisas vinculadas ao perfil), "Resumo de Mercado" (conteúdo do `-resumo.json` mais recente + seletor de pesquisas anteriores).
 
 ### Insights
 
@@ -121,6 +138,7 @@ None yet.
 ### Roadmap Evolution
 
 - 2026-04-21: Phase 5 added — Market Research & Holistic Profile Refinement (sobra de v1.0, antes do bump SemVer). Brief completo em `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (decisões D-01 a D-21, canonical refs, sub-plans, verification). JobProfile schema declared immutable for this phase — riqueza extra (stack híbrido, arquétipo) tem que caber nos campos existentes.
+- 2026-04-25: v1.1 roadmap defined — Phases 6-8 covering CRIA, PESQ, VIZ requirement groups (10 requirements total, 100% mapped).
 
 ---
 
@@ -128,16 +146,14 @@ None yet.
 
 ### Starting Phase
 
-Phase 5: Market Research & Holistic Profile Refinement
+Phase 6: Guided Profile Creation Skill
 
 ### What Needs to Happen Next
 
-1. Rodar `/gsd-plan-phase 5` para detalhar os 5 sub-plans (05-01 a 05-05)
-2. Sub-plan 05-01 é bloqueante: research e decisão de portais BR antes de implementar a skill
-3. Sub-plan 05-04 (definir aiProfileInstructions de P&D/Lyceum) pode consumir output de 05-02 como insumo
-4. Tech debt opcional pendente de v1.0: F-04 (key instável no DynamicListField), F-05 (assertions bullet no excel-generator.test.ts)
-5. Validação manual das skills /refinar-perfil e /abrir-vaga continua recomendada (ver 04-05-PLAN.md Task 3)
-6. Bump SemVer via `/fechar-versao` só após phase 5 concluída
+1. Rodar `/gsd-plan-phase 6` para detalhar os planos da skill `/criar-perfil`
+2. Phase 7 depende de Phase 6 estar completa (precisa do profileId nos testes de ancoragem)
+3. Phase 8 depende de Phase 7 (precisa dos arquivos ancorados para exibir no frontend)
+4. Ao completar Phase 7, verificar se `/atualizar-roles-map` pode ser removida ou apenas marcada como legada no SKILL.md
 
 ### Sessão de Execução Phase 05 — Plano 05-06 (2026-04-25)
 
@@ -187,89 +203,7 @@ Phase 5: Market Research & Holistic Profile Refinement
 - Commit: ecce4f3 (.agents/skills/pesquisar-mercado/SKILL.md)
 - Concluído sem checkpoints — plano totalmente autônomo
 
-### Sessão de Execução Phase 05 — Plano 05-02 (2026-04-22)
-
-- Plano 05-02 concluído (Task 1): mapa global de cargos/funções BR para engenharia de software
-- 12 cargos mapeados: Júnior, Pleno, Sênior, Tech Lead, Staff Engineer, Principal Engineer, Arquiteto, Especialista, AI Engineer, ML Engineer, Data Engineer, Platform Engineer
-- Todos os 12 cargos com salaryRange não-null — faixas salariais SP 2026 baseadas em Robert Half, Glassdoor BR, Catho, Revelo
-- Aliases em PT-BR e EN documentados por cargo; notas de tendência de mercado incluídas
-- Títulos emergentes incluídos: Staff Engineer, Principal Engineer, AI Engineer, Platform Engineer
-- Commit no repositório de dados: 64451b2 (data/research/roles-map.json)
-- Parado em: Task 2 é checkpoint:human-verify — aguardando aprovação do gestor da qualidade do roles-map.json
-
-### Sessão de Execução Phase 05 — Plano 05-01 (2026-04-22)
-
-- Plano 05-01 concluído (Task 1): pesquisa real de portais BR para /pesquisar-mercado
-- 7 portais testados via WebFetch real (curl, múltiplos User-Agents)
-- 4 portais aprovados: LinkedIn (OK via Googlebot UA), vagas.com.br (OK parcial), InfoJobs BR (OK parcial), Gupy (requer Playwright)
-- 3 portais descartados: Glassdoor (403 consistente), Catho (404 — fora do ar), Remotar (remoto-only)
-- Queries PT e EN testadas — PT preferencial (+2-3 vagas no LinkedIn); EN recomendado para Staff Engineer
-- Instruções de sessão autenticada via Playwright documentadas para LinkedIn e Gupy
-- Commit: 56860ac (05-01-PORTALS.md)
-- Parado em: Task 2 é checkpoint:human-verify — aguardando aprovação do gestor do documento 05-01-PORTALS.md
-
-### Sessão de Execução Phase 04 — Plano 04-05 (2026-04-21)
-
-- Plano 04-05 concluído: Wave 2 — skill /refinar-perfil + revisão /abrir-vaga
-- .agents/skills/refinar-perfil/SKILL.md criado: Steps 1-6, 3 modalidades (IA-01/02/03), ciclo A/R/J, gravação node -e, segurança path traversal
-- .agents/skills/abrir-vaga/SKILL.md revisado: Step 3 sem campos AreaSettings, Step 4 pré-carrega 4 campos, Step 5 JSON alinhado com vacancy.ts
-- Commits: efa8705 (refinar-perfil), 1b63a4c (abrir-vaga revisada)
-- Parado em: 04-05 Tasks 1-2 concluídas — Task 3 é checkpoint manual de validação pelo operador
-
-### Sessão de Execução Phase 04 — Plano 04-03 (2026-04-21)
-
-- Plano 04-03 concluído: Wave 1b — aiProfileInstructions + SettingsForm + ProfileForm com DynamicListField
-- settings.ts: aiProfileInstructions?: string adicionado à interface + defaultSettings() retorna ""
-- actions/settings.ts: parsing e persistência de aiProfileInstructions via formData.get()
-- settings-form.tsx: nova seção 5 "Instruções para IA" com textarea aiProfileInstructions
-- profile-form.tsx: 4 campos descritivos migrados de Textarea para DynamicListField
-- actions/profile.ts: já usava formData.getAll() desde 04-02 (Regra 1 aplicada no plano anterior)
-- Commits: e3e9b41 (settings.ts + actions/settings.ts), ddfa401 (settings-form.tsx), 722ca5a (profile-form.tsx)
-- npm test: 98/98 GREEN | typecheck: zero erros
-- Parado em: 04-03 completo — próximo é 04-04 (zeragem base dev + recriação perfis reais)
-
-### Sessão de Execução Phase 04 — Plano 04-02 (2026-04-21)
-
-- Plano 04-02 concluído: Wave 1a — schema + serializeStringArray + DynamicListField
-- profile.ts: 4 campos migrados de string para string[] (D-01) — 23 testes GREEN
-- excel-generator.ts: serializeStringArray exportada e usada nos 4 campos — 18 testes GREEN
-- src/app/actions/profile.ts: formData.getAll() nos 4 campos (Regra 1)
-- DynamicListField criado em src/components/ui/dynamic-list-field.tsx
-- Commits: 06b723a (profile.ts + actions), 6524108 (excel-generator + fixtures), fb5f89b (DynamicListField)
-- Parado em: 04-02 completo — próximo é 04-03 (AreaSettings + ProfileForm)
-
-### Sessão de Execução Phase 04 — Plano 04-01 (2026-04-21)
-
-- Plano 04-01 concluído: Wave 0 RED — 3 arquivos de teste atualizados
-- profile.test.ts: 12 erros TS2322 (string[] vs string) via tsc --noEmit
-- excel-generator.test.ts: 4 falhas runtime (serializeStringArray not a function)
-- settings.test.ts: 4 erros TS2353/TS2339 + 1 falha runtime (defaultSettings sem aiProfileInstructions)
-- Commits: 32f422e (profile.test.ts), 8e29b3a (excel-generator.test.ts), 4e5d196 (settings.test.ts)
-- Parado em: 04-01 completo — próximo é 04-02 (Wave 1 schema migration)
-
-### Sessão de Discuss Phase 04 (2026-04-21)
-
-- Plano 03-12 concluído: 10 campos fixos por área migrados de JobProfile/Vacancy para AreaSettings (GAP-12)
-- Commits: 3ae3e42 (schema — settings/vacancy/profile), bec532a (actions + forms + excel-generator)
-- Parado em: fase 03 completa (12/12 planos executados)
-
-### Phase 2 Planning Summary (2026-04-20)
-
-- 4 planos criados: PLAN-A (schema + shadcn), PLAN-B (server actions CRUD), PLAN-C (componentes ProfileList + ProfileForm), PLAN-D (rotas + left rail + checkpoint visual)
-- Verificação: PASSED (1ª verificação, 0 blockers, 0 warnings)
-- Pesquisa pulada — contexto suficiente via CONTEXT.md + UI-SPEC.md
-
-### Phase 1 Planning Summary (2026-04-19)
-
-- 6 planos criados: PLAN-A (Wave 0 testes), PLAN-B (scaffolding), PLAN-C (auth), PLAN-D (data service), PLAN-E (shell UI), PLAN-F (Docker + design)
-- Verificação: PASSED após 1 iteração de revisão (2 warnings corrigidos, 0 blockers)
-
-### Open Questions
-
-- Database location strategy: how will `/data` volume be synchronized in production?
-- Excel form generation: use python-pptx or js-xlsx? Check template structure first.
-- GH form versioning: changes to template — how to migrate old vacancies?
-
 ---
 
 *State initialized: 2026-04-19*
+*v1.1 state reset: 2026-04-25 — roadmap Phases 6-8 defined*

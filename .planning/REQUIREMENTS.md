@@ -31,6 +31,27 @@
 - [ ] **APP-01**: Aplicação protegida por autenticação single-user via next-auth (credenciais em variáveis de ambiente)
 - [ ] **APP-02**: Aplicação acessível via base path configurável (padrão `/hiring-pipeline`)
 
+## v1.1 Requirements
+
+### Criação Guiada de Perfis
+
+- [ ] **CRIA-01**: Gestor pode criar um perfil mínimo a partir de apenas um título/nome de cargo via skill `/criar-perfil`
+- [ ] **CRIA-02**: Skill `/criar-perfil` apresenta análise de força do título no mercado antes de confirmar a criação
+- [ ] **CRIA-03**: Perfil criado contém campos preenchidos com valores-base de mercado, pronto para refinamento via `/refinar-perfil`
+
+### Pesquisa de Mercado por Perfil
+
+- [ ] **PESQ-01**: Skill `/pesquisar-mercado` vincula os arquivos gerados ao ID do perfil selecionado
+- [ ] **PESQ-02**: Arquivo `-resumo.json` inclui faixas salariais e dados de mercado do cargo (unificação com roles-map)
+- [ ] **PESQ-03**: Novas pesquisas do mesmo perfil são acumuladas por data, sem sobrescrever anteriores
+- [ ] **PESQ-04**: Skill `/atualizar-roles-map` é descontinuada e documentada como legada
+
+### Visualização no Frontend
+
+- [ ] **VIZ-01**: Tela do perfil exibe aba "Vagas" com lista das pesquisas vinculadas ao perfil (data, cargo, contagem)
+- [ ] **VIZ-02**: Tela do perfil exibe aba "Resumo" com conteúdo do `-resumo.json` mais recente (faixas salariais, análise, profileHints)
+- [ ] **VIZ-03**: Gestor pode selecionar uma pesquisa anterior na aba Vagas e visualizar seus dados
+
 ## v2 Requirements
 
 ### Gestão de Candidatos
@@ -78,11 +99,26 @@
 | VAG-03 | Phase 4 | Pending |
 | VAG-04 | Phase 4 | Pending |
 
+**v1.1 Traceability:**
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CRIA-01 | Phase 6 | Pending |
+| CRIA-02 | Phase 6 | Pending |
+| CRIA-03 | Phase 6 | Pending |
+| PESQ-01 | Phase 7 | Pending |
+| PESQ-02 | Phase 7 | Pending |
+| PESQ-03 | Phase 7 | Pending |
+| PESQ-04 | Phase 7 | Pending |
+| VIZ-01 | Phase 8 | Pending |
+| VIZ-02 | Phase 8 | Pending |
+| VIZ-03 | Phase 8 | Pending |
+
 **Coverage:**
-- v1 requirements: 14 total
-- Mapped to phases: 14
-- Unmapped: 0 ✓
+- v1 requirements: 14 total, mapped ✓
+- v1.1 requirements: 10 total, 10/10 mapped ✓ (Phases 6-8)
 
 ---
 *Requirements defined: 2026-04-19*
-*Last updated: 2026-04-19 after initial definition*
+*v1.1 requirements added: 2026-04-25*
+*v1.1 traceability mapped: 2026-04-25*

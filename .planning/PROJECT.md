@@ -8,16 +8,31 @@ Ferramenta web interna de contratação para apoiar o processo seletivo da área
 
 Transformar um processo fragmentado em email e planilhas em um fluxo assistido, reaproveitável e rastreável — abrindo vagas mais rápido, triando candidatos com mais consistência e decidindo com mais confiança.
 
+## Current Milestone: v1.1 Profile-Anchored Market Research
+
+**Goal:** Fechar o ciclo de criação e pesquisa de perfis — da concepção do título até a visualização de mercado — de forma integrada e ancorada ao ID do perfil.
+
+**Target features:**
+- Skill `/criar-perfil`: nome → validação de força no mercado → perfil mínimo gerado
+- Pesquisa de mercado ancorada ao ID do perfil (arquivos por-perfil)
+- Unificação `/pesquisar-mercado` + `/atualizar-roles-map` — `-resumo.json` inclui faixas salariais; roles-map global descontinuado
+- Frontend: tela de perfil com abas (Perfil / Vagas / Resumo de Mercado)
+
 ## Requirements
 
 ### Validated
 
 - [x] Gestor pode cadastrar e manter perfis-base de vaga reutilizáveis — Validado em Phase 2 (2026-04-20)
+- [x] IA apoia criação e refinamento de perfis com sugestões de requisitos e descrições — Validado em Phase 4 (2026-04-21)
+- [x] Gestor pode abrir uma vaga a partir de um perfil existente com dados complementares — Validado em Phase 3 (2026-04-21)
+- [x] Sistema gera formulário preenchido da GH em Excel a partir da abertura de vaga — Validado em Phase 3 (2026-04-21)
 
 ### Active
-- [ ] IA apoia criação e refinamento de perfis com sugestões de requisitos e descrições
-- [ ] Gestor pode abrir uma vaga a partir de um perfil existente com dados complementares
-- [ ] Sistema gera formulário preenchido da GH em Excel a partir da abertura de vaga
+
+- [ ] Gestor pode criar um perfil via skill `/criar-perfil` (nome → validação de mercado → perfil mínimo)
+- [ ] `/pesquisar-mercado` gera arquivos ancorados ao ID do perfil com relacionamento explícito
+- [ ] Pesquisa de mercado inclui faixas salariais e dados do cargo específico (unificação com roles-map)
+- [ ] Frontend exibe resultados de pesquisa dentro da tela de perfil (abas: Perfil / Vagas / Resumo)
 - [ ] Gestor pode registrar shortlists de candidatos recebidas da consultoria
 - [ ] IA apoia triagem de candidatos com base nos critérios da vaga
 - [ ] Gestor pode registrar entrevistas com anotações estruturadas via agente conversacional
@@ -78,4 +93,4 @@ Este documento evolui a cada transição de fase e marco de milestone.
 4. Atualizar Context com estado atual
 
 ---
-*Last updated: 2026-04-20 after Phase 2 completion*
+*Last updated: 2026-04-25 — Milestone v1.1 iniciado*
