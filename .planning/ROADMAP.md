@@ -182,7 +182,10 @@ Plans:
 3. Confirmed profile is persisted in `data/profiles/` with all fields pre-populated with market reference values (not empty)
 4. Created profile is immediately ready for further refinement via `/refinar-perfil` without requiring manual field population
 
-**Plans:** TBD
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Wave 1: Skill /criar-perfil — normalização de título + análise de força de mercado + persistência de stub
 
 ---
 
@@ -232,7 +235,7 @@ Plans:
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
-| 6. Guided Profile Creation Skill | 0/? | Not started | - |
+| 6. Guided Profile Creation Skill | 0/1 | Not started | - |
 | 7. Profile-Anchored Market Research | 0/? | Not started | - |
 | 8. Market Research Frontend | 0/? | Not started | - |
 
@@ -248,3 +251,4 @@ Plans:
 *Phase 5 planned: 2026-04-21*
 *Phase 5 replanned: 2026-04-22 (6 planos — expandido de 5 para 6 com roles-map como plano dedicado 05-02)*
 *v1.1 phases (6-8) added: 2026-04-25*
+*Phase 6 planned: 2026-04-25*

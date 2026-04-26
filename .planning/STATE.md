@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Profile-Anchored Market Research
-status: Roadmap defined
+status: Ready to execute
 last_updated: "2026-04-25T00:00:00.000Z"
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
   percent: 0
 ---
@@ -35,8 +35,8 @@ progress:
 
 Phase: Phase 6 — Guided Profile Creation Skill
 Plan: —
-Status: Not started
-Last activity: 2026-04-25 — v1.1 roadmap defined (Phases 6-8)
+Status: Ready to execute (1 plan planned)
+Last activity: 2026-04-25 — Phase 6 planned (1 plano, 1 wave)
 
 **Progress bar:** `[ ] [ ] [ ]` (0/3 phases)
 
@@ -48,7 +48,7 @@ Last activity: 2026-04-25 — v1.1 roadmap defined (Phases 6-8)
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Not started |
+| 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Planned (1 plano) |
 | 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Not started |
 | 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Not started |
 
