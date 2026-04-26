@@ -67,7 +67,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
             <div
               key={profile.id}
               className="flex items-center justify-between py-4 gap-4 cursor-pointer"
-              onClick={() => router.push(`/profiles/${profile.id}/edit`)}
+              onClick={() => router.push(`/profiles/${profile.id}`)}
             >
               {/* Coluna esquerda: título e cargo sugerido */}
               <div className="flex-1 min-w-0">
