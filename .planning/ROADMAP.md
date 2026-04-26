@@ -19,7 +19,7 @@
 ### Milestone v1.1 — Profile-Anchored Market Research
 
 - [x] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base ✓ 2026-04-26
-- [ ] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data
+- [x] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data ✓ 2026-04-26
 - [ ] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil
 
 ---
@@ -206,9 +206,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Wave 1: Refatorar /pesquisar-mercado — selecao de perfil, subpastas research/{profileId}/, step de guias salariais obrigatorio (salaryGuide)
-- [ ] 07-02-PLAN.md — Wave 1: Corrigir /refinar-perfil discovery recursivo + deprecar /atualizar-roles-map
-- [ ] 07-03-PLAN.md — Wave 2 (checkpoint): Migracao manual de arquivos legados para nova estrutura de subpastas
+- [x] 07-01-PLAN.md — Wave 1: Refatorar /pesquisar-mercado — selecao de perfil, subpastas research/{profileId}/, step de guias salariais obrigatorio (salaryGuide) ✓ 2026-04-26
+- [x] 07-02-PLAN.md — Wave 1: Corrigir /refinar-perfil discovery recursivo + deprecar /atualizar-roles-map ✓ 2026-04-26
+- [x] 07-03-PLAN.md — Wave 2 (checkpoint): Migracao de arquivos legados para nova estrutura + conversao completa de schema ✓ 2026-04-26
 
 ---
 
@@ -241,7 +241,7 @@ Plans:
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
 | 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
-| 7. Profile-Anchored Market Research | 0/? | Not started | - |
+| 7. Profile-Anchored Market Research | 3/3 | Complete | 2026-04-26 |
 | 8. Market Research Frontend | 0/? | Not started | - |
 
 ---

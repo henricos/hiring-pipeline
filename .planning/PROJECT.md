@@ -29,9 +29,9 @@ Transformar um processo fragmentado em email e planilhas em um fluxo assistido, 
 
 ### Active
 
-- [ ] Gestor pode criar um perfil via skill `/criar-perfil` (nome → validação de mercado → perfil mínimo)
-- [ ] `/pesquisar-mercado` gera arquivos ancorados ao ID do perfil com relacionamento explícito
-- [ ] Pesquisa de mercado inclui faixas salariais e dados do cargo específico (unificação com roles-map)
+- [x] Gestor pode criar um perfil via skill `/criar-perfil` (nome → validação de mercado → perfil mínimo) — Validado em Phase 6 (2026-04-26)
+- [x] `/pesquisar-mercado` gera arquivos ancorados ao ID do perfil com relacionamento explícito — Validado em Phase 7 (2026-04-26)
+- [x] Pesquisa de mercado inclui faixas salariais e dados do cargo específico (unificação com roles-map) — Validado em Phase 7 (2026-04-26)
 - [ ] Frontend exibe resultados de pesquisa dentro da tela de perfil (abas: Perfil / Vagas / Resumo)
 - [ ] Gestor pode registrar shortlists de candidatos recebidas da consultoria
 - [ ] IA apoia triagem de candidatos com base nos critérios da vaga
@@ -93,4 +93,4 @@ Este documento evolui a cada transição de fase e marco de milestone.
 4. Atualizar Context com estado atual
 
 ---
-*Last updated: 2026-04-25 — Milestone v1.1 iniciado*
+*Last updated: 2026-04-26 — Phase 7 completa: /pesquisar-mercado ancorado ao perfil, /atualizar-roles-map descontinuado, arquivos legados migrados e convertidos*

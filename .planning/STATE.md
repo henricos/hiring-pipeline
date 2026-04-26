@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Profile-Anchored Market Research
-status: Phase 7 ready to execute
-last_updated: "2026-04-26T12:00:00.000Z"
+status: Phase 7 complete — Phase 8 ready to plan
+last_updated: "2026-04-26T16:00:00.000Z"
 progress:
   total_phases: 3
   completed_phases: 1
@@ -28,18 +28,19 @@ progress:
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
 **Phase 5 Status:** Complete ✓ 2026-04-25 (6/6 planos executados — piloto end-to-end validado)
 **Phase 6 Status:** Complete ✓ 2026-04-26 (1/1 plano executado — skill /criar-perfil criada)
-**Current Focus:** Milestone v1.1 — Phase 7: Profile-Anchored Market Research
+**Phase 7 Status:** Complete ✓ 2026-04-26 (3/3 planos executados — /pesquisar-mercado ancorado, /refinar-perfil corrigido, legados migrados e convertidos)
+**Current Focus:** Milestone v1.1 — Phase 8: Market Research Frontend
 
 ---
 
 ## Current Position
 
-Phase: Phase 7 — Profile-Anchored Market Research
+Phase: Phase 8 — Market Research Frontend
 Plan: —
-Status: Ready to execute (3 planos planejados — wave 1: 07-01, 07-02 | wave 2: 07-03)
-Last activity: 2026-04-26 — Phase 7 planejada (3 planos criados, verificação PASSED)
+Status: Ready to plan (Phase 7 completa ✓ — aguardando /gsd-plan-phase 8)
+Last activity: 2026-04-26 — Phase 7 completa (3/3 planos — /pesquisar-mercado refatorado, /refinar-perfil corrigido, 4 pesquisas legadas migradas e schema convertido)
 
-**Progress bar:** `[x] [ ] [ ]` (1/3 phases)
+**Progress bar:** `[x] [x] [ ]` (2/3 phases)
 
 **At risk:** None
 
@@ -50,7 +51,7 @@ Last activity: 2026-04-26 — Phase 7 planejada (3 planos criados, verificação
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
 | 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Complete ✓ 2026-04-26 |
-| 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Ready to execute (3 planos) |
+| 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Complete ✓ 2026-04-26 |
 | 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Not started |
 
 ---
