@@ -31,8 +31,8 @@ export function ProfileList({ profiles }: ProfileListProps) {
 
   function handleConfirmDelete() {
     if (!deleteTarget) return;
-    startTransition(() => {
-      deleteProfile(deleteTarget.id);
+    startTransition(async () => {
+      await deleteProfile(deleteTarget.id);
     });
     setDeleteTarget(null);
   }
