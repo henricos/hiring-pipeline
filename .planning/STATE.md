@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Profile-Anchored Market Research
-status: Phase 7 complete — Phase 8 ready to plan
-last_updated: "2026-04-26T16:00:00.000Z"
+status: Phase 8 planned — ready to execute
+last_updated: "2026-04-26T18:00:00.000Z"
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 1
-  percent: 33
+  completed_phases: 2
+  total_plans: 8
+  completed_plans: 4
+  percent: 66
 ---
 
 # State: Hiring Pipeline v1.1
@@ -37,8 +37,8 @@ progress:
 
 Phase: Phase 8 — Market Research Frontend
 Plan: —
-Status: Ready to plan (Phase 7 completa ✓ — aguardando /gsd-plan-phase 8)
-Last activity: 2026-04-26 — Phase 7 completa (3/3 planos — /pesquisar-mercado refatorado, /refinar-perfil corrigido, 4 pesquisas legadas migradas e schema convertido)
+Status: Ready to execute (4 planos criados — Wave 0-3, VIZ-01, VIZ-02, VIZ-03 cobertos)
+Last activity: 2026-04-26 — Phase 8 planejada (4 planos: Wave 0 testes RED, Wave 1 repositório, Wave 2 componentes, Wave 3 página + navegação)
 
 **Progress bar:** `[x] [x] [ ]` (2/3 phases)
 
