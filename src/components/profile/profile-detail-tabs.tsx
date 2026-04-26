@@ -21,9 +21,12 @@ const TABS: TabItem[] = [
   { value: "resumo", label: "Resumo de Mercado" },
 ];
 
+// Estende Research para carregar o conteúdo do resumo pré-carregado pelo servidor
+type ResearchWithResumo = Research & { resumoContent?: any };
+
 interface ProfileDetailTabsProps {
   profile: JobProfile;
-  researches: Research[];
+  researches: ResearchWithResumo[];
   allVagas?: Record<string, any[]>;
 }
 
@@ -32,6 +35,7 @@ export function ProfileDetailTabs({
   researches,
   allVagas = {},
 }: ProfileDetailTabsProps) {
+  // researches já contém resumoContent pré-carregado pelo servidor (WR-01)
   const [activeTab, setActiveTab] = useState<TabValue>("perfil");
 
   return (
