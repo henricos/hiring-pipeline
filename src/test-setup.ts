@@ -1,4 +1,11 @@
 import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
+
+// Garantir cleanup do DOM entre testes (necessário quando render é importado dinamicamente)
+afterEach(() => {
+  cleanup();
+});
 
 // Tornar window.location mutável no JSDOM para testes de navegação
 // O JSDOM bloqueia window.location por padrão; esta configuração
