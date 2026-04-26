@@ -203,7 +203,12 @@ Plans:
 3. Running `/pesquisar-mercado` twice for the same profile produces two dated files — no previous research is overwritten
 4. `/atualizar-roles-map` skill is documented as legacy/deprecated with migration note pointing to `/pesquisar-mercado`
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Wave 1: Refatorar /pesquisar-mercado — selecao de perfil, subpastas research/{profileId}/, step de guias salariais obrigatorio (salaryGuide)
+- [ ] 07-02-PLAN.md — Wave 1: Corrigir /refinar-perfil discovery recursivo + deprecar /atualizar-roles-map
+- [ ] 07-03-PLAN.md — Wave 2 (checkpoint): Migracao manual de arquivos legados para nova estrutura de subpastas
 
 ---
 
