@@ -16,6 +16,8 @@ vi.mock("@/app/actions/profile", () => ({
 
 vi.mock("@/app/actions/research", () => ({
   getResearchesByProfileId: vi.fn(),
+  getVagasForDate: vi.fn().mockResolvedValue(null),
+  getResumoForDate: vi.fn().mockResolvedValue(null),
 }));
 
 vi.mock("@/components/profile/profile-detail-tabs", () => ({
