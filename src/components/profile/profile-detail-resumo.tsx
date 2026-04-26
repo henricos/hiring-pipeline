@@ -5,21 +5,20 @@ import type { Research } from "@/lib/repositories/research-repository";
 const SECTION_HEADING_CLASS =
   "text-[1.125rem] font-medium text-on-surface mb-4";
 
-// Estrutura do campo summary dentro de resumoContent
 interface ResearchSummaryData {
   commonTitles?: string[];
   titleAliases?: string[];
   stackFrequency?: Record<string, number>;
   salaryRange?: { min: number; max: number } | null;
+  salarySource?: string | null;
   emergingStack?: string[];
   commonBehaviors?: string[];
   commonChallenges?: string[];
-  archetypes?: Array<{ name: string; count?: number }>;
+  archetypes?: Array<{ name: string; count?: number } | string>;
   trends?: string[];
   redFlags?: string[];
 }
 
-// Estrutura do campo salaryGuide dentro de resumoContent
 interface SalaryGuide {
   min: number;
   max: number;
@@ -27,7 +26,6 @@ interface SalaryGuide {
   sources?: Array<{ portal: string; year: number }>;
 }
 
-// Estrutura do campo profileHints dentro de resumoContent
 interface ProfileHints {
   responsibilities?: string[];
   qualifications?: Array<{ text: string; required: boolean }>;
@@ -37,17 +35,15 @@ interface ProfileHints {
   suggestedExperienceLevel?: string;
 }
 
-// Estrutura completa de resumoContent
 interface ResumoContent {
   profileId?: string;
   profileTitle?: string;
   baseName?: string;
   summary?: ResearchSummaryData;
-  salaryGuide?: SalaryGuide;
+  salaryGuide?: SalaryGuide | null;
   profileHints?: ProfileHints;
 }
 
-// Extend Research para incluir campo opcional resumoContent
 type ResearchWithResumo = Research & {
   resumoContent?: ResumoContent;
 };
@@ -56,8 +52,13 @@ interface ProfileDetailResumoProps {
   researches: ResearchWithResumo[];
 }
 
+function renderArchetype(arch: { name: string; count?: number } | string): string {
+  if (typeof arch === "string") return arch;
+  if (arch.count) return `${arch.name} (${arch.count} menções)`;
+  return arch.name;
+}
+
 export function ProfileDetailResumo({ researches }: ProfileDetailResumoProps) {
-  // Empty state
   if (researches.length === 0) {
     return (
       <div className="text-center py-12">
@@ -81,54 +82,105 @@ export function ProfileDetailResumo({ researches }: ProfileDetailResumoProps) {
   const salaryGuide = resumoContent?.salaryGuide;
   const profileHints = resumoContent?.profileHints;
 
-  // Stack frequency ranqueado DESC
+  const MARKET_SEPARATOR = "Dados secundários de mercado:";
+  const vagasSalaryLine: string | null = summary?.salarySource
+    ? (summary.salarySource.split(MARKET_SEPARATOR)[0] ?? "")
+        .replace(/\.\s*$/, "")
+        .trim() || null
+    : null;
+  const marketSources: string[] = summary?.salarySource?.includes(MARKET_SEPARATOR)
+    ? (summary.salarySource.split(MARKET_SEPARATOR)[1] ?? "")
+        .split(";")
+        .map((s) => s.trim().replace(/\.\s*$/, ""))
+        .filter(Boolean)
+    : [];
+
   const sortedStack = summary?.stackFrequency
     ? Object.entries(summary.stackFrequency).sort(
         ([, a], [, b]) => (b as number) - (a as number)
       )
     : [];
 
-  // Archetypes ranqueados DESC
   const sortedArchetypes = summary?.archetypes
     ? summary.archetypes
         .slice()
-        .sort((a, b) => (b.count || 0) - (a.count || 0))
+        .sort((a, b) => {
+          const countA = typeof a === "string" ? 0 : (a.count ?? 0);
+          const countB = typeof b === "string" ? 0 : (b.count ?? 0);
+          return countB - countA;
+        })
     : [];
 
-  // Posição de inserção dos archetypes: entre o penúltimo e último stack item
-  // Isso garante que: listItems[0] = Java (primeiro), listItems[last] = Go (último)
-  // e os archetypes aparecem no meio para que findIndex funcione corretamente
-  const stackHead = sortedStack.length > 1 ? sortedStack.slice(0, -1) : sortedStack;
-  const stackTail = sortedStack.length > 1 ? sortedStack.slice(-1) : [];
+  const hasSalaryInfo =
+    salaryGuide || summary?.salaryRange || summary?.salarySource;
 
   return (
     <div className="space-y-8">
-      {/* Data do resumo (se múltiplas pesquisas) */}
       {researches.length > 1 && (
         <p className="text-label-sm text-on-surface/60">
           Resumo de: {mostRecent.date}
         </p>
       )}
 
-      {/* Faixa Salarial com atribuição de fontes */}
-      {salaryGuide && (
+      {/* Faixa Salarial */}
+      {hasSalaryInfo && (
         <section>
           <h3 className={SECTION_HEADING_CLASS}>Faixa Salarial</h3>
-          <div className="space-y-2">
-            {salaryGuide.sources && salaryGuide.sources.length > 0 ? (
-              salaryGuide.sources.map((source, idx) => (
-                <p key={idx} className="text-body-md text-on-surface">
-                  <strong>
-                    {source.portal} {source.year}:
-                  </strong>{" "}
-                  R$ {(salaryGuide.min / 1000).toFixed(1)}k – R${" "}
-                  {(salaryGuide.max / 1000).toFixed(1)}k
+          <div className="space-y-6">
+
+            {/* Bloco 1: Das Vagas */}
+            {(vagasSalaryLine || summary?.salaryRange) && (
+              <div>
+                <p className="text-label-sm font-semibold uppercase tracking-[0.05em] text-on-surface/60 mb-2">
+                  Das Vagas
                 </p>
-              ))
-            ) : (
-              <p className="text-body-md text-on-surface/60">
-                Faixa salarial não disponível.
-              </p>
+                <ul className="space-y-1">
+                  {vagasSalaryLine && (
+                    <li className="text-body-md text-on-surface flex gap-3">
+                      <span className="shrink-0">•</span>
+                      <span>{vagasSalaryLine}</span>
+                    </li>
+                  )}
+                  {summary?.salaryRange && (
+                    <li className="text-body-md text-on-surface flex gap-3">
+                      <span className="shrink-0">•</span>
+                      <span>
+                        Faixa: R${" "}
+                        {(summary.salaryRange.min / 1000).toFixed(1)}k – R${" "}
+                        {(summary.salaryRange.max / 1000).toFixed(1)}k
+                      </span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+
+            {/* Bloco 2: Pesquisa de Mercado */}
+            {(marketSources.length > 0 ||
+              (salaryGuide?.sources && salaryGuide.sources.length > 0)) && (
+              <div>
+                <p className="text-label-sm font-semibold uppercase tracking-[0.05em] text-on-surface/60 mb-2">
+                  Pesquisa de Mercado
+                </p>
+                <ul className="space-y-1">
+                  {salaryGuide?.sources?.map((source, idx) => (
+                    <li key={idx} className="text-body-md text-on-surface flex gap-3">
+                      <span className="shrink-0">•</span>
+                      <span>
+                        {source.portal} {source.year}: R${" "}
+                        {(salaryGuide.min / 1000).toFixed(1)}k – R${" "}
+                        {(salaryGuide.max / 1000).toFixed(1)}k
+                      </span>
+                    </li>
+                  ))}
+                  {marketSources.map((source, idx) => (
+                    <li key={idx} className="text-body-md text-on-surface flex gap-3">
+                      <span className="shrink-0">•</span>
+                      <span>{source}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         </section>
@@ -158,6 +210,57 @@ export function ProfileDetailResumo({ researches }: ProfileDetailResumoProps) {
               <li key={idx} className="text-body-md text-on-surface flex gap-3">
                 <span className="shrink-0">•</span>
                 <span>{alias}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Stack Frequência */}
+      {sortedStack.length > 0 && (
+        <section>
+          <h3 className={SECTION_HEADING_CLASS}>Stack Frequência</h3>
+          <div className="space-y-2">
+            {sortedStack.map(([tech, count]) => (
+              <div
+                key={tech}
+                data-testid="stack-item"
+                className="flex items-center justify-between py-2 px-3 rounded-sm bg-surface-container-low"
+              >
+                <span className="text-body-md text-on-surface">{tech}</span>
+                <span className="text-label-sm font-medium text-on-surface/70">
+                  {count} menções
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Arquétipos */}
+      {sortedArchetypes.length > 0 && (
+        <section>
+          <h3 className={SECTION_HEADING_CLASS}>Arquétipos</h3>
+          <ul className="space-y-1">
+            {sortedArchetypes.map((arch, idx) => (
+              <li key={idx} className="text-body-md text-on-surface flex gap-3">
+                <span className="shrink-0">•</span>
+                <span>{renderArchetype(arch)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Stack Emergente */}
+      {summary?.emergingStack && summary.emergingStack.length > 0 && (
+        <section>
+          <h3 className={SECTION_HEADING_CLASS}>Stack Emergente</h3>
+          <ul className="space-y-1">
+            {summary.emergingStack.map((item, idx) => (
+              <li key={idx} className="text-body-md text-on-surface flex gap-3">
+                <span className="shrink-0">•</span>
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -194,98 +297,7 @@ export function ProfileDetailResumo({ researches }: ProfileDetailResumoProps) {
         </section>
       )}
 
-      {/* Stack Frequência — estrutura especial:
-          Head (todos exceto último) → Archetypes → Tail (último = Go)
-          Garante que getAllByText(/\d+ menções/i) tenha Java como primeiro
-          e Go como último, com archetypes (via closest("li")) no meio */}
-      {sortedStack.length > 0 && (
-        <section>
-          <h3 className={SECTION_HEADING_CLASS}>Stack Frequência</h3>
-          <div className="space-y-2">
-            {/* Stack head: todos exceto o último (menor count) */}
-            {stackHead.map(([tech, count]) => (
-              <div
-                key={tech}
-                data-testid="stack-item"
-                className="flex items-center justify-between py-2 px-3 rounded-sm bg-surface-container-low"
-              >
-                <span className="text-body-md text-on-surface">{tech}</span>
-                <span className="text-label-sm font-medium text-on-surface/70">
-                  {count} menções
-                </span>
-              </div>
-            ))}
-
-            {/* Arquétipos inseridos entre penúltimo e último stack item
-                Renderizados como <li> para que closest("li") funcione nos testes */}
-            {sortedArchetypes.length > 0 && (
-              <ul className="space-y-1 py-2">
-                {sortedArchetypes.map((arch, idx) => (
-                  <li
-                    key={idx}
-                    className="text-body-md text-on-surface flex gap-3"
-                  >
-                    <span className="shrink-0">•</span>
-                    <span>
-                      {arch.name} ({arch.count || 0} menções)
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Stack tail: último item (menor count, ex: Go) */}
-            {stackTail.map(([tech, count]) => (
-              <div
-                key={tech}
-                data-testid="stack-item"
-                className="flex items-center justify-between py-2 px-3 rounded-sm bg-surface-container-low"
-              >
-                <span className="text-body-md text-on-surface">{tech}</span>
-                <span className="text-label-sm font-medium text-on-surface/70">
-                  {count} menções
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Heading de Arquétipos — posicionado após o Stack completo */}
-        </section>
-      )}
-
-      {/* Arquétipos heading — visível separadamente quando não há stack */}
-      {sortedArchetypes.length > 0 && sortedStack.length === 0 && (
-        <section>
-          <h3 className={SECTION_HEADING_CLASS}>Arquétipos</h3>
-          <ul className="space-y-1">
-            {sortedArchetypes.map((arch, idx) => (
-              <li key={idx} className="text-body-md text-on-surface flex gap-3">
-                <span className="shrink-0">•</span>
-                <span>
-                  {arch.name} ({arch.count || 0} menções)
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Stack Emergente */}
-      {summary?.emergingStack && summary.emergingStack.length > 0 && (
-        <section>
-          <h3 className={SECTION_HEADING_CLASS}>Stack Emergente</h3>
-          <ul className="space-y-1">
-            {summary.emergingStack.map((item, idx) => (
-              <li key={idx} className="text-body-md text-on-surface flex gap-3">
-                <span className="shrink-0">•</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {/* Profile Hints — Responsabilidades sugeridas */}
+      {/* Responsabilidades Sugeridas */}
       {profileHints?.responsibilities &&
         profileHints.responsibilities.length > 0 && (
           <section>
@@ -303,7 +315,7 @@ export function ProfileDetailResumo({ researches }: ProfileDetailResumoProps) {
           </section>
         )}
 
-      {/* Profile Hints — Qualificações sugeridas */}
+      {/* Qualificações Sugeridas */}
       {profileHints?.qualifications &&
         profileHints.qualifications.length > 0 && (
           <section>

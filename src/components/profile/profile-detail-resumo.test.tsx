@@ -86,14 +86,9 @@ describe("ProfileDetailResumo", () => {
     render(<ProfileDetailResumo researches={mockResearches} />);
 
     // Assert: Java (15) aparece antes de Go (2) na lista ranqueada
-    const listItems = screen.getAllByText(/\d+ menções/i);
-    // Primeiro item deve ser Java (maior contagem)
-    expect(listItems[0].closest("[data-testid='stack-item']") ?? listItems[0].parentElement)
-      .toHaveTextContent("Java");
-    // Ultimo item deve ser Go (menor contagem)
-    const lastItem = listItems[listItems.length - 1];
-    expect(lastItem.closest("[data-testid='stack-item']") ?? lastItem.parentElement)
-      .toHaveTextContent("Go");
+    const stackItems = screen.getAllByTestId("stack-item");
+    expect(stackItems[0]).toHaveTextContent("Java");
+    expect(stackItems[stackItems.length - 1]).toHaveTextContent("Go");
   });
 
   it("renderiza salaryGuide com atribuicao de fonte (D-11, VIZ-02)", () => {

@@ -27,7 +27,6 @@ export function ProfileDetailVagas({
     defaultExpanded ?? researches[0]?.date ?? null
   );
 
-  // Empty state
   if (researches.length === 0) {
     return (
       <div className="text-center py-12">
@@ -52,57 +51,37 @@ export function ProfileDetailVagas({
 
   return (
     <div className="space-y-6">
-      {/* Múltiplas pesquisas: select nativo como seletor de data */}
-      {researches.length > 1 ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <label
-              htmlFor="research-date-select"
-              className="text-label-sm uppercase text-on-surface/60"
-            >
-              Pesquisa:
-            </label>
-            <select
-              id="research-date-select"
-              value={selectedDate ?? ""}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="rounded-sm bg-surface-container px-3 py-2 text-body-md border border-outline-variant"
-            >
-              {researches.map((r) => (
-                <option key={r.date} value={r.date}>
-                  {r.date}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      ) : (
-        /* Uma única pesquisa: lista de rows clicáveis */
-        <div className="space-y-2">
-          {researches.map((research) => (
-            <div
-              key={research.date}
-              className="flex items-center justify-between py-3 px-4 rounded-sm bg-surface-container-low hover:bg-surface-container cursor-pointer transition-colors"
-              onClick={() => setSelectedDate(research.date)}
-            >
-              <div className="flex-1">
-                <p className="text-body-md font-medium text-on-surface">
-                  {research.date}
-                </p>
-              </div>
-              <span className="text-label-sm text-on-surface/60">
-                Pesquisa disponível
-              </span>
-            </div>
-          ))}
+      {/* Seletor de data — só aparece quando há mais de uma pesquisa */}
+      {researches.length > 1 && (
+        <div className="flex items-center gap-4">
+          <label
+            htmlFor="research-date-select"
+            className="text-label-sm uppercase text-on-surface/60"
+          >
+            Pesquisa:
+          </label>
+          <select
+            id="research-date-select"
+            value={selectedDate ?? ""}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="rounded-sm bg-surface-container px-3 py-2 text-body-md border border-outline-variant"
+          >
+            {researches.map((r) => (
+              <option key={r.date} value={r.date}>
+                {r.date}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
-      {/* Vagas expandidas para pesquisa selecionada */}
-      {selectedDate && jobsList.length > 0 && (
+      {/* Lista de vagas */}
+      {jobsList.length > 0 ? (
         <div className="space-y-4">
           <h4 className="text-title-md font-medium text-on-surface">
-            Vagas encontradas
+            {jobsList.length} vaga{jobsList.length !== 1 ? "s" : ""} encontrada
+            {jobsList.length !== 1 ? "s" : ""}{" "}
+            {researches.length === 1 && selectedDate ? `— ${selectedDate}` : ""}
           </h4>
           <div className="space-y-3">
             {jobsList.map((job, idx) => (
@@ -147,15 +126,13 @@ export function ProfileDetailVagas({
             ))}
           </div>
         </div>
+      ) : (
+        <p className="text-body-md text-on-surface/60 text-center py-8">
+          {selectedDate
+            ? `Nenhuma vaga encontrada para ${selectedDate}.`
+            : "Selecione uma pesquisa para ver as vagas."}
+        </p>
       )}
-
-      {selectedDate &&
-        jobsList.length === 0 &&
-        allVagas[selectedDate] !== undefined && (
-          <p className="text-body-md text-on-surface/60 text-center py-8">
-            Nenhuma vaga encontrada para {selectedDate}.
-          </p>
-        )}
     </div>
   );
 }

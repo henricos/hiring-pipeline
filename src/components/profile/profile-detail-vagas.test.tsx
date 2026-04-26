@@ -64,18 +64,14 @@ describe("ProfileDetailVagas", () => {
     expect(dates[1].textContent).toContain("2026-04-23");
   });
 
-  it("clicar em uma linha de pesquisa expande as vagas inline (D-06, VIZ-01)", () => {
-    // Com 1 pesquisa o componente renderiza linha clicável (não <select>).
-    // selectedDate é inicializado com researches[0].date por padrão,
-    // por isso as vagas já estão visíveis — o click confirma o caminho do código correto.
+  it("vagas da unica pesquisa sao exibidas diretamente sem interacao (D-06, VIZ-01)", () => {
+    // Com 1 pesquisa, selectedDate é inicializado com researches[0].date
+    // e as vagas são exibidas imediatamente, sem necessidade de clique.
     const singleResearch = [mockResearches[0]];
     const allVagas = { "2026-04-24": mockVagasDia24 };
     render(<ProfileDetailVagas researches={singleResearch} allVagas={allVagas} />);
 
-    // Act: clicar na linha clicável (div) da pesquisa de 2026-04-24
-    fireEvent.click(screen.getByText("2026-04-24"));
-
-    // Assert: vagas da pesquisa visiveis abaixo da linha
+    // Assert: vagas visíveis imediatamente
     expect(screen.getByText("Pessoa Desenvolvedora Backend Java SR")).toBeInTheDocument();
     expect(screen.getByText("Banco Bradesco")).toBeInTheDocument();
   });

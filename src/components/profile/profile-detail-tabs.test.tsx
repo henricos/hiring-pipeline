@@ -1,29 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import type { JobProfile } from "@/lib/profile";
-// RED: importar componente que nao existe ainda — falhara ate Wave 1 criar o arquivo
 import { ProfileDetailTabs } from "@/components/profile/profile-detail-tabs";
-
-// ─── Fixtures ────────────────────────────────────────────────────────────────
-
-const mockProfile: JobProfile = {
-  id: "2386bf16-4519-409c-9188-45068255df75",
-  title: "Desenvolvedor Java Senior",
-  suggestedTitle: "Senior Java Developer",
-  experienceLevel: "5-10 anos",
-  educationLevel: "Superior completo",
-  postGraduateLevel: "Não exigido",
-  certifications: "Não",
-  responsibilities: ["Projetar microsservicos", "Code review"],
-  qualifications: [
-    { text: "5+ anos de Java", required: true },
-    { text: "Docker", required: false },
-  ],
-  behaviors: ["Protagonismo tecnico"],
-  challenges: ["Alta carga no setor financeiro"],
-  createdAt: "2026-04-24T00:00:00.000Z",
-  updatedAt: "2026-04-24T00:00:00.000Z",
-};
 
 const mockResearches = [
   {
@@ -42,34 +19,42 @@ const mockResearches = [
   },
 ];
 
-// ─── Testes (RED — ProfileDetailTabs nao existe ainda) ────────────────────────
-// Estes testes falharao com erro de importacao ate que o componente seja criado na Wave 1
-
 describe("ProfileDetailTabs", () => {
   it("renderiza tres abas: Perfil, Vagas, Resumo de Mercado", () => {
-    render(<ProfileDetailTabs profile={mockProfile} researches={mockResearches} />);
+    render(
+      <ProfileDetailTabs
+        perfilContent={<div>Formulário de edição</div>}
+        researches={mockResearches}
+      />
+    );
 
-    // Assert: 3 botoes de aba com textos corretos
     expect(screen.getByRole("tab", { name: "Perfil" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Vagas" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Vagas do Mercado" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Resumo de Mercado" })).toBeInTheDocument();
   });
 
   it("clicar na aba Vagas torna o conteudo de Vagas visivel", () => {
-    render(<ProfileDetailTabs profile={mockProfile} researches={mockResearches} />);
+    render(
+      <ProfileDetailTabs
+        perfilContent={<div>Formulário de edição</div>}
+        researches={mockResearches}
+      />
+    );
 
-    // Act: clicar na aba Vagas
-    fireEvent.click(screen.getByRole("tab", { name: "Vagas" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Vagas do Mercado" }));
 
-    // Assert: conteudo de vagas visivel (data da pesquisa)
     expect(screen.getByText("2026-04-24")).toBeInTheDocument();
   });
 
-  it("passa profile para ProfileDetailPerfil ao selecionar aba Perfil", () => {
-    const profile = { ...mockProfile, title: "Dev Java Unico" };
-    render(<ProfileDetailTabs profile={profile} researches={[]} />);
+  it("renderiza perfilContent na aba Perfil selecionada por padrao", () => {
+    render(
+      <ProfileDetailTabs
+        perfilContent={<div data-testid="perfil-form">Conteúdo do perfil</div>}
+        researches={[]}
+      />
+    );
 
-    // Assert: aba Perfil selecionada por padrao — titulo visivel no filho
-    expect(screen.getByText("Dev Java Unico")).toBeInTheDocument();
+    expect(screen.getByTestId("perfil-form")).toBeInTheDocument();
+    expect(screen.getByText("Conteúdo do perfil")).toBeInTheDocument();
   });
 });

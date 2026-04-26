@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ interface ProfileListProps {
 }
 
 export function ProfileList({ profiles }: ProfileListProps) {
-  const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<JobProfile | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -66,8 +64,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
           return (
             <div
               key={profile.id}
-              className="flex items-center justify-between py-4 gap-4 cursor-pointer"
-              onClick={() => router.push(`/profiles/${profile.id}`)}
+              className="flex items-center justify-between py-4 gap-4"
             >
               {/* Coluna esquerda: título e cargo sugerido */}
               <div className="flex-1 min-w-0">
@@ -85,10 +82,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
               </div>
 
               {/* Ações */}
-              <div
-                className="flex gap-1 shrink-0"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="flex gap-1 shrink-0">
                 <Button
                   size="icon"
                   variant="ghost"
@@ -96,7 +90,7 @@ export function ProfileList({ profiles }: ProfileListProps) {
                   className="min-h-[40px] min-w-[40px]"
                   aria-label={`Editar perfil ${profile.title}`}
                 >
-                  <Link href={`/profiles/${profile.id}/edit`}>
+                  <Link href={`/profiles/${profile.id}`}>
                     <Pencil className="w-4 h-4" />
                   </Link>
                 </Button>

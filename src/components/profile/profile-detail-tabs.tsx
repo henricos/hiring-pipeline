@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ProfileDetailPerfil } from "./profile-detail-perfil";
 import { ProfileDetailVagas } from "./profile-detail-vagas";
 import { ProfileDetailResumo } from "./profile-detail-resumo";
-import type { JobProfile } from "@/lib/profile";
 import type { Research } from "@/lib/repositories/research-repository";
 
 type TabValue = "perfil" | "vagas" | "resumo";
@@ -17,30 +15,27 @@ interface TabItem {
 
 const TABS: TabItem[] = [
   { value: "perfil", label: "Perfil" },
-  { value: "vagas", label: "Vagas" },
+  { value: "vagas", label: "Vagas do Mercado" },
   { value: "resumo", label: "Resumo de Mercado" },
 ];
 
-// Estende Research para carregar o conteúdo do resumo pré-carregado pelo servidor
 type ResearchWithResumo = Research & { resumoContent?: any };
 
 interface ProfileDetailTabsProps {
-  profile: JobProfile;
+  perfilContent: React.ReactNode;
   researches: ResearchWithResumo[];
   allVagas?: Record<string, any[]>;
 }
 
 export function ProfileDetailTabs({
-  profile,
+  perfilContent,
   researches,
   allVagas = {},
 }: ProfileDetailTabsProps) {
-  // researches já contém resumoContent pré-carregado pelo servidor (WR-01)
   const [activeTab, setActiveTab] = useState<TabValue>("perfil");
 
   return (
     <div>
-      {/* TabsList */}
       <div
         role="tablist"
         aria-orientation="horizontal"
@@ -68,7 +63,6 @@ export function ProfileDetailTabs({
         ))}
       </div>
 
-      {/* TabsContent: Perfil */}
       <div
         id="tabpanel-perfil"
         role="tabpanel"
@@ -76,10 +70,9 @@ export function ProfileDetailTabs({
         hidden={activeTab !== "perfil"}
         className="mt-8"
       >
-        {activeTab === "perfil" && <ProfileDetailPerfil profile={profile} />}
+        {activeTab === "perfil" && perfilContent}
       </div>
 
-      {/* TabsContent: Vagas */}
       <div
         id="tabpanel-vagas"
         role="tabpanel"
@@ -92,7 +85,6 @@ export function ProfileDetailTabs({
         )}
       </div>
 
-      {/* TabsContent: Resumo */}
       <div
         id="tabpanel-resumo"
         role="tabpanel"
