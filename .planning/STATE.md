@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — Profile-Anchored Market Research
-status: Phase 8 complete — Market Research Frontend entregue
-last_updated: "2026-04-26T20:00:00.000Z"
-last_activity: 2026-04-26 -- Phase 08 concluída (4 planos, verificação PASS)
+status: Milestone v1.1 fechado — release v1.1.0 publicada no GHCR
+last_updated: "2026-04-26T21:00:00.000Z"
+last_activity: 2026-04-26 -- Release v1.1.0 publicada (tag + GHCR ghcr.io/henricos/hiring-pipeline:v1.1.0)
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 8
   total_plans: 31
   completed_plans: 41
   percent: 100
