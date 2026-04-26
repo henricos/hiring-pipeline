@@ -12,8 +12,8 @@ const mockProfile: JobProfile = {
   suggestedTitle: "Senior Java Developer",
   experienceLevel: "5-10 anos",
   educationLevel: "Superior completo",
-  postGraduateLevel: "Nao exigido",
-  certifications: "Nao",
+  postGraduateLevel: "Não exigido",
+  certifications: "Não",
   responsibilities: ["Projetar microsservicos", "Code review"],
   qualifications: [
     { text: "5+ anos de Java", required: true },

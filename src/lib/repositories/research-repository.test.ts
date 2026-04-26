@@ -27,12 +27,13 @@ describe("JsonResearchRepository", () => {
   it("listByProfileId retorna pesquisas ordenadas por data decrescente", async () => {
     // Arrange: dois dias distintos, cada um com vagas.json e resumo.json
     vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.readdirSync).mockReturnValue([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.mocked(fs.readdirSync) as any).mockReturnValue([
       "2026-04-24-vagas.json",
       "2026-04-24-resumo.json",
       "2026-04-23-vagas.json",
       "2026-04-23-resumo.json",
-    ] as unknown as fs.Dirent[]);
+    ]);
 
     // Act
     const results = await repo.listByProfileId(
@@ -50,11 +51,12 @@ describe("JsonResearchRepository", () => {
   it("listByProfileId consolida arquivos com sufixo -2 no mesmo dia", async () => {
     // Arrange: colisao de data — dois arquivos vagas no mesmo dia
     vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.readdirSync).mockReturnValue([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.mocked(fs.readdirSync) as any).mockReturnValue([
       "2026-04-24-vagas.json",
       "2026-04-24-resumo.json",
       "2026-04-24-2-vagas.json",
-    ] as unknown as fs.Dirent[]);
+    ]);
 
     // Act
     const results = await repo.listByProfileId(
@@ -107,9 +109,7 @@ describe("JsonResearchRepository", () => {
       ],
     };
     vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.readFileSync).mockReturnValue(
-      JSON.stringify(fixture) as unknown as Buffer
-    );
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(fixture));
 
     // Act
     const result = await repo.getVagas(
@@ -172,9 +172,7 @@ describe("JsonResearchRepository", () => {
       },
     };
     vi.mocked(fs.existsSync).mockReturnValue(true);
-    vi.mocked(fs.readFileSync).mockReturnValue(
-      JSON.stringify(fixture) as unknown as Buffer
-    );
+    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(fixture));
 
     // Act
     const result = await repo.getResumo(
