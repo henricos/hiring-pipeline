@@ -26,6 +26,16 @@ export interface ResearchRepository {
 
 export class JsonResearchRepository implements ResearchRepository {
   /**
+   * Valida o parâmetro date contra path traversal e formato esperado.
+   * Aceita YYYY-MM-DD ou YYYY-MM-DD-N (sufixo numérico para colisões).
+   */
+  private validateDate(date: string): void {
+    if (!date || !/^\d{4}-\d{2}-\d{2}(?:-\d+)?$/.test(date)) {
+      throw new Error(`Data inválida: "${date}"`);
+    }
+  }
+
+  /**
    * Retorna o caminho para o diretório de pesquisas de um perfil.
    * Valida profileId contra path traversal (T-08-01).
    */
@@ -105,6 +115,7 @@ export class JsonResearchRepository implements ResearchRepository {
    */
   async getVagas(profileId: string, date: string): Promise<any | null> {
     try {
+      this.validateDate(date);
       const dir = this.researchPath(profileId);
       const filePath = path.join(dir, `${date}-vagas.json`);
 
@@ -122,6 +133,7 @@ export class JsonResearchRepository implements ResearchRepository {
    */
   async getResumo(profileId: string, date: string): Promise<any | null> {
     try {
+      this.validateDate(date);
       const dir = this.researchPath(profileId);
       const filePath = path.join(dir, `${date}-resumo.json`);
 
