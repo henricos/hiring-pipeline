@@ -226,7 +226,14 @@ Plans:
 3. "Resumo de Mercado" tab displays the most recent `-resumo.json` content: salary ranges, analysis, and profileHints
 4. Manager can select a past research entry in the "Vagas" tab and view its full data
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Wave 0: Test stubs (RED) — criar arquivos de teste com casos failing para VIZ-01, VIZ-02, VIZ-03 (Nyquist contract)
+- [ ] 08-02-PLAN.md — Wave 1: Data layer — ResearchRepository (interface + JsonResearchRepository), Server Actions de pesquisa
+- [ ] 08-03-PLAN.md — Wave 2: Components — Tabs component install (shadcn), ProfileDetailTabs, ProfileDetailPerfil, ProfileDetailVagas, ProfileDetailResumo
+- [ ] 08-04-PLAN.md — Wave 3: Page + navigation — /profiles/[id]/page.tsx Server Component async, ajuste cirúrgico em profile-list.tsx (click → /[id] não /edit)
+
 **UI hint**: yes
 
 ---
@@ -242,7 +249,7 @@ Plans:
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
 | 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
 | 7. Profile-Anchored Market Research | 3/3 | Complete | 2026-04-26 |
-| 8. Market Research Frontend | 0/? | Not started | - |
+| 8. Market Research Frontend | 4/4 | Planned | 2026-04-26 |
 
 ---
 
@@ -257,3 +264,5 @@ Plans:
 *Phase 5 replanned: 2026-04-22 (6 planos — expandido de 5 para 6 com roles-map como plano dedicado 05-02)*
 *v1.1 phases (6-8) added: 2026-04-25*
 *Phase 6 planned: 2026-04-25*
+*Phase 7 planned: 2026-04-26*
+*Phase 8 planned: 2026-04-26*
