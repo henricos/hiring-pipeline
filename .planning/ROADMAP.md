@@ -20,7 +20,7 @@
 
 - [x] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base ✓ 2026-04-26
 - [x] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data ✓ 2026-04-26
-- [ ] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil
+- [x] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil ✓ 2026-04-26
 
 ---
 
@@ -229,10 +229,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Wave 0: Test stubs (RED) — criar arquivos de teste com casos failing para VIZ-01, VIZ-02, VIZ-03 (Nyquist contract)
-- [ ] 08-02-PLAN.md — Wave 1: Data layer — ResearchRepository (interface + JsonResearchRepository), Server Actions de pesquisa
-- [ ] 08-03-PLAN.md — Wave 2: Components — Tabs component install (shadcn), ProfileDetailTabs, ProfileDetailPerfil, ProfileDetailVagas, ProfileDetailResumo
-- [ ] 08-04-PLAN.md — Wave 3: Page + navigation — /profiles/[id]/page.tsx Server Component async, ajuste cirúrgico em profile-list.tsx (click → /[id] não /edit)
+- [x] 08-01-PLAN.md — Wave 0: Test stubs (RED) — criar arquivos de teste com casos failing para VIZ-01, VIZ-02, VIZ-03 (Nyquist contract) ✓ 2026-04-26
+- [x] 08-02-PLAN.md — Wave 1: Data layer — ResearchRepository (interface + JsonResearchRepository), Server Actions de pesquisa ✓ 2026-04-26
+- [x] 08-03-PLAN.md — Wave 2: Components — Tabs component install (shadcn), ProfileDetailTabs, ProfileDetailPerfil, ProfileDetailVagas, ProfileDetailResumo ✓ 2026-04-26
+- [x] 08-04-PLAN.md — Wave 3: Page + navigation — /profiles/[id]/page.tsx Server Component async, ajuste cirúrgico em profile-list.tsx (click → /[id] não /edit) ✓ 2026-04-26
 
 **UI hint**: yes
 
@@ -249,7 +249,7 @@ Plans:
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
 | 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
 | 7. Profile-Anchored Market Research | 3/3 | Complete | 2026-04-26 |
-| 8. Market Research Frontend | 4/4 | Planned | 2026-04-26 |
+| 8. Market Research Frontend | 4/4 | Complete | 2026-04-26 |
 
 ---
 

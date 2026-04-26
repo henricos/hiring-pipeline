@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: Profile-Anchored Market Research
-status: Phase 8 planned — ready to execute
-last_updated: "2026-04-26T18:00:00.000Z"
+milestone_name: — Profile-Anchored Market Research
+status: Phase 8 complete — Market Research Frontend entregue
+last_updated: "2026-04-26T20:00:00.000Z"
+last_activity: 2026-04-26 -- Phase 08 concluída (4 planos, verificação PASS)
 progress:
-  total_phases: 3
-  completed_phases: 2
-  total_plans: 8
-  completed_plans: 4
-  percent: 66
+  total_phases: 8
+  completed_phases: 6
+  total_plans: 31
+  completed_plans: 41
+  percent: 100
 ---
 
 # State: Hiring Pipeline v1.1
@@ -29,18 +30,19 @@ progress:
 **Phase 5 Status:** Complete ✓ 2026-04-25 (6/6 planos executados — piloto end-to-end validado)
 **Phase 6 Status:** Complete ✓ 2026-04-26 (1/1 plano executado — skill /criar-perfil criada)
 **Phase 7 Status:** Complete ✓ 2026-04-26 (3/3 planos executados — /pesquisar-mercado ancorado, /refinar-perfil corrigido, legados migrados e convertidos)
-**Current Focus:** Milestone v1.1 — Phase 8: Market Research Frontend
+**Phase 8 Status:** Complete ✓ 2026-04-26 (4/4 planos — ResearchRepository, Server Actions, componentes UI, página detalhe + navegação)
+**Current Focus:** Milestone v1.1 completo — todas as 3 phases executadas
 
 ---
 
 ## Current Position
 
-Phase: Phase 8 — Market Research Frontend
-Plan: —
-Status: Ready to execute (4 planos criados — Wave 0-3, VIZ-01, VIZ-02, VIZ-03 cobertos)
-Last activity: 2026-04-26 — Phase 8 planejada (4 planos: Wave 0 testes RED, Wave 1 repositório, Wave 2 componentes, Wave 3 página + navegação)
+Phase: 08 (Market Research Frontend) — COMPLETE ✓
+Plan: 4/4 concluídos
+Status: Milestone v1.1 completo (Phases 6, 7, 8 executadas)
+Last activity: 2026-04-26 — Phase 08 verificação PASS (140/140 testes, VIZ-01 VIZ-02 VIZ-03 cobertos)
 
-**Progress bar:** `[x] [x] [ ]` (2/3 phases)
+**Progress bar:** `[x] [x] [x]` (3/3 phases)
 
 **At risk:** None
 
