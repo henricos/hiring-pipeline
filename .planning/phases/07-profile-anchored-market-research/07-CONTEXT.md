@@ -6,12 +6,12 @@
 <domain>
 ## Phase Boundary
 
-Refatoração de `/pesquisar-mercado` para: (1) ancorar toda pesquisa ao ID de um perfil existente, (2) acumular pesquisas por data em pasta dedicada ao perfil, (3) absorver o step de faixas salariais em guias curados (que vivia no `/atualizar-roles-map`) e as técnicas de scraping mais robustas daquela skill. `/atualizar-roles-map` é descontinuada após a migração.
+Refatoração de `/pesquisar-mercado` para: (1) ancorar toda pesquisa ao ID de um perfil existente, (2) acumular pesquisas por data em pasta dedicada ao perfil, (3) absorver o step de faixas salariais em guias curados (que vivia no `/atualizar-roles-map`) e as técnicas de scraping mais robustas daquela skill. `/atualizar-roles-map` é removida ao final da phase.
 
 **Em escopo:**
 - Refatoração da skill `/pesquisar-mercado`: seleção de perfil, nova estrutura de pastas, step de guias salariais obrigatório, absorção das melhores técnicas de scraping do `/atualizar-roles-map`
 - Novo campo `salaryGuide` no schema do `-resumo.json`
-- Deprecação da skill `/atualizar-roles-map` (SKILL.md atualizado com migration note)
+- Remoção da skill `/atualizar-roles-map` (diretório apagado de `.agents/`, `.claude/` e `.cursor/`)
 - Atividade pontual de migração dos arquivos legados `{slug}-{date}-*.json` para a nova estrutura de pastas
 
 **Fora de escopo:**
@@ -45,9 +45,9 @@ Refatoração de `/pesquisar-mercado` para: (1) ancorar toda pesquisa ao ID de u
   - `salaryRange` — extraído das vagas brutas coletadas (0-N vagas com faixa visível). `null` se nenhuma vaga exibiu faixa. Comportamento atual preservado.
   - `salaryGuide` — faixas curadas de guias salariais. Estrutura: `{ min, max, currency, location, sources: [{ portal, year, url }] }`. `null` se nenhum guia retornou dado confiável.
 
-### Deprecação do `/atualizar-roles-map`
+### Remoção do `/atualizar-roles-map`
 
-- **D-09:** O SKILL.md do `/atualizar-roles-map` é atualizado para indicar **legado/descontinuado** com migration note apontando para `/pesquisar-mercado`. O arquivo não é deletado — fica como referência histórica.
+- **D-09:** A skill `/atualizar-roles-map` é **removida** ao final da phase — o diretório inteiro é apagado de `.agents/skills/`, `.claude/skills/` e `.cursor/skills/`. Decisão revisada pós-execução: manter o arquivo como "referência histórica" gera ruído na listagem de skills disponíveis sem benefício prático, já que as técnicas foram absorvidas pelo `/pesquisar-mercado`.
 - **D-10:** O `data/research/roles-map.json` também fica obsoleto (a skill nova não o consome). O pesquisador deve verificar se a skill atual ainda referencia esse arquivo e remover a dependência.
 
 ### Claude's Discretion

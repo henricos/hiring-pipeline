@@ -47,8 +47,8 @@ human_verification:
 | 9 | Arquivos legados exibidos com etiqueta '(legado)' na lista do Step 2 | VERIFIED | `grep "legado"` → 7 matches; código exibe `legadoSuffix = r.profileId ? "" : " (legado)"` |
 | 10 | Path do arquivo selecionado validado contra researchDir antes de leitura | VERIFIED | Bloco de carregamento usa `filePath.startsWith(researchDir)` com abort se inválido |
 | 11 | Step 6.5 resolve vagasFile relativo à subpasta do profileId (não ao root de research/) | VERIFIED | `grep "selectedProfileId"` → match; código usa `path.join(..., "research", selectedProfileId, vagasFile)` com fallback legado |
-| 12 | /atualizar-roles-map tem aviso de descontinuado no frontmatter e bloco de migração no topo | VERIFIED | `grep "DESCONTINUADO"` → 2 matches; `grep "SKILL DESCONTINUADO"` → 1 match; `grep "Deprecated"` → 1 match |
-| 13 | Migration note aponta para /pesquisar-mercado como substituto | VERIFIED | `grep "/pesquisar-mercado" .agents/skills/atualizar-roles-map/SKILL.md` → 12 matches; migration note tem instrução explícita "Execute /pesquisar-mercado" |
+| 12 | /atualizar-roles-map removida do repo (diretório apagado em .agents/, .claude/, .cursor/) | VERIFIED | `ls .agents/skills/atualizar-roles-map` → No such file or directory; skill não aparece mais na listagem do harness |
+| 13 | Técnicas de scraping do /atualizar-roles-map absorvidas no /pesquisar-mercado antes da remoção | VERIFIED | Step 6.3 do pesquisar-mercado documenta cadeia Robert Half → Glassdoor → Catho → Revelo com heading OBRIGATORIO |
 
 ### Deferred Items
 
@@ -60,7 +60,7 @@ Nenhum item deferido — todas as truths da Phase 7 estão endereçadas nos plan
 |----------|----------|--------|---------|
 | `.agents/skills/pesquisar-mercado/SKILL.md` | Skill refatorada com ancoragem a perfil, subpastas, salaryGuide e step de guias obrigatório | VERIFIED | Todos os critérios de aceitação verificados via grep; inode 3579172 idêntico em .agents/, .claude/, .cursor/ |
 | `.agents/skills/refinar-perfil/SKILL.md` | Discovery recursivo de dois níveis para -resumo.json | VERIFIED | `collectResumos` implementado; inode 3573365 idêntico nos três diretórios |
-| `.agents/skills/atualizar-roles-map/SKILL.md` | Skill marcada como descontinuada com migration note | VERIFIED | Frontmatter, bloco no topo do Execution Flow e metadata footer atualizados; inode 3572934 idêntico |
+| `.agents/skills/atualizar-roles-map/` | Skill removida — diretório apagado de .agents/, .claude/ e .cursor/ | VERIFIED | Diretório inexistente; skill ausente da listagem do harness; decisão D-09 revisada pós-execução |
 
 ### Key Link Verification
 
@@ -87,7 +87,7 @@ Step 7b SKIPPED — os arquivos SKILL.md são documentação operacional para ag
 | PESQ-01 | 07-01, 07-03 | Skill `/pesquisar-mercado` vincula arquivos ao ID do perfil | SATISFIED | Subpastas `research/{profileId}/` + campo `profileId` como raiz em ambos os JSONs |
 | PESQ-02 | 07-01 | `-resumo.json` inclui faixas salariais e dados de mercado | SATISFIED | Campos `salaryRange` (das vagas) e `salaryGuide` (dos guias) presentes no schema; step 6.3 obrigatório |
 | PESQ-03 | 07-01, 07-03 | Novas pesquisas acumulam por data sem sobrescrever | SATISFIED | `finalBaseName` com detecção de colisão via loop `while fs.existsSync`; sufixo `-2, -3` |
-| PESQ-04 | 07-02 | `/atualizar-roles-map` descontinuada como legada | SATISFIED | Frontmatter com `[DESCONTINUADO]`; bloco de migration note antes do Step 0; `Status: Deprecated` no footer |
+| PESQ-04 | 07-02 | `/atualizar-roles-map` removida do repo | SATISFIED | Diretório apagado de `.agents/`, `.claude/` e `.cursor/`; skill ausente da listagem do harness |
 
 **Nota:** REQUIREMENTS.md ainda marca PESQ-01/02/03/04 como `[ ] Pending` na coluna de status — isso é um artefato de documentação que não foi atualizado após a conclusão. O conteúdo real das skills confirma que todos os requisitos estão satisfeitos.
 
@@ -96,9 +96,7 @@ Step 7b SKIPPED — os arquivos SKILL.md são documentação operacional para ag
 | File | Linha | Pattern | Severidade | Impacto |
 |------|-------|---------|------------|---------|
 | pesquisar-mercado/SKILL.md | 351, 491 | `profileId: "{profileId}"` (placeholder no schema) | INFO | Esperado — placeholder documental em schema de exemplo para o agente preencher em execução. Não é dado hardcoded que flui para output real. |
-| atualizar-roles-map/SKILL.md | header | Descrição ainda menciona `roles-map.json` no body da skill (Steps 1-6 originais preservados) | INFO | Intencional — steps preservados como referência histórica, conforme D-09 e a migration note explica claramente que não devem ser executados para novos levantamentos |
-
-Nenhum bloqueador encontrado. Os itens INFO são esperados e aceitos.
+Nenhum bloqueador encontrado. O item INFO era sobre a atualizar-roles-map, que foi removida.
 
 ### Human Verification Required
 
