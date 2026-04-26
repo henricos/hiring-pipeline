@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Profile-Anchored Market Research
-status: Ready to execute
-last_updated: "2026-04-25T00:00:00.000Z"
+status: Phase 6 complete
+last_updated: "2026-04-26T11:30:51.000Z"
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 33
 ---
 
 # State: Hiring Pipeline v1.1
@@ -27,18 +27,19 @@ progress:
 **Phase 3 Status:** Complete ✓ 2026-04-21 (12/12 planos executados)
 **Phase 4 Status:** Complete ✓ 2026-04-21 (5/5 planos + code review PASS WITH NOTES + verificação PASS)
 **Phase 5 Status:** Complete ✓ 2026-04-25 (6/6 planos executados — piloto end-to-end validado)
-**Current Focus:** Milestone v1.1 — Phase 6: Guided Profile Creation Skill (`/criar-perfil`)
+**Phase 6 Status:** Complete ✓ 2026-04-26 (1/1 plano executado — skill /criar-perfil criada)
+**Current Focus:** Milestone v1.1 — Phase 7: Profile-Anchored Market Research
 
 ---
 
 ## Current Position
 
-Phase: Phase 6 — Guided Profile Creation Skill
+Phase: Phase 7 — Profile-Anchored Market Research
 Plan: —
-Status: Ready to execute (1 plan planned)
-Last activity: 2026-04-25 — Phase 6 planned (1 plano, 1 wave)
+Status: Not started (needs planning)
+Last activity: 2026-04-26 — Phase 6 complete (1/1 plano — skill /criar-perfil)
 
-**Progress bar:** `[ ] [ ] [ ]` (0/3 phases)
+**Progress bar:** `[x] [ ] [ ]` (1/3 phases)
 
 **At risk:** None
 
@@ -48,7 +49,7 @@ Last activity: 2026-04-25 — Phase 6 planned (1 plano, 1 wave)
 
 | Phase | Goal | Requirements | Status |
 |-------|------|--------------|--------|
-| 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Planned (1 plano) |
+| 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Complete ✓ 2026-04-26 |
 | 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Not started |
 | 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Not started |
 
@@ -154,6 +155,19 @@ Phase 6: Guided Profile Creation Skill
 2. Phase 7 depende de Phase 6 estar completa (precisa do profileId nos testes de ancoragem)
 3. Phase 8 depende de Phase 7 (precisa dos arquivos ancorados para exibir no frontend)
 4. Ao completar Phase 7, verificar se `/atualizar-roles-map` pode ser removida ou apenas marcada como legada no SKILL.md
+
+### Sessão de Execução Phase 06 — Plano 06-01 (2026-04-26)
+
+- Plano 06-01 concluído: skill /criar-perfil criada como fonte de verdade em .agents/skills/criar-perfil/SKILL.md
+- 6 steps completos: Step 0 (env), Step 1 (normalização título + inferência nível), Step 2 (WebSearch força de mercado), Step 3 (preview de confirmação), Step 4 (UUID + montar stub), Step 5 (persistir JSON), Step 6 (resultado + próximos passos)
+- Acessível automaticamente via .claude/skills/ e .cursor/skills/ (mesmo inode 3698371)
+- Tabela de mapeamento senioridade incluída (5 valores válidos do union type ExperienceLevel)
+- Classificação de força (forte/médio/fraco/nicho) baseada em WebSearch executado ao vivo — nunca em conhecimento de treinamento
+- Preview (Step 3) omite campos placeholder intencionalmente (D-11 do CONTEXT.md)
+- Path traversal guard: path.resolve() + startsWith(profilesDir + path.sep) — mesmo padrão de pesquisar-mercado
+- node -e com aspas simples em todos os blocos bash (evita expansão de $)
+- 109 testes vitest passando — schema JobProfile imutável não foi tocado
+- Requirements CRIA-01, CRIA-02, CRIA-03 cobertos
 
 ### Sessão de Execução Phase 05 — Plano 05-06 (2026-04-25)
 

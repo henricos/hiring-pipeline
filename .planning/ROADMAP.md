@@ -18,7 +18,7 @@
 
 ### Milestone v1.1 — Profile-Anchored Market Research
 
-- [ ] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base
+- [x] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base ✓ 2026-04-26
 - [ ] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data
 - [ ] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil
 
@@ -185,7 +185,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md — Wave 1: Skill /criar-perfil — normalização de título + análise de força de mercado + persistência de stub
+- [x] 06-01-PLAN.md — Wave 1: Skill /criar-perfil — normalização de título + análise de força de mercado + persistência de stub ✓ 2026-04-26
 
 ---
 
@@ -235,7 +235,7 @@ Plans:
 | 3. Vacancy & GH Form | 12/12 | Complete | 2026-04-21 |
 | 4. AI-Assisted Profiles | 5/5 | Complete | 2026-04-21 |
 | 5. Market Research & Holistic Refinement | 6/6 | Complete | 2026-04-25 |
-| 6. Guided Profile Creation Skill | 0/1 | Not started | - |
+| 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
 | 7. Profile-Anchored Market Research | 0/? | Not started | - |
 | 8. Market Research Frontend | 0/? | Not started | - |
 
