@@ -294,179 +294,254 @@ Registrar cada query em `sources[]`:
 
 Registrar no log: quantas vagas foram coletadas no total e quantas foram filtradas por porte.
 
-### Step 5: Salvar {slug}-{date}-vagas.json
+### Step 5: Salvar {date}-vagas.json na Subpasta do Perfil
 
-**5.1 — Verificar colisão de nome no mesmo dia:**
-
-```bash
-ls $DATA_PATH/research/{slug}-{date}-vagas.json 2>/dev/null
-```
-
-Se existir: usar sufixo `-2`, `-3`, etc. inserido ANTES de `-vagas.json` e `-resumo.json`.
-Exemplo: `senior-pd-java-python-ts-sp-2026-04-22-2-vagas.json`
-
-**5.2 — Criar diretório se necessário:**
+**5.1 — Calcular nome final (com detecção de colisão):**
 
 ```bash
-node -e "require('fs').mkdirSync(require('path').join(process.env.DATA_PATH || './data', 'research'), { recursive: true })"
+node -e '
+const fs = require("fs");
+const path = require("path");
+const profileId = "{profileId}";
+const date = new Date().toISOString().split("T")[0];
+const profileDir = path.resolve(process.env.DATA_PATH || "./data", "research", profileId);
+let suffix = "";
+let counter = 2;
+let vagasPath = path.resolve(profileDir, date + "-vagas.json");
+while (fs.existsSync(vagasPath)) {
+  suffix = "-" + counter;
+  vagasPath = path.resolve(profileDir, date + suffix + "-vagas.json");
+  counter++;
+}
+const finalBaseName = date + suffix;
+console.log(finalBaseName);
+'
 ```
 
-**5.3 — Salvar vagas brutas via node -e (NÃO heredoc — evita problemas com aspas e newlines):**
+Registrar `finalBaseName` em memória (ex: `2026-04-26` ou `2026-04-26-2`).
+
+**5.2 — Criar subpasta do perfil:**
+
+```bash
+node -e '
+const fs = require("fs");
+const path = require("path");
+const profileDir = path.resolve(process.env.DATA_PATH || "./data", "research", "{profileId}");
+fs.mkdirSync(profileDir, { recursive: true });
+console.log("Diretorio pronto:", profileDir);
+'
+```
+
+**5.3 — Salvar vagas brutas com validação de path traversal:**
 
 ```bash
 node -e '
 const fs = require("fs");
 const path = require("path");
 const dataPath = process.env.DATA_PATH || "./data";
-const fileName = "{slug}-{date}-vagas.json";
-const filePath = path.resolve(dataPath, "research", fileName);
-// Validar path traversal antes de escrever
-const researchDir = path.resolve(dataPath, "research");
-if (!filePath.startsWith(researchDir)) {
+const profileId = "{profileId}";
+const baseName = "{finalBaseName}";
+const profileDir = path.resolve(dataPath, "research", profileId);
+const filePath = path.resolve(profileDir, baseName + "-vagas.json");
+if (!filePath.startsWith(profileDir + path.sep)) {
   console.error("Path traversal detectado — abortando");
   process.exit(1);
 }
-const vagasData = {/* objeto completo conforme schema abaixo */};
+const vagasData = {
+  profileId: "{profileId}",
+  profileTitle: "{title}",
+  profileExperienceLevel: "{experienceLevel}",
+  baseName: "{finalBaseName}",
+  createdAt: new Date().toISOString(),
+  depth: "{depth}",
+  scope: {
+    role: "{title}",
+    location: "{location}",
+    seniority: "{experienceLevel}",
+    stack: [],
+    companySize: "{companySize}"
+  },
+  sessions: [/* sessoes detectadas */],
+  sources: [/* queries executadas */],
+  jobs: [/* vagas extraidas */]
+};
 fs.writeFileSync(filePath, JSON.stringify(vagasData, null, 2));
 console.log("Vagas salvas em:", filePath);
 '
 ```
 
-**Schema completo de {slug}-{date}-vagas.json:**
+Exibir: `Vagas brutas salvas: {N} vagas em {DATA_PATH}/research/{profileId}/{finalBaseName}-vagas.json`
 
-```json
-{
-  "slug": "senior-pd-java-python-ts-sp-2026-04-22",
-  "createdAt": "2026-04-22T10:30:00.000Z",
-  "depth": "média",
-  "scope": {
-    "role": "Engenheiro Sênior de Software",
-    "location": "Nacional",
-    "seniority": "Sênior",
-    "stack": [],
-    "companySize": "médias+"
-  },
-  "sessions": [
-    { "portal": "linkedin", "authenticated": true },
-    { "portal": "gupy", "authenticated": false }
-  ],
-  "sources": [
-    { "portal": "gupy", "query": "engenheiro senior", "url": "https://portal.gupy.io/...", "status": "OK" },
-    { "portal": "linkedin", "query": "engenheiro sênior java python", "url": "https://linkedin.com/jobs/...", "status": "OK" }
-  ],
-  "jobs": [
-    {
-      "title": "Engenheiro Sênior de Software",
-      "company": "TechCorp",
-      "companySize": "grande",
-      "url": "https://techcorp.gupy.io/job/abc123",
-      "snippet": "Buscamos engenheiro sênior com experiência em Java e Python...",
-      "portal": "gupy",
-      "fetchedFull": true,
-      "authenticated": false,
-      "stack": ["Java", "Python", "Spring Boot", "Kafka"],
-      "seniority": "Sênior",
-      "salaryRange": { "min": 15000, "max": 22000, "currency": "BRL" },
-      "behaviors": ["comunicação técnica clara", "mentoria de desenvolvedores juniores"],
-      "archetype": "arquiteto técnico"
-    }
-  ]
-}
-```
+### Step 6: Gerar Summary + profileHints + salaryGuide e Salvar {date}-resumo.json
 
-Exibir: `Vagas brutas salvas: {N} vagas em {filePath}`
-
-### Step 6: Gerar Summary Executivo + profileHints e Salvar {slug}-{date}-resumo.json
-
-**6.1 — Com base nas vagas coletadas, gerar o bloco `summary`:**
+**6.1 — Gerar o bloco `summary` com base nas vagas coletadas:**
 
 - `commonTitles[]` — títulos de cargo mais frequentes nas vagas coletadas
-- `titleAliases[]` — variações do mesmo papel (ex: "Dev Sênior Backend", "Engenheiro Backend Sênior")
+- `titleAliases[]` — variações do mesmo papel encontradas nos portais
 - `stackFrequency{}` — objeto `{ tecnologia: contagem }` para todas as tecnologias mencionadas
 - `emergingStack[]` — tecnologias presentes em menos de 30% das vagas mas em crescimento notável
 - `salaryRange` — faixa agregada das vagas que exibiram salário; `null` se nenhuma teve faixa visível
 - `salarySource` — descrição da origem (ex: `"6 de 20 vagas com faixa salarial visível"`)
 - `commonBehaviors[]` — competências comportamentais mais frequentes
-- `commonChallenges[]` — desafios mais citados nas descrições
+- `commonChallenges[]` — desafios mais citados
 - `archetypes[]` — arquétipos detectados com frequência
-- `trends[]` — tendências observadas no conjunto (ex: "crescimento de IA generativa nos requisitos")
-- `redFlags[]` — padrões preocupantes (ex: "exige 10+ linguagens diferentes sem foco claro")
+- `trends[]` — tendências observadas no conjunto
+- `redFlags[]` — padrões preocupantes detectados
 
-**6.2 — Gerar o bloco `profileHints`** (pré-mastigado para uso no /refinar-perfil):
+**6.2 — Gerar o bloco `profileHints` (pré-mastigado para uso no /refinar-perfil):**
 
-Usar APENAS os 4 campos descritivos do JobProfile + identificação — não inventar campos novos (D-01):
+Usar APENAS os 4 campos descritivos do JobProfile — não inventar campos novos (D-01):
 
 - `responsibilities[]` — sugestões de responsabilidades derivadas do padrão de vagas
-- `qualifications[]` — array de `{ text: string, required: boolean }` — format ProfileItem[] do `src/lib/profile.ts`
+- `qualifications[]` — array de `{ text: string, required: boolean }` (ProfileItem[])
 - `behaviors[]` — competências comportamentais sugeridas
 - `challenges[]` — desafios sugeridos para o cargo
-- `suggestedTitle` — título mais adequado para o perfil (baseado em `commonTitles`)
+- `suggestedTitle` — título mais adequado baseado em `commonTitles`
 - `suggestedExperienceLevel` — um dos valores válidos: `"< 1 ano"` | `"1-3 anos"` | `"3-5 anos"` | `"5-10 anos"` | `"> 10 anos"`
 
-**6.3 — Salvar via node -e com a mesma validação de path traversal do Step 5:**
+**6.3 — Pesquisar guias salariais e gerar `salaryGuide` (OBRIGATORIO — sempre roda):**
 
-**Schema completo de {slug}-{date}-resumo.json:**
+Consultar as seguintes fontes para o cargo `{title}`, âncora geográfica SP/Sudeste:
 
-```json
-{
-  "slug": "senior-pd-java-python-ts-sp-2026-04-22",
-  "createdAt": "2026-04-22T10:35:00.000Z",
-  "vagasFile": "senior-pd-java-python-ts-sp-2026-04-22-vagas.json",
-  "summary": {
-    "commonTitles": ["Engenheiro Sênior de Software", "Senior Software Engineer"],
-    "titleAliases": ["Dev Sênior Backend", "Engenheiro Backend Sênior"],
-    "stackFrequency": { "Java": 18, "Python": 12, "TypeScript": 8, "Spring Boot": 14, "Kafka": 7 },
-    "emergingStack": ["LangChain", "FastAPI", "Kafka Streams"],
-    "salaryRange": { "min": 12000, "max": 22000, "currency": "BRL", "location": "Sudeste/Sul" },
-    "salarySource": "6 de 20 vagas com faixa salarial visível",
-    "commonBehaviors": ["liderança técnica", "mentoria de juniores", "comunicação com stakeholders"],
-    "commonChallenges": ["escalar sistemas legados", "adoção de IA generativa em produtos"],
-    "archetypes": ["arquiteto técnico", "evangelizador de IA"],
-    "trends": ["crescimento de IA generativa nos requisitos", "stack tri-linguagem valorizada"],
-    "redFlags": ["exigência de 10+ linguagens diferentes sem foco claro"]
-  },
-  "profileHints": {
-    "responsibilities": [
-      "Projetar e implementar soluções escaláveis em Java e Python",
-      "Liderar decisões técnicas de arquitetura em colaboração com o time"
-    ],
-    "qualifications": [
-      { "text": "5+ anos de experiência com Java e ecossistema Spring", "required": true },
-      { "text": "Experiência com Python para serviços de dados ou IA", "required": true },
-      { "text": "Experiência com LLMs e APIs de IA generativa", "required": false }
-    ],
-    "behaviors": [
-      "Comunicação técnica clara para stakeholders não-técnicos",
-      "Capacidade de mentoria e desenvolvimento de engenheiros juniores"
-    ],
-    "challenges": [
-      "Modernizar sistemas legados mantendo continuidade operacional",
-      "Integrar soluções de IA generativa em produtos existentes"
-    ],
-    "suggestedTitle": "Engenheiro Sênior de Software",
-    "suggestedExperienceLevel": "5-10 anos"
-  }
-}
+**Robert Half Guia Salarial TI (âncora primária) — cadeia de três níveis:**
+
+Nível 1 — tentar PDF:
+```
+WebSearch: "robert half guia salarial TI {ano} download PDF filetype:pdf"
+WebSearch: "site:roberthalf.com.br guia salarial {ano} download"
+```
+Se encontrar URL de PDF direto, fazer WebFetch. PDF contém tabelas por cargo e percentil.
+
+Nível 2 — se PDF indisponível, usar Playwright MCP na calculadora:
+```
+browser_navigate -> https://www.roberthalf.com/br/pt/insights/guia-salarial/calculadora
+```
+Selecionar área "Tecnologia", digitar o cargo (ver mapeamento abaixo), selecionar cidade "São Paulo".
+Capturar P25, P50, P75 via browser_snapshot.
+NAO chamar browser_close após uso — reutilizar o mesmo contexto de browser.
+
+Mapeamento de títulos Robert Half:
+- "Analista de Dados" -> RH usa "Analista de BI"
+- "Cientista de Dados Sênior" -> RH usa "Especialista/Cientista de Dados"
+- "Engenheiro de Dados" -> não listado no RH — usar Glassdoor como âncora primária
+
+Nível 3 — se calculadora não retornar o cargo, buscar cobertura jornalística:
+```
+WebSearch: "robert half guia salarial TI {ano} {title} faixa salarial"
+WebSearch: "robert half salary guide {ano} site:canaltech.com.br OR site:opiniaorh.com OR site:segs.com.br"
 ```
 
-Exibir: `Resumo executivo salvo: {filePath}`
+**Glassdoor BR (mediana e spot-check) — WebSearch apenas:**
+
+Glassdoor bloqueia WebFetch com 403 — NUNCA tentar WebFetch.
+```
+WebSearch: "site:glassdoor.com.br salario {title} pleno senior sao paulo {ano}"
+```
+Playwright como fallback se snippets insuficientes:
+```
+browser_navigate -> https://www.glassdoor.com.br/Salarios/{cargo-slug}-salario-SRCH_KO0,{n}.htm
+browser_snapshot -> extrair "faixa de salario base medio (R$Xk-R$Yk/mes)"
+```
+Atenção: snippets podem rotular mensais como "por ano" — usar o campo "R$Xk–R$Yk/mes" como verdade.
+Glassdoor BR reporta salários CLT mensais brutos — não anuais.
+
+**Catho (validação cruzada — sem split de senioridade):**
+```
+WebSearch: "catho pesquisa salarial {ano} {title}"
+```
+Dados são nacionais agregados sem split Pleno/Senior — usar só como validação de ordem de magnitude.
+
+**Revelo (baixa confiabilidade):**
+```
+WebSearch: "revelo salary report {ano} {aliasEN} brazil"
+```
+Se não retornar relatório específico, ignorar esta fonte.
+
+**Fontes a NUNCA usar como âncora de salaryGuide:**
+- `salario.com.br` — inclui verbas rescisórias, infla salário base
+- `meutudo.com.br` — sem metodologia publicada
+
+**Detecção de outlier:** se uma fonte retornar valores >50% acima das demais, verificar se cita
+total compensation (equity + bonus) em vez de CLT base — descartar se sim.
+
+Consolidar em `salaryGuide`:
+- `min` / `max`: percentil P25-P75 de CLT mensal bruta, âncora SP/Sudeste, valores inteiros em BRL
+- `currency`: "BRL"
+- `location`: "Sao Paulo / Sudeste"
+- `sources[]`: cada fonte consultada — incluir mesmo as que retornaram null para rastreabilidade
+  Cada entrada: `{ "portal": "...", "year": 2026, "url": "...", "percentiles": "P25=..., P75=..." }`
+- `salaryGuide: null` apenas se nenhuma fonte retornou dado confiável
+
+**6.4 — Salvar resumo com validação de path traversal:**
+
+```bash
+node -e '
+const fs = require("fs");
+const path = require("path");
+const dataPath = process.env.DATA_PATH || "./data";
+const profileId = "{profileId}";
+const baseName = "{finalBaseName}";
+const profileDir = path.resolve(dataPath, "research", profileId);
+const filePath = path.resolve(profileDir, baseName + "-resumo.json");
+if (!filePath.startsWith(profileDir + path.sep)) {
+  console.error("Path traversal detectado — abortando");
+  process.exit(1);
+}
+const resumoData = {
+  profileId: "{profileId}",
+  profileTitle: "{title}",
+  profileExperienceLevel: "{experienceLevel}",
+  baseName: "{finalBaseName}",
+  vagasFile: "{finalBaseName}-vagas.json",
+  createdAt: new Date().toISOString(),
+  summary: {
+    commonTitles: [],
+    titleAliases: [],
+    stackFrequency: {},
+    emergingStack: [],
+    salaryRange: null,
+    salarySource: "",
+    commonBehaviors: [],
+    commonChallenges: [],
+    archetypes: [],
+    trends: [],
+    redFlags: []
+  },
+  salaryGuide: null,
+  profileHints: {
+    responsibilities: [],
+    qualifications: [],
+    behaviors: [],
+    challenges: [],
+    suggestedTitle: "",
+    suggestedExperienceLevel: ""
+  }
+};
+fs.writeFileSync(filePath, JSON.stringify(resumoData, null, 2));
+console.log("Resumo salvo em:", filePath);
+'
+```
+
+Exibir: `Resumo executivo salvo: {DATA_PATH}/research/{profileId}/{finalBaseName}-resumo.json`
 
 ### Step 7: Exibir Resultado e Sugerir Próxima Ação
 
 ```
 Pesquisa concluída!
 
+Perfil pesquisado: {title} ({experienceLevel}) — ID: {profileId}
 Vagas coletadas: {N} ({M} filtradas por porte — {F} vagas excluídas)
 Portais usados: {lista de portais com status OK}
 Sessões autenticadas: {lista ou "nenhuma"}
 
 Arquivos gerados:
-  {DATA_PATH}/research/{slug}-{date}-vagas.json
-  {DATA_PATH}/research/{slug}-{date}-resumo.json
+  {DATA_PATH}/research/{profileId}/{finalBaseName}-vagas.json
+  {DATA_PATH}/research/{profileId}/{finalBaseName}-resumo.json
 
 Stack mais frequente: {top 3 do stackFrequency}
-Faixa salarial agregada: {salaryRange.min}–{salaryRange.max} BRL (ou "não disponível — nenhuma vaga exibiu faixa")
-Arquétipos detectados: {archetypes[].join(', ')}
+Faixa salarial (vagas): {salaryRange.min}–{salaryRange.max} BRL (ou "não disponível — nenhuma vaga exibiu faixa")
+Faixa salarial (guias): {salaryGuide.min}–{salaryGuide.max} BRL [{fontes}] (ou "não disponível")
+Arquétipos detectados: {archetypes[].join(", ")}
 
 Próxima ação sugerida:
   Execute /refinar-perfil e selecione a pesquisa acima quando solicitado
@@ -475,24 +550,60 @@ Próxima ação sugerida:
 ## Notes for Agent
 
 - **Sessões autenticadas — privacidade:** NUNCA logar, exibir ou incluir no output o conteúdo de arquivos de sessão (`$DATA_PATH/sessions/{portal}-session.json`). Apenas verificar existência via `ls`. Esses arquivos contêm credenciais.
-- **Sanitização de slug:** aceitar APENAS `[a-z0-9-]`. Rejeitar slugs com `..`, `/`, `\`, espaços ou qualquer outro caractere especial. Gerar slug automaticamente a partir do cargo + data — nunca aceitar slug digitado diretamente pelo gestor.
-- **Validação de path traversal no Step 5 e 6:** construir o path com `path.resolve()` e verificar que começa com o diretório `research` antes de escrever. Abortar com erro se `filePath` não começar dentro de `$DATA_PATH/research/`.
-- **salaryRange nulo é correto:** quando nenhuma vaga coletada exibiu faixa salarial, `salaryRange: null` é o valor correto em `summary`. NÃO inventar valores.
+
+- **salaryRange nulo é correto:** quando nenhuma vaga coletada exibiu faixa salarial,
+  `salaryRange: null` é o valor correto no bloco `summary`. NAO inventar valores.
+
+- **salaryGuide nulo é correto:** quando nenhum guia retornou dado confiável, `salaryGuide: null`
+  é o valor correto no -resumo.json. O step de guias é OBRIGATORIO como esforço de pesquisa —
+  mas o campo pode ser null se as fontes não retornarem dados para o cargo específico.
+
+- **salaryGuide — fontes proibidas como âncora:** `salario.com.br` (inclui verbas rescisórias,
+  infla salário base) e `meutudo.com.br` (sem metodologia publicada). Registrar em `sources[]`
+  se consultadas, mas NAO usar para definir min/max.
+
+- **Outlier em guias:** se fonte retornar >50% acima das demais, verificar se cita total
+  compensation (equity+bonus) em vez de CLT base. Descartar outliers — não fazer média com eles.
+
+- **Playwright — guias salariais:** reutilizar o mesmo browser context do step de vagas.
+  NAO chamar browser_close entre portais de vagas e portais de guias.
+
+- **Colisão de nome no mesmo dia:** sufixo `-2`, `-3` inserido ANTES de `-vagas` e `-resumo`.
+  Exemplo: `2026-04-26-2-vagas.json` e `2026-04-26-2-resumo.json`. O `finalBaseName` calculado
+  no Step 5.1 é reusado no Step 6 para ambos os arquivos.
+
+- **profileId vem da lista, nunca do gestor:** ID sempre obtido do JSON do perfil selecionado
+  no Step 1. NAO aceitar UUID digitado diretamente. Validar com regex UUID v4.
+
+- **Subpasta criada automaticamente:** `DATA_PATH/research/{profileId}/` criada com
+  `mkdirSync({ recursive: true })` no Step 5.2. Não depende de criação manual prévia.
+
+- **Sem dependência de arquivo legado de roles:** a skill não lê nem escreve o arquivo legado de mapeamento de cargos. O campo `salaryGuide` no -resumo.json substitui integralmente essa função.
+
 - **profileHints usa apenas os campos do JobProfile (D-01):** `responsibilities[]`, `qualifications[]` (com `required:boolean`), `behaviors[]`, `challenges[]`, `suggestedTitle`, `suggestedExperienceLevel`. Não inventar campos novos. `qualifications` é `ProfileItem[]` com `{ text: string, required: boolean }` — não `string[]`.
-- **Colisão de nome no mesmo dia:** sufixo `-2`, `-3` inserido ANTES de `-vagas` e `-resumo`. Exemplo: `...sp-2026-04-22-2-vagas.json` e `...sp-2026-04-22-2-resumo.json`.
+
 - **node -e para salvar JSON:** não usar heredoc — evita problemas com aspas e newlines no conteúdo das vagas. Usar sempre **aspas simples** no shell (`node -e '...'`): aspas duplas fazem o bash interpretar `$` seguido de dígitos como variável de ambiente vazia — `R$7k` vira `R.7k` silenciosamente.
-- **Playwright MCP — nunca chamar `browser_close`:** chamar `browser_close` encerra o browser permanentemente para toda a sessão — sem possibilidade de reabrir automaticamente. Deixar o browser aberto entre todas as navegações. O contexto é compartilhado: usar o mesmo browser para Gupy e depois Catho, sem fechar entre portais.
+
+- **Playwright MCP — nunca chamar `browser_close`:** chamar `browser_close` encerra o browser permanentemente para toda a sessão — sem possibilidade de reabrir automaticamente. Deixar o browser aberto entre todas as navegações. O contexto é compartilhado: usar o mesmo browser para Gupy, Catho e portais de guias salariais, sem fechar entre portais.
+
 - **Playwright MCP — verificar disponibilidade antes de usar:** tentar `browser_navigate` como primeiro passo; se retornar "Tool not found" ou "browser closed", prosseguir somente com WebFetch/WebSearch para os portais Playwright e registrar como `"unavailable"` em `sources[]`.
+
 - **Playwright MCP — configuração headless:** o plugin `playwright@claude-plugins-official` abre janela de browser visível por padrão. Para rodar headless, editar `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`:
   ```json
   {"playwright": {"command": "npx", "args": ["@playwright/mcp@latest", "--headless"]}}
   ```
   Reiniciar o Claude Code após a mudança (configuração única por máquina). Sem isso, fechar a janela durante a execução destrói o contexto permanentemente para a sessão.
+
 - **WebFetch que falha:** registrar como `"unavailable"` em `sources[]` e continuar. Sem retry agressivo.
+
 - **Filtro de porte é heurística best-effort:** a classificação de porte por nome da empresa pode errar. Vagas com `companySize: "desconhecido"` são incluídas mesmo em filtros restritivos. Documentar no output quantas vagas tiveram porte estimado vs. desconhecido.
+
 - **Gupy sem sessão é funcional:** 23+ vagas retornadas via Playwright MCP sem autenticação. Não classificar Gupy como "unavailable" por ausência de sessão.
-- **Busca nacional por padrão:** não fixar localização nas queries de WebSearch/Playwright. O filtro de porte (D-26) é a âncora de qualidade — não a localização. Gestor pode restringir no Step 1 se desejar.
+
+- **Busca nacional por padrão:** não fixar localização nas queries de WebSearch/Playwright. O filtro de porte é a âncora de qualidade — não a localização. Gestor pode restringir no Step 1 se desejar.
+
 - **TypeScript nas queries:** adicionar "typescript" como termo de busca gera ruído (vagas de front-end puro). Preferir "backend" ou o stack principal como qualificador; avaliar TypeScript no conteúdo das vagas coletadas.
+
 - **Dados pessoais de candidatos:** apenas dados de vagas públicas (empresa, cargo, requisitos). Nunca persistir PII de candidatos (nome, email, telefone) — vagas são informações públicas de empregadores, não de candidatos.
 
 ## Troubleshooting
@@ -502,6 +613,10 @@ Próxima ação sugerida:
 ```bash
 export DATA_PATH=/caminho/para/repo-de-dados
 ```
+
+**"Nenhum perfil encontrado no Step 1"**
+→ Verificar que existe ao menos um arquivo .json em $DATA_PATH/profiles/. Se a base está vazia,
+criar via web app em /profiles/new ou via skill /criar-perfil.
 
 **"WebFetch retorna 403 consistentemente em um portal"**
 → Registrar aquele portal como `"unavailable"` em `sources[]` e continuar com os demais. Não tentar novamente na mesma execução. Se o portal é prioritário (ex: LinkedIn), verificar o User-Agent — para LinkedIn usar Googlebot UA, não Chrome UA.
@@ -519,7 +634,12 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 → Verificar URL de busca: `https://portal.gupy.io/job-search/term={cargo-sem-stack}`. Queries com múltiplos termos técnicos retornam 0 resultados no Gupy — usar termo genérico de cargo.
 
 **"Arquivo já existe com o mesmo nome"**
-→ Comportamento esperado ao rodar duas pesquisas com mesmo escopo no mesmo dia. O Step 5 detecta colisão automaticamente e usa sufixo `-2`, `-3`, etc.
+→ Comportamento esperado ao rodar duas pesquisas no mesmo dia para o mesmo perfil. O Step 5.1 detecta colisão automaticamente e usa sufixo `-2`, `-3`, etc. via `finalBaseName`.
+
+**"Guias salariais não retornam dados para o cargo pesquisado"**
+→ Gravar `salaryGuide: null`. Verificar mapeamento de títulos Robert Half em Notes.
+Para "Engenheiro de Dados", usar Glassdoor SP como âncora primária (RH não cobre este cargo).
+O campo null é válido — a pesquisa continua útil com salaryRange das vagas.
 
 **"Browser abriu uma janela de browser visível / foi fechado acidentalmente"**
 → O plugin `@playwright/mcp` roda em modo headed por padrão — abre uma janela real do Chromium. Fechar essa janela destrói o contexto permanentemente para a sessão (sem reabertura automática). Para evitar: configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json` e adicionar `"--headless"` nos args (ver Notes). Reiniciar o Claude Code após salvar. Se a janela já foi fechada, reiniciar o Claude Code para recuperar o MCP.
@@ -528,10 +648,11 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 → O browser foi fechado em uma sessão anterior (por `browser_close` ou pelo usuário fechando a janela). O playwright-mcp não relança o browser automaticamente. Único caminho: reiniciar o Claude Code — isso relança o processo MCP com browser limpo. Enquanto isso, prosseguir só com WebFetch/WebSearch para todos os portais e registrar Gupy e Catho como `"unavailable"` em `sources[]`.
 
 **"Erro de path traversal detectado"**
-→ O slug gerado contém caracteres inválidos. A skill sanitiza automaticamente — se ocorreu mesmo assim, reportar o cargo/escopo fornecido ao gestor para diagnóstico.
+→ O UUID do perfil falhou na validação de path. Verificar que o arquivo do perfil contém um `id` UUID v4 válido.
 
 ## Related Skills
 
+- `/criar-perfil` — criar o perfil que será selecionado no Step 1 desta skill
 - `/refinar-perfil` — refinamento de perfil usando o `-resumo.json` gerado por esta skill como contexto
 - `/abrir-vaga` — criar vaga a partir de um perfil refinado com dados de mercado
 - `/fechar-versao` — referência de guardrails de segurança operacional
@@ -540,4 +661,5 @@ npx playwright open --save-storage=$DATA_PATH/sessions/{portal}-session.json htt
 
 **Skill created:** 2026-04-22
 **Updated:** 2026-04-22 — ajustes pós-primeira execução: stacks removidas do input (são output), indústria default Livre, queries sem stack-principal, URL InfoJobs corrigida, LinkedIn com filtro f_E por nível, Catho documentada como unavailable sem sessão, vagas.com.br rebaixada para fallback
+**Updated:** 2026-04-26 — Phase 7: seleção de perfil por lista (Step 1 novo), subpastas research/{profileId}/ (Steps 5-6 reescritos), step de guias salariais obrigatório (salaryGuide), campo salaryRange preservado, arquivo legado de roles removido da skill, técnicas de scraping do /atualizar-roles-map absorvidas
 **Status:** Ready for Claude Code integration
