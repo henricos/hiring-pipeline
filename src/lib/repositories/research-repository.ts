@@ -83,10 +83,14 @@ export class JsonResearchRepository implements ResearchRepository {
         const type = match[2] as "vagas" | "resumo";
 
         if (!map.has(date)) {
+          // baseName = nome do arquivo sem o sufixo "-(vagas|resumo).json"
+          // ex: "2026-04-24-vagas.json" → "2026-04-24"
+          // ex: "2026-04-24-2-vagas.json" → "2026-04-24-2"
+          const baseName = (file as string).replace(/-(vagas|resumo)\.json$/, "");
           map.set(date, {
             profileId,
             date,
-            baseName: "",
+            baseName,
             vagasFile: "",
             resumoFile: "",
           });
