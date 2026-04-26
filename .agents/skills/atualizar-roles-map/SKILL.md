@@ -1,11 +1,10 @@
 ---
 name: atualizar-roles-map
 description: |
-  Pesquisa fontes públicas de salário BR (Robert Half Guia Salarial TI, Glassdoor BR,
-  State of Data Brazil, Catho, Revelo) e adiciona ou atualiza entradas em
-  data/research/roles-map.json. Use quando precisar mapear um cargo novo (ex: "Analista
-  de Dados Sênior") ou atualizar faixas salariais de cargos existentes com dados do
-  ano corrente.
+  [DESCONTINUADO — use /pesquisar-mercado] Esta skill foi absorvida pelo /pesquisar-mercado
+  a partir da Phase 7. O step de pesquisa em guias salariais (Robert Half, Glassdoor BR,
+  Catho, Revelo) agora faz parte do fluxo de /pesquisar-mercado, ancorado ao perfil
+  selecionado, e gera o campo salaryGuide no -resumo.json. Ver migration note abaixo.
 command: /atualizar-roles-map
 ---
 
@@ -25,6 +24,24 @@ salariais públicos de múltiplas fontes, consolida os dados no schema D-24 e at
 - `data/research/roles-map.json` pode ou não existir (a skill cria se não existir)
 
 ## Execution Flow
+
+> **SKILL DESCONTINUADO — use /pesquisar-mercado (Phase 7)**
+>
+> Esta skill foi absorvida por `/pesquisar-mercado` a partir da Phase 7 do milestone v1.1.
+> O step de pesquisa em guias salariais (Robert Half, Glassdoor BR, Catho, Revelo)
+> agora e um step OBRIGATORIO do `/pesquisar-mercado`, ancorado ao perfil selecionado.
+>
+> **Migracao:** Execute `/pesquisar-mercado` — o step de guias salariais roda automaticamente
+> apos a coleta de vagas. O campo `salaryGuide` no `-resumo.json` por perfil substitui o
+> `data/research/roles-map.json` como repositorio de faixas salariais curadas.
+>
+> **O que muda:**
+> - Antes: `/atualizar-roles-map` atualiza `data/research/roles-map.json` (arquivo global)
+> - Agora: `/pesquisar-mercado` gera `data/research/{profileId}/{date}-resumo.json` com
+>   campo `salaryGuide` (ancorado ao perfil, acumulado por data)
+>
+> Este arquivo e mantido como referencia historica das tecnicas de scraping de guias salariais.
+> Nao executar esta skill para novos levantamentos salariais.
 
 ### Step 0: Carregar Variáveis de Ambiente
 
@@ -475,4 +492,5 @@ Reiniciar o Claude Code após salvar. Enquanto não configurado, **não fechar**
 
 **Skill created:** 2026-04-22
 **Last updated:** 2026-04-22
-**Status:** Ready for Claude Code integration
+**Updated:** 2026-04-26 — Phase 7: skill descontinuada. Tecnicas de scraping absorvidas pelo /pesquisar-mercado. Ver migration note acima.
+**Status:** Deprecated — use /pesquisar-mercado
