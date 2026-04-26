@@ -86,46 +86,66 @@ Extrair de settings.json (se existir):
 Listar pesquisas disponíveis com data legível:
 
 ```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const researchDir = path.join(process.env.DATA_PATH || './data', 'research');
-try {
-  const files = fs.readdirSync(researchDir)
-    .filter(f => f.endsWith('-resumo.json'))
-    .sort().reverse();
-  if (files.length === 0) {
-    console.log('(Nenhuma pesquisa de mercado disponível — execute /pesquisar-mercado para criar uma)');
-  } else {
-    console.log('Pesquisas de mercado disponíveis:');
-    const today = new Date().toISOString().split('T')[0];
-    files.forEach((f, i) => {
-      const match = f.match(/(\d{4}-\d{2}-\d{2})/);
-      const fileDate = match ? match[1] : null;
-      let label = fileDate || f;
-      if (fileDate) {
-        const diff = Math.floor((new Date(today) - new Date(fileDate)) / (1000 * 60 * 60 * 24));
-        if (diff === 0) label = 'hoje';
-        else if (diff === 1) label = 'ontem';
-        else label = diff + ' dias atrás';
+node -e '
+const fs = require("fs");
+const path = require("path");
+const researchDir = path.join(process.env.DATA_PATH || "./data", "research");
+
+function collectResumos(dir) {
+  const results = [];
+  let entries;
+  try { entries = fs.readdirSync(dir, { withFileTypes: true }); }
+  catch (e) { return results; }
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      let subEntries;
+      try { subEntries = fs.readdirSync(fullPath, { withFileTypes: true }); }
+      catch (e) { continue; }
+      for (const subEntry of subEntries) {
+        if (subEntry.isFile() && subEntry.name.endsWith("-resumo.json")) {
+          results.push({ file: subEntry.name, dir: fullPath, profileId: entry.name });
+        }
       }
-      console.log((i + 1) + '. ' + f + ' — ' + label);
-    });
+    } else if (entry.isFile() && entry.name.endsWith("-resumo.json")) {
+      results.push({ file: entry.name, dir: dir, profileId: null });
+    }
   }
-} catch (e) {
-  console.log('(Nenhuma pesquisa de mercado disponível — execute /pesquisar-mercado para criar uma)');
+  return results.sort((a, b) => b.file.localeCompare(a.file));
 }
-"
+
+const resumos = collectResumos(researchDir);
+if (resumos.length === 0) {
+  console.log("(Nenhuma pesquisa de mercado disponivel — execute /pesquisar-mercado para criar uma)");
+} else {
+  console.log("Pesquisas de mercado disponiveis:");
+  const today = new Date().toISOString().split("T")[0];
+  resumos.forEach((r, i) => {
+    const match = r.file.match(/(\d{4}-\d{2}-\d{2})/);
+    const fileDate = match ? match[1] : null;
+    let ageLabel = fileDate || r.file;
+    if (fileDate) {
+      const diff = Math.floor((new Date(today) - new Date(fileDate)) / (1000 * 60 * 60 * 24));
+      if (diff === 0) ageLabel = "hoje";
+      else if (diff === 1) ageLabel = "ontem";
+      else ageLabel = diff + " dias atras";
+    }
+    const prefix = r.profileId ? r.profileId.substring(0, 8) + " / " : "";
+    const legadoSuffix = r.profileId ? "" : " (legado)";
+    console.log((i + 1) + ". " + prefix + r.file + " — " + ageLabel + legadoSuffix);
+  });
+}
+'
 ```
 
 Se houver arquivos `-resumo.json`, exibir:
 ```
-Pesquisas de mercado disponíveis:
-1. senior-pd-java-python-ts-sp-2026-04-22-resumo.json — hoje
-2. senior-pd-java-python-ts-sp-2026-04-21-resumo.json — ontem
-3. dev-java-pleno-sp-2026-04-18-resumo.json — 4 dias atrás
+Pesquisas de mercado disponiveis:
+1. a1b2c3d4 / 2026-04-26-resumo.json — hoje
+2. a1b2c3d4 / 2026-04-22-resumo.json — 4 dias atras
+3. senior-pd-java-2026-04-18-resumo.json — 8 dias atras (legado)
 
-Carregar pesquisa como contexto? (número ou Enter para pular)
+Carregar pesquisa como contexto? (numero ou Enter para pular)
 ```
 
 Se o gestor escolher um número:
@@ -133,19 +153,22 @@ Se o gestor escolher um número:
 - Registrar o conteúdo do resumo como `marketResearch` em memória para uso nos Steps 3-4 e Step 5 holístico
 
 ```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const researchDir = path.join(process.env.DATA_PATH || './data', 'research');
-// {selectedFile} é o nome do arquivo selecionado pelo gestor
-const filePath = path.resolve(researchDir, '{selectedFile}');
+node -e '
+const fs = require("fs");
+const path = require("path");
+const researchDir = path.join(process.env.DATA_PATH || "./data", "research");
+const selectedDir = "{selectedDir}";   // entry.dir do objeto selecionado
+const selectedFile = "{selectedFile}"; // entry.file do objeto selecionado
+const filePath = path.resolve(selectedDir, selectedFile);
 if (!filePath.startsWith(researchDir)) {
-  console.error('Path inválido — abortando');
+  console.error("Path invalido — abortando");
   process.exit(1);
 }
-console.log(fs.readFileSync(filePath, 'utf8'));
-"
+console.log(fs.readFileSync(filePath, "utf8"));
+'
 ```
+
+Instrucao ao executor: `{selectedDir}` e `{selectedFile}` sao os campos `dir` e `file` do objeto `resumos[numero - 1]` obtido pela funcao `collectResumos`. O `profileId` do objeto selecionado deve ser registrado em memoria junto com `marketResearch` para uso no Step 6.5.
 
 Se o gestor pular (Enter sem número):
 - `marketResearch = null`
@@ -433,19 +456,25 @@ Ver amostra de 3 vagas de referência da pesquisa? (S/N)
 Se o gestor responder S:
 - Carregar o arquivo `-vagas.json` referenciado em `marketResearch.vagasFile` (apenas para leitura):
 ```bash
-source .env.local && DATA_PATH="$DATA_PATH" node -e "
-const fs = require('fs'), path = require('path');
-const vagasPath = path.join(process.env.DATA_PATH, 'research', '{vagasFile}');
-const vagas = JSON.parse(fs.readFileSync(vagasPath, 'utf8'));
+source .env.local && DATA_PATH="$DATA_PATH" node -e '
+const fs = require("fs"), path = require("path");
+// Se a pesquisa selecionada e do novo formato (tem profileId), usar subpasta
+const selectedProfileId = "{profileId do resumo selecionado ou null}";
+const vagasPath = selectedProfileId
+  ? path.join(process.env.DATA_PATH, "research", selectedProfileId, "{vagasFile}")
+  : path.join(process.env.DATA_PATH, "research", "{vagasFile}"); // fallback legado
+const vagas = JSON.parse(fs.readFileSync(vagasPath, "utf8"));
 const sample = vagas.sort(() => Math.random() - 0.5).slice(0, 3);
 sample.forEach((v, i) => {
-  console.log((i+1) + '. ' + v.title + ' — ' + (v.company || 'empresa não informada'));
+  console.log((i+1) + ". " + v.title + " — " + (v.company || "empresa nao informada"));
   const reqs = (v.requirements || []).slice(0, 3);
-  reqs.forEach(r => console.log('   · ' + r));
-  console.log('');
+  reqs.forEach(r => console.log("   · " + r));
+  console.log("");
 });
-"
+'
 ```
+
+O `profileId` aqui e o campo `profileId` do objeto selecionado em memoria (registrado no Step 2). Para resumos no novo formato, o campo `profileId` do JSON tambem esta disponivel — pode ser obtido de `marketResearch.profileId` apos o carregamento.
 - Exibir título, empresa e os 3 primeiros requisitos de cada vaga amostrada
 - Não abre novo ciclo A/R/J — é apenas referência visual para o gestor
 
@@ -476,6 +505,8 @@ Próximas ações:
 - **Sem backup explícito (D-13):** DATA_PATH é um repositório git. O histórico de versões está disponível via `git log` no diretório de dados.
 - **Refinar tudo (Modalidade 3):** Processa os 4 campos na sequência: responsibilities → qualifications → behaviors → challenges. Ao final, exibe resumo consolidado de todos os campos antes de gravar.
 - **Pesquisa de mercado — carregamento apenas do -resumo.json:** Ao carregar pesquisa no Step 2, carregar APENAS o arquivo `-resumo.json` (NÃO o `-vagas.json`). O arquivo de vagas brutas é para auditoria/histórico; o resumo contém o `profileHints` já estruturado para injeção no prompt.
+- **Discovery de -resumo.json pos-Phase 7:** A funcao `collectResumos` percorre dois niveis: (1) arquivos -resumo.json diretamente em `research/` (legado flat — exibidos com "(legado)"); (2) arquivos -resumo.json em `research/{profileId}/` (novo formato — exibidos com UUID curto como prefixo). O path de leitura usa `entry.dir` do objeto retornado, nao concatenacao manual de researchDir + filename.
+- **Step 6.5 pos-Phase 7:** O vagasFile de resumos no novo formato esta em `research/{profileId}/`, nao em `research/`. Usar `marketResearch.profileId` (ou o `profileId` registrado no Step 2) para montar o path correto. Resumos legados (profileId null) continuam no path antigo — fallback preservado.
 - **Pesquisa de mercado — fallback quando não selecionada:** Se `marketResearch = null`, o fluxo continua exatamente como o comportamento original — apenas o System prompt 1 (`aiProfileInstructions`) é usado nos Steps 3-4. Retrocompatível sem qualquer degradação.
 - **Três contextos empilhados — priorização da pesquisa:** Quando pesquisa está carregada, o System prompt 2 injeta `marketResearch.profileHints` + `summary.trends`. A instrução de priorização orienta a IA a expressar a riqueza do mercado (stack híbrido, arquétipo) dentro dos 4 campos do JobProfile — NÃO inventar novos campos (D-01 imutável).
 - **Step 5 holístico analisa o perfil APÓS o ciclo A/R/J:** A revisão holística opera sobre o perfil já refinado em memória, não sobre o perfil original do arquivo. A gravação real acontece no Step 6, após o gestor confirmar.
@@ -517,4 +548,5 @@ export DATA_PATH=/caminho/para/repo-de-dados
 **Skill created:** 2026-04-21
 **Updated:** 2026-04-22 — Step 2 evoluído com pesquisa de mercado opcional; Steps 3-4 com três contextos empilhados; Step 5 holístico inserido (4 tipos de incoerência, padrão [A/I/J]); Steps 5→6, 6→7 renumerados
 **Updated:** 2026-04-22 (v2) — 4 melhorias pós-primeira-execução: (1) nota de Bash state persistence + `source .env.local` em todos os templates de comando; (2) confirmação de `targetLevel` no Step 2 antes do menu, injetado no system prompt dos Steps 4 e 5; (3) Tipo 3 da holística expandido com matriz de verbos por nível (Junior/Pleno/Sênior); (4) Step 6.5 — confronto pós-gravação do perfil final com pesquisa de mercado (top 5 stack, cobertura de responsabilidades, avaliação geral, amostra opcional de vagas)
+**Updated:** 2026-04-26 (v3) — Phase 7: Step 2 atualizado com discovery recursivo de dois niveis (research/{profileId}/ e research/ legado); Step 6.5 com path de vagasFile corrigido para subpastas; Notes expandidas com guardrails do novo discovery
 **Status:** Ready for Claude Code integration
