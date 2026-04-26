@@ -1,11 +1,12 @@
 ---
 name: pesquisar-mercado
 description: |
-  Coleta dados de vagas reais em portais BR via WebSearch + WebFetch, extrai stack,
-  senioridade, comportamentos e arquétipo por vaga, e gera dois arquivos em
-  DATA_PATH/research/: {slug}-{date}-vagas.json (vagas brutas) e
-  {slug}-{date}-resumo.json (summary executivo + profileHints para uso no /refinar-perfil).
-  Use quando quiser contextualizar um perfil com dados reais do mercado antes de refinar.
+  Seleciona um perfil existente de DATA_PATH/profiles/ e ancora toda a pesquisa ao seu ID.
+  Coleta dados de vagas reais em portais BR (WebSearch + WebFetch + Playwright MCP), pesquisa
+  faixas salariais em guias curados (Robert Half, Glassdoor BR, Catho, Revelo) e gera dois
+  arquivos: DATA_PATH/research/{profileId}/{date}-vagas.json e
+  DATA_PATH/research/{profileId}/{date}-resumo.json (com salaryRange das vagas + salaryGuide
+  dos guias + profileHints para /refinar-perfil). Pesquisas acumulam por data sem sobrescrever.
 command: /pesquisar-mercado
 ---
 
@@ -23,6 +24,7 @@ por execução: vagas brutas e resumo executivo com profileHints prontos para o 
 - Playwright MCP disponível (`mcp__plugin_playwright_playwright__*`) para Gupy e Catho
   - **Configuração necessária para headless:** o plugin abre janela de browser visível por padrão. Para evitar que o usuário feche acidentalmente a janela e destrua o contexto, configurar headless editando `~/.claude/plugins/cache/claude-plugins-official/playwright/unknown/.mcp.json`: adicionar `"--headless"` nos args e reiniciar o Claude Code (configuração única por máquina — ver Notes)
 - (Opcional) Sessão autenticada disponível em `$DATA_PATH/sessions/{portal}-session.json`
+- Ao menos um perfil cadastrado em DATA_PATH/profiles/ (criado via web app ou /criar-perfil)
 
 ## Execution Flow
 
@@ -43,40 +45,80 @@ Erro: DATA_PATH não encontrado em .env.local nem no ambiente.
 Configure a variável e tente novamente.
 ```
 
-### Step 1: Coletar Escopo Conversacional
+### Step 1: Selecionar Perfil
 
-Perguntar ao gestor em conversa natural (não formulário rígido):
+Listar os perfis disponíveis em DATA_PATH/profiles/:
 
-- **Cargo/função** a pesquisar (ex: "Engenheiro Sênior de Software", "Staff Engineer")
-- **Localização** (default: pesquisa nacional — sem restrição geográfica nas queries; mencionar que âncora salarial é Sudeste/Sul via `data/research/roles-map.json`)
-- **Senioridade** (Pleno / Sênior / Staff / Principal / Arquiteto)
-- **Profundidade da pesquisa** (apresentar as 3 opções):
-  - `enxuta` — 5-10 vagas, ~5 min
-  - `média` — 15-25 vagas, ~15 min (padrão recomendado)
-  - `profunda` — 30-50 vagas, ~30 min+
-- **Porte de empresa** (default: `médias+`):
-  - `todas` — incluir startups e pequenas empresas
-  - `médias+` — filtrar para médias e grandes (default recomendado)
-  - `grandes+` — apenas empresas de grande porte
-
-**Gerar slug sanitizado** a partir de cargo + data:
-- Converter para kebab-case em minúsculas
-- Aceitar APENAS caracteres `[a-z0-9-]`
-- REJEITAR slugs com `..`, `/`, `\`, espaços ou caracteres especiais — gerar slug automaticamente
-- Exemplos válidos: `senior-pd-java-python-ts-sp`, `staff-engineer-sp`, `arquiteto-solucoes-java`
-
-**Nota sobre stacks:** NÃO perguntar stacks como input. As stacks são o *output* da pesquisa — o objetivo é descobrir o que o mercado exige. Se o gestor mencionar stacks espontaneamente como contexto adicional, registrar em `scope.stack[]`; caso contrário, deixar o array vazio.
-
-Após coletar, exibir resumo e aguardar confirmação:
-
+```bash
+node -e '
+const fs = require("fs");
+const path = require("path");
+const profilesDir = path.join(process.env.DATA_PATH || "./data", "profiles");
+let files;
+try { files = fs.readdirSync(profilesDir).filter(f => f.endsWith(".json")); }
+catch (e) { console.error("Diretorio de perfis nao encontrado:", profilesDir); process.exit(1); }
+if (files.length === 0) {
+  console.log("Nenhum perfil cadastrado. Execute /criar-perfil para criar um.");
+  process.exit(0);
+}
+console.log("Perfis disponiveis:");
+files.forEach((f, i) => {
+  try {
+    const p = JSON.parse(fs.readFileSync(path.join(profilesDir, f), "utf8"));
+    const shortId = (p.id || "").substring(0, 8);
+    console.log((i + 1) + ". " + shortId + " | " + (p.title || "sem titulo") + " | " + (p.experienceLevel || "sem nivel"));
+  } catch (e) { console.log((i + 1) + ". " + f + " (erro ao ler)"); }
+});
+'
 ```
-Escopo definido:
-  Cargo: {role} ({seniority})
-  Local: {location ou "Nacional"}
-  Stacks: a descobrir (output da pesquisa)
-  Profundidade: {depth}
-  Porte: {companySize}
-  Slug: {slug}-{YYYY-MM-DD}
+
+Exibir ao gestor:
+```
+Perfis disponiveis:
+1. a1b2c3d4 | Engenheiro Senior de Software | 5-10 anos
+2. e5f6g7h8 | Cientista de Dados Pleno | 3-5 anos
+
+Qual perfil voce quer pesquisar? (numero)
+```
+
+Registrar o ID do perfil selecionado a partir da lista (NAO aceitar ID digitado diretamente
+pelo gestor — usar somente IDs listados pelo comando acima).
+
+Apos a selecao, validar que o `id` do JSON e um UUID v4 valido:
+
+```bash
+node -e '
+const profileId = "{profileId}";
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+if (!uuidRegex.test(profileId)) {
+  console.error("profileId invalido — nao e UUID v4. Abortando.");
+  process.exit(1);
+}
+console.log("UUID valido:", profileId);
+'
+```
+
+Coletar escopo adicional apos a selecao do perfil:
+
+- **Profundidade da pesquisa:**
+  - `enxuta` — 5-10 vagas, ~5 min
+  - `media` — 15-25 vagas, ~15 min (padrao recomendado)
+  - `profunda` — 30-50 vagas, ~30 min+
+- **Porte de empresa** (default: `medias+`):
+  - `todas` — incluir startups e pequenas empresas
+  - `medias+` — filtrar para medias e grandes (default recomendado)
+  - `grandes+` — apenas empresas de grande porte
+- **Localizacao** (default: pesquisa nacional — sem restricao geografica)
+
+O cargo e a senioridade sao obtidos do perfil selecionado (`title` e `experienceLevel`) —
+NAO perguntar ao gestor. A stack NAO e input; e output da pesquisa.
+
+Exibir resumo e aguardar confirmacao:
+```
+Perfil selecionado: {title} ({experienceLevel}) — ID: {8 chars do profileId}
+Profundidade: {depth}
+Porte: {companySize}
+Local: {location ou "Nacional"}
 
 Confirmar e iniciar pesquisa? (S/N)
 ```
@@ -435,7 +477,7 @@ Próxima ação sugerida:
 - **Sessões autenticadas — privacidade:** NUNCA logar, exibir ou incluir no output o conteúdo de arquivos de sessão (`$DATA_PATH/sessions/{portal}-session.json`). Apenas verificar existência via `ls`. Esses arquivos contêm credenciais.
 - **Sanitização de slug:** aceitar APENAS `[a-z0-9-]`. Rejeitar slugs com `..`, `/`, `\`, espaços ou qualquer outro caractere especial. Gerar slug automaticamente a partir do cargo + data — nunca aceitar slug digitado diretamente pelo gestor.
 - **Validação de path traversal no Step 5 e 6:** construir o path com `path.resolve()` e verificar que começa com o diretório `research` antes de escrever. Abortar com erro se `filePath` não começar dentro de `$DATA_PATH/research/`.
-- **salaryRange nulo é correto:** quando nenhuma vaga coletada exibiu faixa salarial, `salaryRange: null` é o valor correto em `summary`. NÃO inventar valores ou usar ranges do `roles-map.json` como substituto para dados ausentes nas vagas coletadas.
+- **salaryRange nulo é correto:** quando nenhuma vaga coletada exibiu faixa salarial, `salaryRange: null` é o valor correto em `summary`. NÃO inventar valores.
 - **profileHints usa apenas os campos do JobProfile (D-01):** `responsibilities[]`, `qualifications[]` (com `required:boolean`), `behaviors[]`, `challenges[]`, `suggestedTitle`, `suggestedExperienceLevel`. Não inventar campos novos. `qualifications` é `ProfileItem[]` com `{ text: string, required: boolean }` — não `string[]`.
 - **Colisão de nome no mesmo dia:** sufixo `-2`, `-3` inserido ANTES de `-vagas` e `-resumo`. Exemplo: `...sp-2026-04-22-2-vagas.json` e `...sp-2026-04-22-2-resumo.json`.
 - **node -e para salvar JSON:** não usar heredoc — evita problemas com aspas e newlines no conteúdo das vagas. Usar sempre **aspas simples** no shell (`node -e '...'`): aspas duplas fazem o bash interpretar `$` seguido de dígitos como variável de ambiente vazia — `R$7k` vira `R.7k` silenciosamente.
