@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — Profile-Anchored Market Research
-status: Milestone v1.1 estendido — Phase 9 planejada (6 planos), pronta para executar
-last_updated: "2026-04-27T15:36:20.827Z"
-last_activity: 2026-04-27 -- Phase 9 planejada (6 planos em 2 waves; verificação passou na 2ª iteração)
+status: executing
+last_updated: "2026-04-27T16:16:19.185Z"
+last_activity: 2026-04-27
 progress:
-  total_phases: 9
-  completed_phases: 8
-  total_plans: 47
+  total_phases: 8
+  completed_phases: 6
+  total_plans: 31
   completed_plans: 41
-  percent: 87
+  percent: 100
 ---
 
 # State: Hiring Pipeline v1.1
@@ -32,16 +32,16 @@ progress:
 **Phase 7 Status:** Complete ✓ 2026-04-26 (3/3 planos executados — /pesquisar-mercado ancorado, /refinar-perfil corrigido, legados migrados e convertidos)
 **Phase 8 Status:** Complete ✓ 2026-04-26 (4/4 planos — ResearchRepository, Server Actions, componentes UI, página detalhe + navegação)
 **Phase 9 Status:** Planned ✓ 2026-04-27 (6 planos em 2 waves — verificação passou na 2ª iteração)
-**Current Focus:** Milestone v1.1 estendido — Phase 9 pronta para /gsd-execute-phase 9
+**Current Focus:** Phase 09 — pequenos-ajustes-p-s-v1-1-1
 
 ---
 
 ## Current Position
 
-Phase: 09 (Pequenos ajustes pós-v1.1.1) — PLANNED
-Plan: 0/6 (6 planos prontos em 2 waves, aguarda /gsd-execute-phase 9)
-Status: Ready to execute
-Last activity: 2026-04-27 -- Phase 9 planejada (6 planos)
+Phase: 09
+Plan: Not started
+Status: Executing Phase 09
+Last activity: 2026-04-27
 
 **Progress bar:** `[x] [x] [x] [~]` (3/4 phases — Phase 9 pronta para execução)
 

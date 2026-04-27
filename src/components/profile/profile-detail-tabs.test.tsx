@@ -43,7 +43,8 @@ describe("ProfileDetailTabs", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Vagas do Mercado" }));
 
-    expect(screen.getByText("2026-04-24")).toBeInTheDocument();
+    // D-33: data agora aparece como "Pesquisa de: {date}" (sem <select>)
+    expect(screen.getByText(/Pesquisa de:\s*2026-04-24/i)).toBeInTheDocument();
   });
 
   it("renderiza perfilContent na aba Perfil selecionada por padrao", () => {

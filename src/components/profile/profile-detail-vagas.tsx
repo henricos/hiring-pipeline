@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { Research } from "@/lib/repositories/research-repository";
 
 interface Job {
@@ -15,18 +14,17 @@ interface Job {
 interface ProfileDetailVagasProps {
   researches: Research[];
   allVagas: Record<string, Job[]>;
-  defaultExpanded?: string;
 }
 
+/**
+ * D-32..D-34 (Phase 9 / Item 7): UI read-only da pesquisa mais recente.
+ * Switcher de pesquisa (estado selectedDate + <select>) removido.
+ * Histórico permanece persistido no repo montado em /data (D-35).
+ */
 export function ProfileDetailVagas({
   researches,
   allVagas,
-  defaultExpanded,
 }: ProfileDetailVagasProps) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(
-    defaultExpanded ?? researches[0]?.date ?? null
-  );
-
   if (researches.length === 0) {
     return (
       <div className="text-center py-12">
@@ -47,41 +45,21 @@ export function ProfileDetailVagas({
     );
   }
 
-  const jobsList: Job[] = selectedDate ? (allVagas[selectedDate] ?? []) : [];
+  const mostRecent = researches[0];
+  const jobsList: Job[] = allVagas[mostRecent.date] ?? [];
 
   return (
     <div className="space-y-6">
-      {/* Seletor de data — só aparece quando há mais de uma pesquisa */}
-      {researches.length > 1 && (
-        <div className="flex items-center gap-4">
-          <label
-            htmlFor="research-date-select"
-            className="text-label-sm uppercase text-on-surface/60"
-          >
-            Pesquisa:
-          </label>
-          <select
-            id="research-date-select"
-            value={selectedDate ?? ""}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="rounded-sm bg-surface-container px-3 py-2 text-body-md border border-outline-variant"
-          >
-            {researches.map((r) => (
-              <option key={r.date} value={r.date}>
-                {r.date}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* D-33: data exibida sempre, mesmo com 1 pesquisa */}
+      <p className="text-label-sm text-on-surface/60">
+        Pesquisa de: {mostRecent.date}
+      </p>
 
-      {/* Lista de vagas */}
       {jobsList.length > 0 ? (
         <div className="space-y-4">
           <h4 className="text-title-md font-medium text-on-surface">
             {jobsList.length} vaga{jobsList.length !== 1 ? "s" : ""} encontrada
-            {jobsList.length !== 1 ? "s" : ""}{" "}
-            {researches.length === 1 && selectedDate ? `— ${selectedDate}` : ""}
+            {jobsList.length !== 1 ? "s" : ""}
           </h4>
           <div className="space-y-3">
             {jobsList.map((job, idx) => (
@@ -128,9 +106,7 @@ export function ProfileDetailVagas({
         </div>
       ) : (
         <p className="text-body-md text-on-surface/60 text-center py-8">
-          {selectedDate
-            ? `Nenhuma vaga encontrada para ${selectedDate}.`
-            : "Selecione uma pesquisa para ver as vagas."}
+          Nenhuma vaga encontrada para {mostRecent.date}.
         </p>
       )}
     </div>

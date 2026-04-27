@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
@@ -51,18 +50,19 @@ export function DynamicListField({
       <Label className={labelClassName ?? LABEL_CLASS}>{label}</Label>
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div key={item.id} className="flex gap-2">
+          <div key={item.id} className="flex gap-2 items-start">
             {/*
-              PITFALL: o <Input> visível NÃO tem name.
+              PITFALL: o textarea visível NÃO tem name.
               Somente o hidden input tem name — evita duplicação no FormData.
               CONTRATO: getAll(name) requer .filter(Boolean) — pode enviar strings vazias.
             */}
             <input type="hidden" name={name} value={item.value} />
-            <Input
+            <textarea
               value={item.value}
               onChange={e => update(item.id, e.target.value)}
               required={required && index === 0}
-              className={`flex-1 ${INPUT_CLASS}`}
+              rows={2}
+              className={`flex-1 resize-none px-3 py-2 text-body-md text-on-surface border border-input rounded-sm ${INPUT_CLASS}`}
             />
             <Button
               type="button"

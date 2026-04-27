@@ -93,4 +93,4 @@ Este documento evolui a cada transição de fase e marco de milestone.
 4. Atualizar Context com estado atual
 
 ---
-*Last updated: 2026-04-26 — Phase 7 completa: /pesquisar-mercado ancorado ao perfil, /atualizar-roles-map descontinuado, arquivos legados migrados e convertidos*
+*Last updated: 2026-04-27 — Phase 9 completa: 6 ajustes pós-v1.1.1 (Excel multilinha, xlsx em /tmp, botão Download na lista, textareas em Conteúdo Descritivo, barras horizontais + fix archetype no resumo, simplificação UX multi-pesquisa)*

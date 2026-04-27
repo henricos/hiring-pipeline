@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { VacancyList } from "@/components/vacancy/vacancy-list";
 import { vacancyRepository } from "@/lib/repositories/vacancy-repository";
 import { profileRepository } from "@/lib/repositories/profile-repository";
+import { env } from "@/lib/env";
+import { normalizeBasePath } from "@/lib/base-path";
 
 async function VacanciesContent() {
   const [vacancies, profiles] = await Promise.all([
@@ -14,7 +16,10 @@ async function VacanciesContent() {
   // Constrói mapa para lookup eficiente do título do perfil
   const profileMap = new Map(profiles.map((p) => [p.id, p]));
 
-  return <VacancyList vacancies={vacancies} profiles={profileMap} />;
+  const basePath = normalizeBasePath(env.APP_BASE_PATH);
+  const apiPrefix = basePath === "/" ? "" : basePath;
+
+  return <VacancyList vacancies={vacancies} profiles={profileMap} apiPrefix={apiPrefix} />;
 }
 
 export default function VacanciesPage() {

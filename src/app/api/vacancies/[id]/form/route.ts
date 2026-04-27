@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import os from "node:os";
+import { randomUUID } from "node:crypto";
 import { auth } from "@/lib/auth";
 import { env } from "@/lib/env";
-import { ensureSubdir } from "@/lib/data-service";
 import { vacancyRepository } from "@/lib/repositories/vacancy-repository";
 import { profileRepository } from "@/lib/repositories/profile-repository";
 import { settingsRepository } from "@/lib/repositories/settings-repository";
 import { generateVacancyForm } from "@/lib/excel-generator";
 
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   // 1. Autenticar usuário (single-user auth via next-auth)
@@ -42,25 +43,23 @@ export async function GET(
       );
     }
 
-    // 5. Montar caminhos (por D-07, D-08: template em templates/, saída em forms/)
-    const formsDir = ensureSubdir("forms");
-    const outputPath = path.join(formsDir, `${id}-requisicao.xlsx`);
+    // 5. Montar caminhos
+    // Phase 9 / D-05: xlsx em os.tmpdir() (read-write em qualquer ambiente).
+    // DATA_PATH é read-only em produção — sem env var nova, sem segundo volume.
+    const outputPath = path.join(
+      os.tmpdir(),
+      `vacancy-${id}-${randomUUID()}.xlsx`
+    );
     const templatePath = path.join(
       env.DATA_PATH,
       "templates",
       "requisicao-de-pessoal.xlsx"
     );
 
-    // 6. Verificar regeneração forçada via query param (por D-09, D-10)
-    const url = new URL(req.url);
-    const forceRegen = url.searchParams.get("regen") === "1";
+    // 6. Phase 9 / D-04: cache eliminado — regenerar a cada request.
+    generateVacancyForm(templatePath, outputPath, vacancy, profile, settings);
 
-    // 7. Gerar Excel se não estiver em cache OU se regeneração forçada solicitada
-    if (!fs.existsSync(outputPath) || forceRegen) {
-      generateVacancyForm(templatePath, outputPath, vacancy, profile, settings);
-    }
-
-    // 8. Verificar que o arquivo foi gerado e servir como download
+    // 7. Verificar que o arquivo foi gerado e servir como download
     if (!fs.existsSync(outputPath)) {
       return NextResponse.json(
         { error: "Falha ao gerar formulário Excel. Verifique os dados da vaga." },
@@ -69,6 +68,10 @@ export async function GET(
     }
 
     const buffer = fs.readFileSync(outputPath);
+
+    // Cleanup pós-stream: arquivo já está em memória, removemos do tmp.
+    try { fs.unlinkSync(outputPath); } catch { /* best-effort */ }
+
     const titleSlug = (profile.title ?? vacancy.id)
       .normalize("NFD")
       .replace(/[̀-ͯ]/g, "")

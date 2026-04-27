@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import fs from "fs";
 import path from "path";
@@ -228,6 +229,69 @@ describe("validateCellMapping", () => {
     if (!xml) return;
     expect(xml).toContain('r="B27"');
     expect(xml).toContain("EQUIPE_UNICA");
+  });
+});
+
+describe("xml:space preserve em additionalInfo", () => {
+  // Busca o template em múltiplos caminhos candidatos (cwd da worktree, repo principal, data volume)
+  function findTemplatePath(): string | null {
+    const candidates = [
+      path.join(process.cwd(), "data/templates/requisicao-de-pessoal.xlsx"),
+      path.join(__dirname, "../../../data/templates/requisicao-de-pessoal.xlsx"),
+      process.env.DATA_PATH ? path.join(process.env.DATA_PATH, "templates/requisicao-de-pessoal.xlsx") : null,
+      "/home/henrico/github/henricos/hiring-pipeline-data/templates/requisicao-de-pessoal.xlsx",
+      "/data/templates/requisicao-de-pessoal.xlsx",
+    ].filter(Boolean) as string[];
+    for (const c of candidates) {
+      if (fs.existsSync(c)) return c;
+    }
+    return null;
+  }
+
+  it("preserva quebras de linha em additionalInfo via xml:space=preserve", async () => {
+    const TEMPLATE_PATH_LOCAL = findTemplatePath();
+    if (!TEMPLATE_PATH_LOCAL) {
+      console.log("SKIP: template não disponível neste ambiente");
+      return;
+    }
+
+    const AdmZip = (await import("adm-zip")).default;
+    const out = path.join(os.tmpdir(), `test-additional-info-${Date.now()}.xlsx`);
+    const settings = {
+      additionalInfo: "linha um\nlinha dois\nlinha três",
+    } as any;
+    const vacancy = createDefaultVacancy("p1");
+    const profile = {
+      title: "Test",
+      suggestedTitle: "",
+      experienceLevel: "3-5 anos",
+      educationLevel: "Superior completo",
+      educationCourse: "",
+      postGraduateLevel: "",
+      englishLevel: "Não exigido",
+      spanishLevel: "Não exigido",
+      responsibilities: [],
+      qualifications: [],
+      behaviors: [],
+      challenges: [],
+      additionalInfo: "",
+    } as any;
+
+    generateVacancyForm(TEMPLATE_PATH_LOCAL, out, vacancy, profile, settings);
+    const zip = new AdmZip(out);
+    const sheetEntry = zip.getEntry("xl/worksheets/sheet1.xml");
+    expect(sheetEntry).not.toBeNull();
+    const sheet = sheetEntry!.getData().toString("utf-8");
+
+    // B59 deve conter <t xml:space="preserve"> com as três linhas
+    const cellB59Match = sheet.match(/<c\s+r="B59"[^>]*>[\s\S]*?<\/c>/);
+    expect(cellB59Match).not.toBeNull();
+    expect(cellB59Match![0]).toMatch(/xml:space="preserve"/);
+    expect(cellB59Match![0]).toContain("linha um");
+    expect(cellB59Match![0]).toContain("linha dois");
+    expect(cellB59Match![0]).toContain("linha três");
+
+    if (fs.existsSync(out)) fs.rmSync(out);
   });
 });
 

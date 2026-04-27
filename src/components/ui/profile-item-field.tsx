@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { ProfileItem } from "@/lib/profile";
@@ -59,7 +58,7 @@ export function ProfileItemField({
       <Label className={labelClassName ?? LABEL_CLASS}>{label}</Label>
       <div className="space-y-2">
         {items.map(item => (
-          <div key={item.id} className="flex gap-2 items-center">
+          <div key={item.id} className="flex gap-2 items-start">
             {/*
               CONTRATO: getAll(name) + getAll(name_required) são arrays paralelos.
               A server action faz .map((text, i) => ({ text, required: requireds[i] !== "false" }))
@@ -67,10 +66,11 @@ export function ProfileItemField({
             */}
             <input type="hidden" name={name} value={item.text} />
             <input type="hidden" name={`${name}_required`} value={item.required.toString()} />
-            <Input
+            <textarea
               value={item.text}
               onChange={e => update(item.id, e.target.value)}
-              className={`flex-1 ${INPUT_CLASS}`}
+              rows={2}
+              className={`flex-1 resize-none px-3 py-2 text-body-md text-on-surface border border-input rounded-sm ${INPUT_CLASS}`}
             />
             <button
               type="button"

@@ -439,10 +439,19 @@ export function generateVacancyForm(
       : "",
   };
 
+  // Helper: gera o bloco <is><t>...</t></is> para inlineStr.
+  // Quando o valor contém \n, \r ou espaços no início/fim, emite xml:space="preserve"
+  // para garantir que o Excel preserve as quebras de linha (OOXML §18.3.1.4 / XML §2.10).
+  // escapeXml é sempre aplicado para segurança (T-09-01-04).
+  const inlineStrTag = (val: string): string => {
+    const escaped = escapeXml(val);
+    const needsPreserve = /\n|\r|^\s|\s$/.test(val);
+    const tAttr = needsPreserve ? ' xml:space="preserve"' : "";
+    return `<is><t${tAttr}>${escaped}</t></is>`;
+  };
+
   // Edição cirúrgica: substituir cada célula no XML do sheet
   for (const [cellAddr, value] of Object.entries(cellValues)) {
-    const escapedValue = escapeXml(value);
-
     // Padrão 1: Célula vazia — <c r="D6" s="59"/>
     // Substituída por inline string com valor
     const emptyCellRe = new RegExp(
@@ -451,7 +460,7 @@ export function generateVacancyForm(
     );
     sheetXml = sheetXml.replace(
       emptyCellRe,
-      `<c r="${cellAddr}" s="$1" t="inlineStr"><is><t>${escapedValue}</t></is></c>`
+      `<c r="${cellAddr}" s="$1" t="inlineStr">${inlineStrTag(value)}</c>`
     );
 
     // Padrão 2: Célula com valor existente (ex: shared string t="s" ou outro tipo)
@@ -465,7 +474,7 @@ export function generateVacancyForm(
       // Preservar atributo s= (estilo) se presente; remover t= pois usaremos inlineStr
       const styleMatch = /s="(\d+)"/.exec(attrs);
       const styleAttr = styleMatch ? ` s="${styleMatch[1]}"` : "";
-      return `<c r="${cellAddr}"${styleAttr} t="inlineStr"><is><t>${escapedValue}</t></is></c>`;
+      return `<c r="${cellAddr}"${styleAttr} t="inlineStr">${inlineStrTag(value)}</c>`;
     });
   }
 

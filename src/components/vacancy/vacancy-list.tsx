@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Pencil, Trash2 } from "lucide-react";
+import { Download, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,6 +23,7 @@ import type { JobProfile } from "@/lib/profile";
 interface VacancyListProps {
   vacancies: Vacancy[];
   profiles: Map<string, JobProfile>;
+  apiPrefix?: string;
 }
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
@@ -33,7 +34,7 @@ const STATUS_BADGE_VARIANT: Record<VacancyStatus, BadgeVariant> = {
   Encerrada: "destructive",
 };
 
-export function VacancyList({ vacancies, profiles }: VacancyListProps) {
+export function VacancyList({ vacancies, profiles, apiPrefix = "" }: VacancyListProps) {
   const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<Vacancy | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -111,6 +112,22 @@ export function VacancyList({ vacancies, profiles }: VacancyListProps) {
                 className="flex gap-1 shrink-0"
                 onClick={(e) => e.stopPropagation()}
               >
+                {/* Phase 9 / Item 3 / D-09..D-13: Download do xlsx via rota /api/vacancies/[id]/form */}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  asChild
+                  className="min-h-[40px] min-w-[40px]"
+                  aria-label={`Baixar formulário GH da vaga ${vacancyTitle}`}
+                >
+                  <a
+                    href={`${apiPrefix}/api/vacancies/${vacancy.id}/form`}
+                    download
+                  >
+                    <Download className="w-4 h-4" />
+                  </a>
+                </Button>
+
                 {/* Editar */}
                 <Button
                   size="icon"

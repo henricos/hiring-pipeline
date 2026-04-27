@@ -250,12 +250,12 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Wave 1: Excel "informações adicionais" — patch styles.xml do template (B59 left/top/wrap) + xml:space="preserve" no &lt;t&gt; do gerador (Item 1, D-01..D-03)
-- [ ] 09-02-PLAN.md — Wave 1: Excel storage em os.tmpdir() — eliminar cache em DATA_PATH/forms/, regenerar a cada request, remover ?regen=1 do caller (Item 2, D-04..D-08)
-- [ ] 09-03-PLAN.md — Wave 2 (depende de 09-02): Botão Download no card de /vacancies — ordem `[Download] [Edit] [Delete]`, padrão visual existente (Item 3, D-09..D-13)
-- [ ] 09-04-PLAN.md — Wave 1: Textareas multi-linha de altura uniforme em "Conteúdo Descritivo" — `<textarea rows={2} resize-none>` em dynamic-list-field e profile-item-field (Item 4, D-14..D-19)
-- [ ] 09-05-PLAN.md — Wave 1: Resumo de Mercado — barras horizontais CSS puro para Stack Frequência + fix `arch.archetype` com percentage + auditoria de schema (Items 5+6, D-20..D-31)
-- [ ] 09-06-PLAN.md — Wave 2 (depende de 09-05): Multi-pesquisa simplificada — remover switcher em Vagas, exibir data sempre nas duas abas, atualizar testes (Item 7, D-32..D-37)
+- [x] 09-01-PLAN.md — Wave 1: Excel "informações adicionais" — patch styles.xml do template (B59 left/top/wrap) + xml:space="preserve" no &lt;t&gt; do gerador (Item 1, D-01..D-03)
+- [x] 09-02-PLAN.md — Wave 1: Excel storage em os.tmpdir() — eliminar cache em DATA_PATH/forms/, regenerar a cada request, remover ?regen=1 do caller (Item 2, D-04..D-08)
+- [x] 09-03-PLAN.md — Wave 2 (depende de 09-02): Botão Download no card de /vacancies — ordem `[Download] [Edit] [Delete]`, padrão visual existente (Item 3, D-09..D-13)
+- [x] 09-04-PLAN.md — Wave 1: Textareas multi-linha de altura uniforme em "Conteúdo Descritivo" — `<textarea rows={2} resize-none>` em dynamic-list-field e profile-item-field (Item 4, D-14..D-19)
+- [x] 09-05-PLAN.md — Wave 1: Resumo de Mercado — barras horizontais CSS puro para Stack Frequência + fix `arch.archetype` com percentage + auditoria de schema (Items 5+6, D-20..D-31)
+- [x] 09-06-PLAN.md — Wave 2 (depende de 09-05): Multi-pesquisa simplificada — remover switcher em Vagas, exibir data sempre nas duas abas, atualizar testes (Item 7, D-32..D-37)
 
 **Context:** `.planning/phases/09-pequenos-ajustes-p-s-v1-1-1/09-CONTEXT.md` (decisões D-01..D-37 + canonical refs + specifics + deferred)
 

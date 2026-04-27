@@ -26,7 +26,8 @@ const mockResumoContent = {
       Go: 2,
     },
     emergingStack: ["Quarkus", "Micronaut"],
-    salaryRange: null,
+    // D-30: fixture inclui salaryRange.note para cobertura permanente
+    salaryRange: { min: 18000, max: 38000, note: "Faixa de São Paulo capital, regime CLT" },
     commonBehaviors: [
       "Protagonismo tecnico",
       "Code review e mentoria",
@@ -36,18 +37,24 @@ const mockResumoContent = {
       "Sistemas de alta carga",
       "Modernizacao de sistemas legados",
     ],
+    // D-29, D-31: mock reflete schema canônico de .agents/skills/pesquisar-mercado/SKILL.md §6.1
+    // Campo correto é "archetype" (não "name"); "percentage" opcional do schema canônico.
     archetypes: [
-      { name: "arquiteto tecnico", count: 9 },
-      { name: "especialista", count: 4 },
-      { name: "engenheiro de produto", count: 2 },
+      { archetype: "arquiteto tecnico", count: 9, percentage: 50 },
+      { archetype: "especialista", count: 4, percentage: 22 },
+      { archetype: "engenheiro de produto", count: 2, percentage: 11 },
     ],
     trends: [],
     redFlags: [],
   },
+  // D-30: primeira source tem url para cobertura de link <a>; segunda sem url para cobertura de fallback texto-puro
   salaryGuide: {
-    min: 10000,
-    max: 18000,
-    sources: [{ portal: "Robert Half", year: 2025 }],
+    min: 17000,
+    max: 35000,
+    sources: [
+      { portal: "Glassdoor", year: 2025, url: "https://www.glassdoor.com.br/salarios/staff-engineer", percentiles: "P50: R$ 25k" },
+      { portal: "Catho", year: 2024 },
+    ],
   },
   profileHints: {
     responsibilities: ["Projetar microsservicos em Java"],
@@ -70,7 +77,7 @@ const mockResearches = [
   },
 ];
 
-// ─── Testes (RED — ProfileDetailResumo nao existe ainda) ─────────────────────
+// ─── Testes ───────────────────────────────────────────────────────────────────
 // Cobrem VIZ-02 (stackFrequency ranqueado, salaryGuide com atribuicao)
 
 describe("ProfileDetailResumo", () => {
@@ -94,11 +101,11 @@ describe("ProfileDetailResumo", () => {
   it("renderiza salaryGuide com atribuicao de fonte (D-11, VIZ-02)", () => {
     render(<ProfileDetailResumo researches={mockResearches} />);
 
-    // Assert: "Robert Half 2025" visivel com faixa salarial (D-11)
-    expect(screen.getByText(/Robert Half/i)).toBeInTheDocument();
-    expect(screen.getByText(/2025/)).toBeInTheDocument();
-    expect(screen.getByText(/10/)).toBeInTheDocument();
-    expect(screen.getByText(/18/)).toBeInTheDocument();
+    // Assert: "Glassdoor 2025" visivel com faixa salarial (D-11)
+    expect(screen.getByText(/Glassdoor/i)).toBeInTheDocument();
+    // Faixa do salaryGuide: R$ 17.0k – R$ 35.0k
+    expect(screen.getAllByText(/17/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/35/).length).toBeGreaterThan(0);
   });
 
   it("renderiza secoes commonTitles, commonBehaviors, commonChallenges (D-09, VIZ-02)", () => {
@@ -130,5 +137,65 @@ describe("ProfileDetailResumo", () => {
       el.closest("li")?.textContent?.includes("especialista")
     );
     expect(arquitetoIndex).toBeLessThan(especialistaIndex);
+  });
+
+  it("renderiza archetype com percentage no formato 'X — N menções (P%)' (D-28)", () => {
+    render(<ProfileDetailResumo researches={mockResearches} />);
+
+    // D-28: formato "arquiteto tecnico — 9 menções (50%)"
+    expect(screen.getByText(/arquiteto tecnico\s*—\s*9 menç/i)).toBeInTheDocument();
+    expect(screen.getByText(/\(50%\)/)).toBeInTheDocument();
+  });
+
+  it("renderiza Stack Frequência como barras horizontais (D-20, D-21)", () => {
+    const { container } = render(<ProfileDetailResumo researches={mockResearches} />);
+
+    // Cada stack-item tem o tech name e "X menções" visíveis (D-23)
+    const items = screen.getAllByTestId("stack-item");
+    expect(items.length).toBe(7); // mock tem 7 entries em stackFrequency
+    expect(items[0]).toHaveTextContent("Java");
+    expect(items[0]).toHaveTextContent("15 menções");
+
+    // Cada item tem um inner <div> com style.width (a barra)
+    items.forEach((item) => {
+      const bar = item.querySelector('[style*="width"]');
+      expect(bar).not.toBeNull();
+    });
+
+    void container; // suppress unused var warning
+  });
+
+  it("largura da barra é proporcional a count/maxCount (D-22)", () => {
+    render(<ProfileDetailResumo researches={mockResearches} />);
+    const items = screen.getAllByTestId("stack-item");
+
+    // Java=15 (top), Spring Boot=13, Go=2 (último). maxCount=15.
+    const javaBar = items[0].querySelector('[style*="width"]') as HTMLElement;
+    const goBar = items[items.length - 1].querySelector('[style*="width"]') as HTMLElement;
+
+    expect(javaBar.style.width).toBe("100%");
+    // Go: 2/15 * 100 ≈ 13.3% — acima do mínimo de 8%, mas estritamente menor que Java
+    const javaW = parseFloat(javaBar.style.width);
+    const goW = parseFloat(goBar.style.width);
+    expect(goW).toBeLessThan(javaW);
+  });
+
+  it("renderiza salaryRange.note quando presente (D-30)", () => {
+    render(<ProfileDetailResumo researches={mockResearches} />);
+    expect(screen.getByText(/São Paulo capital.*CLT/i)).toBeInTheDocument();
+  });
+
+  it("renderiza salaryGuide.sources[i].url como link <a> (D-30)", () => {
+    render(<ProfileDetailResumo researches={mockResearches} />);
+
+    // primeira source: Glassdoor com url → vira <a>
+    const glassdoorLink = screen.getByRole("link", { name: /Glassdoor 2025/i });
+    expect(glassdoorLink).toHaveAttribute("href", expect.stringContaining("glassdoor.com.br"));
+    expect(glassdoorLink).toHaveAttribute("target", "_blank");
+    expect(glassdoorLink).toHaveAttribute("rel", expect.stringContaining("noopener"));
+
+    // segunda source: Catho sem url → texto puro, não vira <a>
+    expect(screen.queryByRole("link", { name: /Catho 2024/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Catho 2024/)).toBeInTheDocument();
   });
 });

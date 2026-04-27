@@ -1,9 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-// RED: importar componente que nao existe ainda — falhara ate Wave 1 criar o arquivo
+import { render, screen } from "@testing-library/react";
 import { ProfileDetailVagas } from "@/components/profile/profile-detail-vagas";
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
+// Nota: fixture com 2 pesquisas mantida intencionalmente para testar que apenas
+// a mais recente é exibida (D-32, D-34). O teste antigo "renderiza lista de
+// pesquisas em ordem cronologica reversa" dependia de ambas as datas estarem
+// visíveis no DOM via <select> — substituído pelo teste "renderiza apenas a
+// pesquisa mais recente" que verifica a AUSÊNCIA das vagas antigas.
 
 const mockResearches = [
   {
@@ -43,53 +47,47 @@ const mockVagasDia23 = [
   },
 ];
 
-// ─── Testes (RED — ProfileDetailVagas nao existe ainda) ──────────────────────
-// Cobrem VIZ-01 (lista de pesquisas) e VIZ-03 (selecao de pesquisa anterior)
+// ─── Testes — alinhados à nova UI read-only da mais recente (D-32..D-34, D-37) ──
 
 describe("ProfileDetailVagas", () => {
   it("renderiza empty state quando researches e vazio (D-07)", () => {
     render(<ProfileDetailVagas researches={[]} allVagas={{}} />);
-
-    // Assert: mensagem de empty state visivel (D-07)
     expect(screen.getByText(/Nenhuma pesquisa de mercado/i)).toBeInTheDocument();
     expect(screen.getByText(/pesquisar-mercado/i)).toBeInTheDocument();
   });
 
-  it("renderiza lista de pesquisas em ordem cronologica reversa (D-05, VIZ-01)", () => {
-    render(<ProfileDetailVagas researches={mockResearches} allVagas={{}} />);
-
-    // Assert: datas visiveis; 2026-04-24 deve aparecer antes de 2026-04-23
-    const dates = screen.getAllByText(/2026-04-2[34]/);
-    expect(dates[0].textContent).toContain("2026-04-24");
-    expect(dates[1].textContent).toContain("2026-04-23");
-  });
-
-  it("vagas da unica pesquisa sao exibidas diretamente sem interacao (D-06, VIZ-01)", () => {
-    // Com 1 pesquisa, selectedDate é inicializado com researches[0].date
-    // e as vagas são exibidas imediatamente, sem necessidade de clique.
-    const singleResearch = [mockResearches[0]];
-    const allVagas = { "2026-04-24": mockVagasDia24 };
-    render(<ProfileDetailVagas researches={singleResearch} allVagas={allVagas} />);
-
-    // Assert: vagas visíveis imediatamente
-    expect(screen.getByText("Pessoa Desenvolvedora Backend Java SR")).toBeInTheDocument();
-    expect(screen.getByText("Banco Bradesco")).toBeInTheDocument();
-  });
-
-  it("selecionar pesquisa diferente via dropdown atualiza lista de vagas (VIZ-03)", () => {
+  it("renderiza apenas a pesquisa mais recente (D-32, D-34)", () => {
     const allVagas = {
       "2026-04-24": mockVagasDia24,
       "2026-04-23": mockVagasDia23,
     };
     render(<ProfileDetailVagas researches={mockResearches} allVagas={allVagas} />);
 
-    // Act: mudar o select de data para 2026-04-23
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "2026-04-23" } });
+    // Vagas da mais recente (24) visíveis
+    expect(screen.getByText("Pessoa Desenvolvedora Backend Java SR")).toBeInTheDocument();
+    // Vagas da anterior (23) NÃO visíveis (sem switcher — D-34)
+    expect(screen.queryByText("Engenheiro de Software Java SR")).not.toBeInTheDocument();
 
-    // Assert: vagas da data 2026-04-23 agora visiveis
-    expect(screen.getByText("Engenheiro de Software Java SR")).toBeInTheDocument();
-    expect(screen.queryByText("Pessoa Desenvolvedora Backend Java SR")).not.toBeInTheDocument();
+    // Sem combobox — switcher foi removido (D-34)
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  it("exibe a data da pesquisa sempre, mesmo com 1 unica pesquisa (D-33)", () => {
+    const singleResearch = [mockResearches[0]];
+    const allVagas = { "2026-04-24": mockVagasDia24 };
+    render(<ProfileDetailVagas researches={singleResearch} allVagas={allVagas} />);
+
+    // Data visível mesmo com 1 pesquisa (D-33)
+    expect(screen.getByText(/Pesquisa de:\s*2026-04-24/i)).toBeInTheDocument();
+  });
+
+  it("vagas da unica pesquisa sao exibidas diretamente (D-06, VIZ-01)", () => {
+    const singleResearch = [mockResearches[0]];
+    const allVagas = { "2026-04-24": mockVagasDia24 };
+    render(<ProfileDetailVagas researches={singleResearch} allVagas={allVagas} />);
+
+    expect(screen.getByText("Pessoa Desenvolvedora Backend Java SR")).toBeInTheDocument();
+    expect(screen.getByText("Banco Bradesco")).toBeInTheDocument();
   });
 
   it("exibe card de vaga com title, company, stack e snippet (D-06)", () => {
@@ -98,11 +96,9 @@ describe("ProfileDetailVagas", () => {
       <ProfileDetailVagas
         researches={[mockResearches[0]]}
         allVagas={allVagas}
-        defaultExpanded="2026-04-24"
       />
     );
 
-    // Assert: todos os campos da vaga visiveis no card expandido
     expect(screen.getByText("Pessoa Desenvolvedora Backend Java SR")).toBeInTheDocument();
     expect(screen.getByText("Banco Bradesco")).toBeInTheDocument();
     expect(screen.getByText("Java 21")).toBeInTheDocument();
