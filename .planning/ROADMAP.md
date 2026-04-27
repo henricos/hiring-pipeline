@@ -21,6 +21,7 @@
 - [x] **Phase 6: Guided Profile Creation Skill** - Skill `/criar-perfil` com validação de força do título no mercado e geração de perfil mínimo com valores-base ✓ 2026-04-26
 - [x] **Phase 7: Profile-Anchored Market Research** - Refatoração de `/pesquisar-mercado` para ancorar arquivos ao ID do perfil, unificar com roles-map e acumular pesquisas por data ✓ 2026-04-26
 - [x] **Phase 8: Market Research Frontend** - Tela de perfil com abas (Perfil / Vagas / Resumo de Mercado) exibindo pesquisas ancoradas ao perfil ✓ 2026-04-26
+- [ ] **Phase 9: Pequenos ajustes pós-v1.1.1** - Ajustes de continuidade após release v1.1.1 (escopo a planejar)
 
 ---
 
@@ -238,6 +239,18 @@ Plans:
 
 ---
 
+### Phase 9: Pequenos ajustes pós-v1.1.1
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 8
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 9 to break down)
+
+---
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -250,6 +263,7 @@ Plans:
 | 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
 | 7. Profile-Anchored Market Research | 3/3 | Complete | 2026-04-26 |
 | 8. Market Research Frontend | 4/4 | Complete | 2026-04-26 |
+| 9. Pequenos ajustes pós-v1.1.1 | 0/0 | Not planned | — |
 
 ---
 
@@ -266,3 +280,4 @@ Plans:
 *Phase 6 planned: 2026-04-25*
 *Phase 7 planned: 2026-04-26*
 *Phase 8 planned: 2026-04-26*
+*Phase 9 added: 2026-04-27 (continuidade v1.1 — ajustes pós-v1.1.1)*

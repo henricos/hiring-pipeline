@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — Profile-Anchored Market Research
-status: Milestone v1.1 fechado — release v1.1.1 publicada no GHCR (patch pós-UX)
+status: Milestone v1.1 estendido — Phase 9 contexto capturado (7 itens), aguardando planejamento
 last_updated: "2026-04-27T00:00:00.000Z"
-last_activity: 2026-04-27 -- Release v1.1.1 publicada (tag + GHCR ghcr.io/henricos/hiring-pipeline:v1.1.1) — unificação UX edição+abas
+last_activity: 2026-04-27 -- Phase 9 contexto capturado (7 itens) — CONTEXT.md + DISCUSSION-LOG.md prontos para /gsd-plan-phase 9
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 8
   total_plans: 31
   completed_plans: 41
-  percent: 100
+  percent: 89
 ---
 
 # State: Hiring Pipeline v1.1
@@ -31,18 +31,19 @@ progress:
 **Phase 6 Status:** Complete ✓ 2026-04-26 (1/1 plano executado — skill /criar-perfil criada)
 **Phase 7 Status:** Complete ✓ 2026-04-26 (3/3 planos executados — /pesquisar-mercado ancorado, /refinar-perfil corrigido, legados migrados e convertidos)
 **Phase 8 Status:** Complete ✓ 2026-04-26 (4/4 planos — ResearchRepository, Server Actions, componentes UI, página detalhe + navegação)
-**Current Focus:** Milestone v1.1 completo — todas as 3 phases executadas
+**Phase 9 Status:** Context gathered ✓ 2026-04-27 (7 itens — CONTEXT.md pronto)
+**Current Focus:** Milestone v1.1 estendido — Phase 9 aguardando /gsd-plan-phase 9
 
 ---
 
 ## Current Position
 
-Phase: 08 (Market Research Frontend) — COMPLETE ✓
-Plan: 4/4 concluídos
-Status: Milestone v1.1 completo (Phases 6, 7, 8 executadas)
-Last activity: 2026-04-26 — Phase 08 verificação PASS (140/140 testes, VIZ-01 VIZ-02 VIZ-03 cobertos)
+Phase: 09 (Pequenos ajustes pós-v1.1.1) — CONTEXT GATHERED
+Plan: 0/0 (CONTEXT.md pronto, aguarda /gsd-plan-phase 9)
+Status: Milestone v1.1 estendido — Phase 9 contexto capturado, aguarda planejamento
+Last activity: 2026-04-27 — Phase 9 contexto capturado (7 itens em 09-CONTEXT.md)
 
-**Progress bar:** `[x] [x] [x]` (3/3 phases)
+**Progress bar:** `[x] [x] [x] [~]` (3/4 phases — Phase 9 em planejamento)
 
 **At risk:** None
 
@@ -54,7 +55,8 @@ Last activity: 2026-04-26 — Phase 08 verificação PASS (140/140 testes, VIZ-0
 |-------|------|--------------|--------|
 | 6. Guided Profile Creation Skill | Manager can create market-validated minimal profile from a job title via `/criar-perfil` | CRIA-01, CRIA-02, CRIA-03 | Complete ✓ 2026-04-26 |
 | 7. Profile-Anchored Market Research | Research files anchored to profile ID, salary ranges in resumo, accumulate by date, `/atualizar-roles-map` deprecated | PESQ-01, PESQ-02, PESQ-03, PESQ-04 | Complete ✓ 2026-04-26 |
-| 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Not started |
+| 8. Market Research Frontend | Profile screen with tabs (Perfil / Vagas / Resumo de Mercado) showing anchored research | VIZ-01, VIZ-02, VIZ-03 | Complete ✓ 2026-04-26 |
+| 9. Pequenos ajustes pós-v1.1.1 | Ajustes de continuidade após release v1.1.1 | TBD | Context captured ✓ 2026-04-27 |
 
 ---
 
@@ -160,6 +162,7 @@ None.
 
 - 2026-04-21: Phase 5 added — Market Research & Holistic Profile Refinement (sobra de v1.0, antes do bump SemVer). Brief completo em `.planning/phases/05-market-research-holistic-refinement/05-CONTEXT.md` (decisões D-01 a D-21, canonical refs, sub-plans, verification). JobProfile schema declared immutable for this phase — riqueza extra (stack híbrido, arquétipo) tem que caber nos campos existentes.
 - 2026-04-25: v1.1 roadmap defined — Phases 6-8 covering CRIA, PESQ, VIZ requirement groups (10 requirements total, 100% mapped).
+- 2026-04-27: Phase 9 added — Pequenos ajustes pós-v1.1.1 (continuidade do milestone v1.1 após release patch v1.1.1; escopo a detalhar em /gsd-plan-phase 9).
 
 ---
 
@@ -167,14 +170,31 @@ None.
 
 ### Starting Phase
 
-Phase 6: Guided Profile Creation Skill
+Phase 9: Pequenos ajustes pós-v1.1.1 (contexto capturado, aguarda planejamento)
 
 ### What Needs to Happen Next
 
-1. Rodar `/gsd-plan-phase 6` para detalhar os planos da skill `/criar-perfil`
-2. Phase 7 depende de Phase 6 estar completa (precisa do profileId nos testes de ancoragem)
-3. Phase 8 depende de Phase 7 (precisa dos arquivos ancorados para exibir no frontend)
-4. Ao completar Phase 7, verificar se `/atualizar-roles-map` pode ser removida ou apenas marcada como legada no SKILL.md
+1. Rodar `/gsd-plan-phase 9` para quebrar os 7 itens do CONTEXT.md em planos executáveis
+2. Itens 2 e 3 têm dependência sequencial (Item 3 limpa o `?regen=1` que Item 2 desabilitou) — planejar ordem coerente
+3. Item 6 inclui auditoria colateral de schema (D-30) — pode crescer durante execução; planejar buffer
+4. Após execução completa de Phase 9, decidir se vira release patch (v1.1.2) ou se acumula com mais ajustes para v1.2.0
+
+### Sessão de Discussão Phase 09 — Contexto (2026-04-27)
+
+- Phase 9 adicionada ao roadmap como continuidade do milestone v1.1 (sem novo milestone)
+- Contexto capturado via `/gsd-discuss-phase 9` em modo interativo livre (escopo emergente, sem gray-area pré-definidas)
+- 7 itens fechados pelo gestor:
+  1. Excel: campo "informações adicionais" não respeita `\n` e fica centralizado (template B59 + `xml:space="preserve"`)
+  2. Excel: rota falha em prod (DATA_PATH read-only) — eliminar cache + escrever em `os.tmpdir()`, sem env var nova
+  3. UI: botão de download no card da `/vacancies` (ordem `[Download] [Edit] [Delete]`)
+  4. UI: textareas `rows={2}` + `resize-none` em "Conteúdo Descritivo" (4 sub-seções)
+  5. UI: gráfico de barras horizontais em CSS puro pra "Stack Frequência" (sem chart library)
+  6. Bug: arquétipos renderizam `undefined (X menções)` — schema mismatch (`name` vs `archetype`); fix de código + teste + auditoria colateral
+  7. UX: simplificar multi-pesquisa — sempre mostrar só a mais recente, exibir data sempre, **remover** switcher de Vagas; histórico fica no repo separado montado em `/data`
+- Profile concreto onde Item 6 se manifesta: `8b09c8eb-6db0-454b-9abd-4bab1ac2dded`
+- Esclarecimento crítico do gestor: `/data` é gitignored neste repo, mas existe **outro repo versionado** montado em `/data` que guarda o histórico — informa decisão de Item 7
+- Princípio reforçado durante Item 6: mocks de teste devem refletir schema canônico declarado em `.agents/skills/.../SKILL.md`, não inventar campos
+- Artefatos gerados: `09-CONTEXT.md` + `09-DISCUSSION-LOG.md` (commits aguardando autorização do gestor — política `AGENTS.md`)
 
 ### Sessão de Execução Phase 06 — Plano 06-01 (2026-04-26)
 
