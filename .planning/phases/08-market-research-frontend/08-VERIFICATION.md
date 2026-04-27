@@ -172,3 +172,44 @@ Phase 8 successfully achieves its goal. All three success criteria from ROADMAP.
 **Verification timestamp:** 2026-04-26T18:40:00Z  
 **Test suite:** 140/140 passing  
 **Status:** PASSED
+
+---
+
+## Emenda Pós-Release — v1.1.1 (2026-04-27)
+
+### Contexto
+
+Após a release v1.1.0, feedback de UX identificou que a separação entre página de detalhe read-only e página de edição criava confusão: o gestor entrava via ícone de lápis e chegava ao formulário sem abas, sem acesso à pesquisa de mercado.
+
+### Mudanças Aplicadas (commit `d9c281c`, release v1.1.1)
+
+| Artefato | Antes (v1.1.0) | Depois (v1.1.1) | Ação |
+|----------|----------------|-----------------|------|
+| `src/app/(shell)/profiles/[id]/edit/page.tsx` | Rota de edição separada | — | **Deletado** |
+| `src/components/profile/profile-detail-perfil.tsx` | Modo read-only da aba Perfil | — | **Deletado** |
+| `src/components/profile/profile-detail-perfil.test.tsx` | Testes do read-only | — | **Deletado** |
+| `src/components/profile/profile-detail-tabs.tsx` | Prop `profile: JobProfile` → renderizava `ProfileDetailPerfil` | Prop `perfilContent: ReactNode` → renderiza qualquer conteúdo | **Modificado** |
+| `src/app/(shell)/profiles/[id]/page.tsx` | Passava `profile` para tabs | Injeta `<ProfileForm>` como `perfilContent` | **Modificado** |
+| `src/components/profile/profile-list.tsx` | `onClick` no row navegava para `/profiles/[id]` | Row sem clique; lápis navega para `/profiles/[id]` | **Modificado** |
+| Aba "Vagas" | Label "Vagas" | Label "Vagas do Mercado" | **Modificado** |
+| Aba Vagas — 1 pesquisa | Exibia row clicável redundante | Exibe vagas diretamente | **Modificado** |
+| Aba Resumo — Faixa Salarial | Texto corrido único | Dois blocos: "Das Vagas" + "Pesquisa de Mercado" | **Modificado** |
+| Aba Resumo — Arquétipos | Inseridos no meio da stack (hack de teste) | Seção separada após Stack Frequência | **Corrigido** |
+
+### Design Canônico Resultante
+
+```
+/profiles  →  ícone lápis  →  /profiles/[id]
+                               ├── aba "Perfil"          = ProfileForm (edição direta)
+                               ├── aba "Vagas do Mercado" = ProfileDetailVagas
+                               └── aba "Resumo de Mercado" = ProfileDetailResumo
+```
+
+### ⚠️ Guardrails para Agentes Futuros
+
+- **NÃO recriar** `ProfileDetailPerfil` — componente de modo read-only foi deliberadamente removido
+- **NÃO recriar** a rota `/profiles/[id]/edit` — é obsoleta; toda edição ocorre em `/profiles/[id]` aba Perfil
+- **NÃO restaurar** o `onClick` do row na lista — o lápis é o único ponto de entrada intencional
+- A prop de `ProfileDetailTabs` é `perfilContent: ReactNode`, não `profile: JobProfile`
+
+**Test suite pós-emenda:** 135/135 passing (redução de 140→135 pela remoção de 5 testes de `ProfileDetailPerfil`)

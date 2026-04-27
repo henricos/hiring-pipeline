@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — Profile-Anchored Market Research
-status: Milestone v1.1 fechado — release v1.1.0 publicada no GHCR
-last_updated: "2026-04-26T21:00:00.000Z"
-last_activity: 2026-04-26 -- Release v1.1.0 publicada (tag + GHCR ghcr.io/henricos/hiring-pipeline:v1.1.0)
+status: Milestone v1.1 fechado — release v1.1.1 publicada no GHCR (patch pós-UX)
+last_updated: "2026-04-27T00:00:00.000Z"
+last_activity: 2026-04-27 -- Release v1.1.1 publicada (tag + GHCR ghcr.io/henricos/hiring-pipeline:v1.1.1) — unificação UX edição+abas
 progress:
   total_phases: 8
   completed_phases: 8
@@ -59,6 +59,22 @@ Last activity: 2026-04-26 — Phase 08 verificação PASS (140/140 testes, VIZ-0
 ---
 
 ## Decision Log
+
+### Phase 8 — Correção de UX pós-release (v1.1.1, 2026-04-27)
+
+| Date | Decision | Rationale | Status |
+|------|----------|-----------|--------|
+| 2026-04-27 | Rota `/profiles/[id]/edit` **removida permanentemente** | A fase 8 criou uma página de detalhe read-only separada da edição. O feedback de UX identificou que o fluxo correto é uma única tela com abas — não duas rotas. A rota `/edit` é obsoleta e não deve ser recriada. | **Active — não reverter** |
+| 2026-04-27 | Componente `ProfileDetailPerfil` **removido permanentemente** | Era o modo read-only da aba Perfil. Substituído pelo `ProfileForm` diretamente na aba. Recriar este componente introduz regressão de UX. | **Active — não reverter** |
+| 2026-04-27 | Clique na linha da lista de perfis **removido** | O `onClick` do row navegava para `/profiles/[id]`. Com a unificação, o lápis (único ponto de entrada) já navega para lá. O clique no row era redundante e confuso. | **Active — não reverter** |
+| 2026-04-27 | Aba "Vagas" renomeada para "Vagas do Mercado" | Distingue claramente pesquisa de mercado de vagas internas abertas. | Active |
+| 2026-04-27 | Faixa Salarial: dois blocos separados ("Das Vagas" e "Pesquisa de Mercado") | `salaryGuide` é null em todos os perfis reais; os dados salariais estão em `summary.salarySource` como string rica. O campo `salarySource` é parseado automaticamente pelo separador `"Dados secundários de mercado:"`. | Active |
+
+**Fluxo de navegação canônico (v1.1.1+):**
+```
+/profiles  →  ícone lápis  →  /profiles/[id]  (3 abas: Perfil=edit, Vagas do Mercado, Resumo)
+                               aba Perfil  →  salvar  →  /profiles
+```
 
 ### Phase 5 Decisions (05-04)
 
@@ -130,7 +146,8 @@ None.
 
 - Phase 6 (`/criar-perfil`): nova skill — fluxo nome → análise de força no mercado → geração de perfil mínimo com campos preenchidos com valores-base. Perfil gerado fica pronto para refinamento via `/refinar-perfil`.
 - Phase 7 (ancoragem `/pesquisar-mercado`): arquivos passam a incluir `profileId` no path ou no conteúdo; `-resumo.json` absorve faixas salariais do roles-map; pesquisas acumulam por data; `/atualizar-roles-map` descontinuada.
-- Phase 8 (frontend): tela `/profiles/[id]` ganha abas — "Perfil" (conteúdo atual), "Vagas" (lista de pesquisas vinculadas ao perfil), "Resumo de Mercado" (conteúdo do `-resumo.json` mais recente + seletor de pesquisas anteriores).
+- Phase 8 (frontend): tela `/profiles/[id]` ganha abas — "Perfil" (formulário de edição), "Vagas do Mercado" (lista de pesquisas vinculadas ao perfil), "Resumo de Mercado" (conteúdo do `-resumo.json` mais recente + seletor de pesquisas anteriores).
+  - **v1.1.1 — DESIGN CANÔNICO:** a aba "Perfil" É o formulário de edição (`ProfileForm`). Não existe modo read-only separado nem rota `/profiles/[id]/edit`. Ver Decision Log abaixo.
 
 ### Insights
 
