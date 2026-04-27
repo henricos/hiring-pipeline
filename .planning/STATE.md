@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — Profile-Anchored Market Research
-status: Milestone v1.1 estendido — Phase 9 contexto capturado (7 itens), aguardando planejamento
-last_updated: "2026-04-27T00:00:00.000Z"
-last_activity: 2026-04-27 -- Phase 9 contexto capturado (7 itens) — CONTEXT.md + DISCUSSION-LOG.md prontos para /gsd-plan-phase 9
+status: Milestone v1.1 estendido — Phase 9 planejada (6 planos), pronta para executar
+last_updated: "2026-04-27T15:36:20.827Z"
+last_activity: 2026-04-27 -- Phase 9 planejada (6 planos em 2 waves; verificação passou na 2ª iteração)
 progress:
   total_phases: 9
   completed_phases: 8
-  total_plans: 31
+  total_plans: 47
   completed_plans: 41
-  percent: 89
+  percent: 87
 ---
 
 # State: Hiring Pipeline v1.1
@@ -31,19 +31,19 @@ progress:
 **Phase 6 Status:** Complete ✓ 2026-04-26 (1/1 plano executado — skill /criar-perfil criada)
 **Phase 7 Status:** Complete ✓ 2026-04-26 (3/3 planos executados — /pesquisar-mercado ancorado, /refinar-perfil corrigido, legados migrados e convertidos)
 **Phase 8 Status:** Complete ✓ 2026-04-26 (4/4 planos — ResearchRepository, Server Actions, componentes UI, página detalhe + navegação)
-**Phase 9 Status:** Context gathered ✓ 2026-04-27 (7 itens — CONTEXT.md pronto)
-**Current Focus:** Milestone v1.1 estendido — Phase 9 aguardando /gsd-plan-phase 9
+**Phase 9 Status:** Planned ✓ 2026-04-27 (6 planos em 2 waves — verificação passou na 2ª iteração)
+**Current Focus:** Milestone v1.1 estendido — Phase 9 pronta para /gsd-execute-phase 9
 
 ---
 
 ## Current Position
 
-Phase: 09 (Pequenos ajustes pós-v1.1.1) — CONTEXT GATHERED
-Plan: 0/0 (CONTEXT.md pronto, aguarda /gsd-plan-phase 9)
-Status: Milestone v1.1 estendido — Phase 9 contexto capturado, aguarda planejamento
-Last activity: 2026-04-27 — Phase 9 contexto capturado (7 itens em 09-CONTEXT.md)
+Phase: 09 (Pequenos ajustes pós-v1.1.1) — PLANNED
+Plan: 0/6 (6 planos prontos em 2 waves, aguarda /gsd-execute-phase 9)
+Status: Ready to execute
+Last activity: 2026-04-27 -- Phase 9 planejada (6 planos)
 
-**Progress bar:** `[x] [x] [x] [~]` (3/4 phases — Phase 9 em planejamento)
+**Progress bar:** `[x] [x] [x] [~]` (3/4 phases — Phase 9 pronta para execução)
 
 **At risk:** None
 
@@ -73,6 +73,7 @@ Last activity: 2026-04-27 — Phase 9 contexto capturado (7 itens em 09-CONTEXT.
 | 2026-04-27 | Faixa Salarial: dois blocos separados ("Das Vagas" e "Pesquisa de Mercado") | `salaryGuide` é null em todos os perfis reais; os dados salariais estão em `summary.salarySource` como string rica. O campo `salarySource` é parseado automaticamente pelo separador `"Dados secundários de mercado:"`. | Active |
 
 **Fluxo de navegação canônico (v1.1.1+):**
+
 ```
 /profiles  →  ícone lápis  →  /profiles/[id]  (3 abas: Perfil=edit, Vagas do Mercado, Resumo)
                                aba Perfil  →  salvar  →  /profiles

@@ -241,13 +241,23 @@ Plans:
 
 ### Phase 9: Pequenos ajustes pós-v1.1.1
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Coletânea de 7 ajustes de continuidade após a release v1.1.1, escolhidos pelo gestor a partir de uso real do produto em produção. Não introduz nova capability; corrige bugs, ajusta UX e desbloqueia operação em ambiente com `DATA_PATH` read-only.
+
+**Requirements:** Nenhum requirement novo (manutenção/UX). Cada plano referencia um item do CONTEXT.md (Item 1..7) e os respectivos D-XX.
+
 **Depends on:** Phase 8
-**Plans:** 0 plans
+
+**Plans:** 6 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 9 to break down)
+- [ ] 09-01-PLAN.md — Wave 1: Excel "informações adicionais" — patch styles.xml do template (B59 left/top/wrap) + xml:space="preserve" no &lt;t&gt; do gerador (Item 1, D-01..D-03)
+- [ ] 09-02-PLAN.md — Wave 1: Excel storage em os.tmpdir() — eliminar cache em DATA_PATH/forms/, regenerar a cada request, remover ?regen=1 do caller (Item 2, D-04..D-08)
+- [ ] 09-03-PLAN.md — Wave 2 (depende de 09-02): Botão Download no card de /vacancies — ordem `[Download] [Edit] [Delete]`, padrão visual existente (Item 3, D-09..D-13)
+- [ ] 09-04-PLAN.md — Wave 1: Textareas multi-linha de altura uniforme em "Conteúdo Descritivo" — `<textarea rows={2} resize-none>` em dynamic-list-field e profile-item-field (Item 4, D-14..D-19)
+- [ ] 09-05-PLAN.md — Wave 1: Resumo de Mercado — barras horizontais CSS puro para Stack Frequência + fix `arch.archetype` com percentage + auditoria de schema (Items 5+6, D-20..D-31)
+- [ ] 09-06-PLAN.md — Wave 2 (depende de 09-05): Multi-pesquisa simplificada — remover switcher em Vagas, exibir data sempre nas duas abas, atualizar testes (Item 7, D-32..D-37)
+
+**Context:** `.planning/phases/09-pequenos-ajustes-p-s-v1-1-1/09-CONTEXT.md` (decisões D-01..D-37 + canonical refs + specifics + deferred)
 
 ---
 
@@ -263,7 +273,7 @@ Plans:
 | 6. Guided Profile Creation Skill | 1/1 | Complete | 2026-04-26 |
 | 7. Profile-Anchored Market Research | 3/3 | Complete | 2026-04-26 |
 | 8. Market Research Frontend | 4/4 | Complete | 2026-04-26 |
-| 9. Pequenos ajustes pós-v1.1.1 | 0/0 | Not planned | — |
+| 9. Pequenos ajustes pós-v1.1.1 | 0/6 | Planned | — |
 
 ---
 
@@ -281,3 +291,4 @@ Plans:
 *Phase 7 planned: 2026-04-26*
 *Phase 8 planned: 2026-04-26*
 *Phase 9 added: 2026-04-27 (continuidade v1.1 — ajustes pós-v1.1.1)*
+*Phase 9 planned: 2026-04-27 (6 planos — Items 1-7 do CONTEXT.md, com 5+6 consolidados)*
