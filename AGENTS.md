@@ -13,22 +13,24 @@ Este repositório adota uma política de idioma híbrida:
 - **Estrutura do projeto** (nomes de pastas, arquivos de código, configs, nomes de documentos técnicos): **inglês**
 - **Conteúdo escrito** (textos, commits, mensagens ao usuário, comunicação no chat): **português do Brasil (`pt-BR`)**
 
-Exceções admissíveis: jargões tecnológicos globais enraizados que soem artificiais em português, como `frontend`, `pipeline`, `shortlist`, `middleware`, ou trechos de código exatos.
+A única exceção admissível são jargões tecnológicos globais enraizados que soem puramente artificiais em português, como `build`, `frontend`, `runtime`, `pipeline`, `deploy`, `compose`, `container`, `workflow`, `shortlist`, `screening`, `middleware`, `hiring` ou trechos de código exatos. Referências externas podem ser capturadas no idioma original; metadados, títulos criados pela IA e textos autorais do sistema continuam em `pt-BR`.
 
 ## Estratégia de IA agnóstica
 
 Este repositório adota uma estratégia agnóstica de ferramenta para suportar múltiplas IAs sem duplicar instruções.
 
 **Fontes de verdade editáveis:**
-- `AGENTS.md` — regras operacionais comuns a qualquer agente
-- `.agents/skills/` — implementações padronizadas dos fluxos operacionais
 
-Arquivos de compatibilidade como `CLAUDE.md` e diretórios de ferramenta são apenas apontamentos para essas fontes de verdade. Nunca edite os apontamentos diretamente.
+- `AGENTS.md` - regras operacionais comuns a qualquer agente.
+- `.agents/skills/` - implementações padronizadas dos fluxos operacionais.
+
+Arquivos de compatibilidade como `CLAUDE.md` e diretórios de ferramenta são apenas apontamentos para essas fontes de verdade. Nunca edite os apontamentos diretamente quando a intenção for mudar regras ou skills.
 
 **Como cada ferramenta carrega as instruções e as skills:**
-- **Claude Code** — carrega as regras por meio de `CLAUDE.md`, que inclui `@AGENTS.md`; skills via `.claude/skills/`, que aponta para `.agents/skills/`
-- **Cursor** — lê `AGENTS.md` como arquivo nativo de instruções; skills via `.cursor/skills/`, que aponta para `.agents/skills/`
-- **Codex CLI / outras ferramentas** — leem `AGENTS.md` diretamente; skills lidas de `.agents/skills/`
+
+- **Claude Code** - carrega as regras por meio de `CLAUDE.md`, que inclui `@AGENTS.md`; skills via `.claude/skills`, que aponta para `.agents/skills`.
+- **Cursor** - lê `AGENTS.md` como arquivo nativo de instruções; skills via `.cursor/skills`, que aponta para `.agents/skills`.
+- **Codex CLI / outras ferramentas** - leem `AGENTS.md` diretamente; skills de `.agents/skills`.
 
 ## Workflow de desenvolvimento
 
@@ -43,7 +45,15 @@ Incorreto: `jobProfile.ts`, `VacancyForm.tsx`, `data_layer.ts`
 
 ## Commits
 
-**Nunca faça commits automáticos.** Sempre que precisar commitar, use a skill de commit instalada no projeto e aguarde autorização explícita do operador antes de executar. Isso se aplica a qualquer agente e em qualquer situação, inclusive durante fluxos do GSD.
+- Mensagens sempre em **pt-BR**.
+- Formato **Conventional Commits**: `tipo: assunto conciso` (assunto até ~72 caracteres).
+- Tipos válidos: `feat`, `fix`, `docs`, `refactor`, `chore`.
+- A mensagem inteira deve usar **presente do indicativo na terceira pessoa do singular**, descrevendo o que o commit faz: `adiciona`, `corrige`, `atualiza`, `remove`, `refatora`, `documenta`.
+- Não use imperativo na mensagem: evite `adicione`, `corrija`, `atualize`, `remova`, `refatore`, `documente`.
+- Corpo obrigatório, com um parágrafo curto resumindo o objetivo da mudança e uma lista de bullets descrevendo as mudanças realizadas.
+- Antes de executar `commit` ou `commit + push`, apresente a mensagem proposta e aguarde aprovação explícita do operador.
+- Use arquivos explícitos no `git add`; não use staging amplo como `git add .`.
+- **`git push` exige `dangerouslyDisableSandbox: true` na chamada da ferramenta Bash.** O sandbox padrão bloqueia conexões de rede — o push falhará silenciosamente se você não ativar esse parâmetro. Nunca delegue o push ao operador por falha de sandbox; ajuste o parâmetro e execute você mesmo.
 
 ## Versionamento
 
