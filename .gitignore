@@ -49,6 +49,7 @@ Thumbs.db
 
 # misc
 .vercel
+tmp/
 
 # claude code local settings
 .claude/settings.local.json
