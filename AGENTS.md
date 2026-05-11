@@ -1,23 +1,46 @@
-# Instruções para Agentes de IA
+# Contexto e Diretrizes para Agentes IA
 
-Regras obrigatórias para qualquer IA (IDEs como Cursor, CLIs como Claude Code ou Codex CLI, ou qualquer orquestrador) operando neste repositório. Siga sem exceção.
+## Contexto e referências
 
-## Leitura de contexto
+Este projeto usa o framework **GSD** como sistema de desenvolvimento. As skills com prefixo `gsd-*` implementam os fluxos de planejamento e execução. O contexto vivo do produto - roadmap, fases, decisões e planos - fica em `.planning/`.
 
-Antes de iniciar qualquer tarefa de implementação, familiarize-se com o contexto do projeto. Este projeto segue o framework **GSD (Get Shit Done)** — consulte os artefatos de planning gerados pelo GSD para entender a visão, os requisitos ativos e o estado de execução do roadmap.
+Antes de decidir sobre convenções, fluxos ou regras, verifique `docs/`. O que está documentado lá é normativo: prevalece sobre suposições e deve ser seguido. Se uma decisão alterar algo já documentado, atualize o documento correspondente.
+
+Para orientação geral:
+- `README.md` - visão de alto nível para humanos; aponta para `docs/` quando precisa detalhar algo.
+- `docs/` - decisões arquiteturais, técnicas e procedimentos do projeto.
+
+## Operações
+
+Ao criar ou atualizar artefatos de planning, respeite a convenção de versionamento: milestones usam `vMAJOR.MINOR` e a versão da aplicação usa SemVer completo `MAJOR.MINOR.PATCH`.
+
+O fluxo operacional de release está documentado na skill `/fechar-versao`.
 
 ## Idioma
 
-Este repositório adota uma política de idioma híbrida:
+Este projeto adota uma política de idioma híbrida:
 
-- **Estrutura do projeto** (nomes de pastas, arquivos de código, configs, nomes de documentos técnicos): **inglês**
-- **Conteúdo escrito** (textos, commits, mensagens ao usuário, comunicação no chat): **português do Brasil (`pt-BR`)**
+- **Estrutura e código do projeto** (nomes de pastas, arquivos de código, configs, nomes de documentos técnicos, variáveis, comentários dentro de arquivos de código e comentários operacionais dentro de arquivos de configuração): **inglês**.
+- **Conteúdo escrito para humanos** (documentação narrativa, commits, mensagens ao usuário, comunicação no chat, exemplos explicativos e comentários em blocos de documentação): **português do Brasil (`pt-BR`)**.
 
-A única exceção admissível são jargões tecnológicos globais enraizados que soem puramente artificiais em português, como `build`, `frontend`, `runtime`, `pipeline`, `deploy`, `compose`, `container`, `workflow`, `shortlist`, `screening`, `middleware`, `hiring` ou trechos de código exatos. Referências externas podem ser capturadas no idioma original; metadados, títulos criados pela IA e textos autorais do sistema continuam em `pt-BR`.
+A única exceção admissível são jargões tecnológicos globais enraizados que soem puramente artificiais em português, como `build`, `entrypoint`, `workflow`, `tag`, `push`, `pipeline` ou trechos de código exatos. Referências externas podem ser capturadas no idioma original; metadados, títulos criados pela IA e textos autorais do sistema continuam em `pt-BR`.
+
+## Commits
+
+- Mensagens sempre em **pt-BR**.
+- Formato **Conventional Commits**: `tipo: assunto conciso` (assunto até ~72 caracteres).
+- Tipos válidos: `feat`, `fix`, `docs`, `refactor`, `chore`.
+- A mensagem inteira deve usar **presente do indicativo na terceira pessoa do singular**, descrevendo o que o commit faz: `adiciona`, `corrige`, `atualiza`, `remove`, `refatora`, `documenta`.
+- Não use imperativo na mensagem: evite `adicione`, `corrija`, `atualize`, `remova`, `refatore`, `documente`.
+- Corpo obrigatório, com um parágrafo curto resumindo o objetivo da mudança e uma lista de bullets descrevendo as mudanças realizadas.
+- Antes de executar `git push`, apresente a proposta e aguarde aprovação explícita do operador.
+- Use arquivos explícitos no `git add`; não use staging amplo como `git add .`.
+- Se houver arquivos não relacionados à tarefa fora do staging, pergunte ao operador o que fazer. Nunca mencione arquivos pendentes na mensagem de commit.
+- `git push` pode ser bloqueado pelo sandbox da ferramenta em uso. Se isso ocorrer, execute o push fora do sandbox - não delegue ao operador por falha de rede.
 
 ## Estratégia de IA agnóstica
 
-Este repositório adota uma estratégia agnóstica de ferramenta para suportar múltiplas IAs sem duplicar instruções.
+Este projeto adota uma estratégia agnóstica de ferramenta para suportar múltiplas IAs sem duplicar instruções.
 
 **Fontes de verdade editáveis:**
 
@@ -31,32 +54,3 @@ Arquivos de compatibilidade como `CLAUDE.md` e diretórios de ferramenta são ap
 - **Claude Code** - carrega as regras por meio de `CLAUDE.md`, que inclui `@AGENTS.md`; skills via `.claude/skills`, que aponta para `.agents/skills`.
 - **Cursor** - lê `AGENTS.md` como arquivo nativo de instruções; skills via `.cursor/skills`, que aponta para `.agents/skills`.
 - **Codex CLI / outras ferramentas** - leem `AGENTS.md` diretamente; skills de `.agents/skills`.
-
-## Workflow de desenvolvimento
-
-Este projeto opera com um workflow determinado chamado **GSD (Get Shit Done)**. Skills do GSD estão instaladas e definem como o trabalho é planejado e executado. Antes de implementar qualquer feature, verifique se existe fase correspondente no roadmap. Se não existir, sinalize ao operador antes de prosseguir.
-
-## Nomenclatura de arquivos
-
-Todos os arquivos e pastas do projeto seguem `kebab-case`.
-
-Correto: `job-profile.ts`, `vacancy-form.tsx`, `data-layer.ts`
-Incorreto: `jobProfile.ts`, `VacancyForm.tsx`, `data_layer.ts`
-
-## Commits
-
-- Mensagens sempre em **pt-BR**.
-- Formato **Conventional Commits**: `tipo: assunto conciso` (assunto até ~72 caracteres).
-- Tipos válidos: `feat`, `fix`, `docs`, `refactor`, `chore`.
-- A mensagem inteira deve usar **presente do indicativo na terceira pessoa do singular**, descrevendo o que o commit faz: `adiciona`, `corrige`, `atualiza`, `remove`, `refatora`, `documenta`.
-- Não use imperativo na mensagem: evite `adicione`, `corrija`, `atualize`, `remova`, `refatore`, `documente`.
-- Corpo obrigatório, com um parágrafo curto resumindo o objetivo da mudança e uma lista de bullets descrevendo as mudanças realizadas.
-- Antes de executar `commit` ou `commit + push`, apresente a mensagem proposta e aguarde aprovação explícita do operador.
-- Use arquivos explícitos no `git add`; não use staging amplo como `git add .`.
-- **`git push` exige `dangerouslyDisableSandbox: true` na chamada da ferramenta Bash.** O sandbox padrão bloqueia conexões de rede — o push falhará silenciosamente se você não ativar esse parâmetro. Nunca delegue o push ao operador por falha de sandbox; ajuste o parâmetro e execute você mesmo.
-
-## Versionamento
-
-Ao criar ou atualizar artefatos de planning, respeite a convenção de versionamento: milestones usam `vMAJOR.MINOR` e a versão da aplicação usa SemVer completo `MAJOR.MINOR.PATCH`.
-
-O fluxo operacional de release está documentado na skill `/fechar-versao`.
