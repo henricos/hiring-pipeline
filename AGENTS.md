@@ -12,9 +12,9 @@ Para orientação geral:
 
 ## Operações
 
-Ao criar ou atualizar artefatos de planning, respeite a convenção de versionamento: milestones usam `vMAJOR.MINOR` e a versão da aplicação usa SemVer completo `MAJOR.MINOR.PATCH`.
-
-O fluxo operacional de release está documentado na skill `/fechar-versao`.
+- Para setup e operações de desenvolvimento: `docs/dev.md`.
+- Para fechar uma versão: `docs/release.md`.
+- Para subir em produção via Docker: `docs/deploy.md`.
 
 ## Idioma
 
